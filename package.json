@@ -1,0 +1,165 @@
+{
+  "publisher": "antfu",
+  "name": "json-string-code",
+  "displayName": "JSON String Code Editor",
+  "version": "0.0.1",
+  "private": true,
+  "packageManager": "pnpm@10.4.1",
+  "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
+  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/antfu",
+  "homepage": "https://github.com/antfu/ext-name#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antfu/ext-name"
+  },
+  "bugs": {
+    "url": "https://github.com/antfu/ext-name/issues"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/antfu"
+  },
+  "categories": [
+    "Other",
+    "Formatters",
+    "Snippets"
+  ],
+  "main": "./dist/index.js",
+  "icon": "res/icon.png",
+  "files": [
+    "LICENSE.md",
+    "dist/*",
+    "res/*"
+  ],
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:jsonc"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "json-string-code.editAsCode",
+        "title": "Edit as Code",
+        "category": "JSON String Code"
+      },
+      {
+        "command": "json-string-code.editSnippetFromHover",
+        "title": "Edit Code Snippet from Hover",
+        "category": "JSON String Code"
+      },
+      {
+        "command": "json-string-code.copySnippetCode",
+        "title": "Copy Code Snippet",
+        "category": "JSON String Code"
+      },
+      {
+        "command": "json-string-code.refreshDecorations",
+        "title": "Refresh Code Snippet Decorations",
+        "category": "JSON String Code"
+      },
+      {
+        "command": "json-string-code.cleanupTempFiles",
+        "title": "Cleanup Temporary Files",
+        "category": "JSON String Code"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "json-string-code.editAsCode",
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/ && editorTextFocus",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "JSON String Code Editor",
+      "properties": {
+        "json-string-code.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.json",
+            "**/*.jsonc"
+          ],
+          "description": "Glob patterns for files where the extension should be active"
+        },
+        "json-string-code.forceCodeKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "script",
+            "code",
+            "template",
+            "function",
+            "expression",
+            "query"
+          ],
+          "description": "Array of key names that should always be treated as code snippets"
+        },
+        "json-string-code.enableLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug logging for the extension"
+        },
+        "json-string-code.autoCloseTempTab": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically close temporary tab after saving changes"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "dev": "nr build --watch --sourcemap",
+    "build": "tsdown src/index.ts --external vscode",
+    "prepare": "nr update",
+    "update": "vscode-ext-gen --output src/generated/meta.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "vscode:prepublish": "nr build",
+    "publish": "vsce publish --no-dependencies",
+    "pack": "vsce package --no-dependencies",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "release": "bumpp && nr publish"
+  },
+  "dependencies": {
+    "jsesc": "^3.1.0",
+    "jsonc-parser": "^3.3.1",
+    "minimatch": "^10.0.3"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.2.1",
+    "@antfu/ni": "^23.3.1",
+    "@types/jsesc": "^3.0.3",
+    "@types/node": "^22.13.4",
+    "@types/vscode": "^1.97.0",
+    "@vscode/vsce": "^3.2.2",
+    "bumpp": "^10.0.3",
+    "eslint": "^9.20.1",
+    "esno": "^4.8.0",
+    "pnpm": "^10.4.1",
+    "reactive-vscode": "^0.2.10",
+    "tsdown": "^0.9.6",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5",
+    "vscode-ext-gen": "^1.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
