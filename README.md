@@ -3,7 +3,7 @@
 <a href="https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor" target="__blank"><img src="https://img.shields.io/visual-studio-marketplace/v/Drswith.vscode-json-string-code-editor.svg?color=eee&amp;label=VS%20Code%20Marketplace&logo=visual-studio-code" alt="Visual Studio Marketplace Version" /></a>
 <a href="https://kermanx.github.io/reactive-vscode/" target="__blank"><img src="https://img.shields.io/badge/made_with-reactive--vscode-%23007ACC?style=flat&labelColor=%23229863"  alt="Made with reactive-vscode" /></a>
 
-一个 VS Code 插件，用于优化 JSON Schema 中代码片段的编辑体验。
+一个用于优化 JSON Schema 中代码片段的编辑体验的 VS Code 插件。
 
 ## 功能特性
 
@@ -20,7 +20,6 @@
    - 支持不同类型代码片段的差异化显示
 
 3. **便捷编辑方式**
-   - **左键单击**：直接点击代码片段打开临时编辑标签页
    - **鼠标悬停**：悬停显示代码预览和编辑按钮
    - **右键菜单**：通过上下文菜单进入编辑模式
 
@@ -81,18 +80,12 @@
 
 ### 2. 编辑代码片段
 
-#### 方式一：左键单击
-1. 将鼠标移动到有下划线的代码片段上
-2. 左键单击即可打开临时编辑标签页
-3. 在临时标签页中编辑代码
-4. 保存文件（Ctrl+S）自动同步到原 JSON
-
-#### 方式二：鼠标悬停
+#### 方式一：鼠标悬停
 1. 将鼠标悬停在代码片段上
 2. 在弹出的悬停面板中点击"在临时标签页编辑"
 3. 或点击"复制代码"按钮复制代码到剪贴板
 
-#### 方式三：右键菜单
+#### 方式二：右键菜单
 1. 在 JSON 文件中右键点击
 2. 选择"Edit as Code"菜单项
 3. 如果光标位置有代码片段则直接编辑
