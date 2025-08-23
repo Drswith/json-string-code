@@ -130,8 +130,8 @@ pnpm run publish
 
 <!-- configs -->
 
-| Key                                 | Description                                  | Type      | Default                                                        |
-| ----------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
+| Key                                               | Description                                  | Type      | Default                                                        |
+| ------------------------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
 | `vscode-json-string-code-editor.include`          | %configuration.include.description%          | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
 | `vscode-json-string-code-editor.forceCodeKeys`    | %configuration.forceCodeKeys.description%    | `array`   | `["script","code","template","function","expression","query"]` |
 | `vscode-json-string-code-editor.enableLogging`    | %configuration.enableLogging.description%    | `boolean` | `false`                                                        |
@@ -144,8 +144,8 @@ pnpm run publish
 
 <!-- commands -->
 
-| Command                                 | Title                                                           |
-| --------------------------------------- | --------------------------------------------------------------- |
+| Command                                               | Title                                                           |
+| ----------------------------------------------------- | --------------------------------------------------------------- |
 | `vscode-json-string-code-editor.editAsCode`           | %category.jsonStringCode%: %command.editAsCode.title%           |
 | `vscode-json-string-code-editor.editSnippetFromHover` | %category.jsonStringCode%: %command.editSnippetFromHover.title% |
 | `vscode-json-string-code-editor.copySnippetCode`      | %category.jsonStringCode%: %command.copySnippetCode.title%      |
