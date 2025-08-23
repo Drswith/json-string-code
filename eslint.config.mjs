@@ -12,6 +12,7 @@ export default antfu(
     rules: {
       // overrides
       'unused-imports/no-unused-vars': 'off',
+      'no-console': 'off',
     },
   },
 )
