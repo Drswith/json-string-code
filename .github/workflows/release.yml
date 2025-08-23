@@ -2,6 +2,7 @@ name: Release
 
 permissions:
   contents: write
+  actions: write
 
 on:
   push:
@@ -28,6 +29,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Update copyright year
+        run: |
+          CURRENT_YEAR=$(date +%Y)
+          sed -i "s/© [0-9]\{4\}/© $CURRENT_YEAR/g" README.md
+          sed -i "s/© [0-9]\{4\}/© $CURRENT_YEAR/g" README.zh-CN.md
+          
+          # Check if any changes were made
+          if git diff --quiet; then
+            echo "No copyright year updates needed"
+          else
+            echo "Updated copyright year to $CURRENT_YEAR"
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add README.md README.zh-CN.md
+            git commit -m "chore: update copyright year to $CURRENT_YEAR"
+            git push
+          fi
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
