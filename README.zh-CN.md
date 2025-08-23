@@ -195,4 +195,4 @@ pnpm run publish:ovsx
 
 ## License
 
-[MIT](./LICENSE.md) License © 2022 [Drswith](https://github.com/Drswith)
+[MIT](./LICENSE.md) License © 2025 [Drswith](https://github.com/Drswith)

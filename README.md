@@ -195,4 +195,4 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 
 ## License
 
-[MIT](./LICENSE.md) License © 2022 [Drswith](https://github.com/Drswith)
+[MIT](./LICENSE.md) License © 2025 [Drswith](https://github.com/Drswith)
