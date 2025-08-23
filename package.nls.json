@@ -1,0 +1,15 @@
+{
+  "displayName": "JSON String Code Editor",
+  "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
+  "command.editAsCode.title": "Edit as Code",
+  "command.editSnippetFromHover.title": "Edit Code Snippet from Hover",
+  "command.copySnippetCode.title": "Copy Code Snippet",
+  "command.refreshDecorations.title": "Refresh Code Snippet Decorations",
+  "command.cleanupTempFiles.title": "Cleanup Temporary Files",
+  "category.jsonStringCode": "JSON String Code",
+  "configuration.title": "JSON String Code Editor",
+  "configuration.include.description": "Glob patterns for files where the extension should be active",
+  "configuration.forceCodeKeys.description": "Array of key names that should always be treated as code snippets",
+  "configuration.enableLogging.description": "Enable debug logging for the extension",
+  "configuration.autoCloseTempTab.description": "Automatically close temporary tab after saving changes"
+}

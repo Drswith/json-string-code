@@ -5,6 +5,7 @@ import { config } from './config'
 import { decorationManager } from './decorations'
 import { fileWatcher } from './file-watcher'
 import { HoverCommandHandler, hoverProvider } from './hover-provider'
+import { i18n } from './i18n'
 import { tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
@@ -31,12 +32,12 @@ const { activate, deactivate } = defineExtension(async () => {
     async () => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
-        vscode.window.showWarningMessage('No active editor found')
+        vscode.window.showWarningMessage(i18n.t('notification.noActiveEditor'))
         return
       }
 
       if (editor.document.languageId !== 'json' && editor.document.languageId !== 'jsonc') {
-        vscode.window.showWarningMessage('This command only works with JSON/JSONC files')
+        vscode.window.showWarningMessage(i18n.t('notification.jsonFilesOnly'))
         return
       }
 
@@ -63,8 +64,9 @@ const { activate, deactivate } = defineExtension(async () => {
   const cleanupTempFilesCommand = vscode.commands.registerCommand(
     'json-string-code.cleanupTempFiles',
     async () => {
+      const tempFileCount = tempFileManager.getTempFileCount()
       await tempFileManager.dispose()
-      vscode.window.showInformationMessage('Temporary files cleaned up')
+      vscode.window.showInformationMessage(i18n.t('notification.tempFileCleanup', String(tempFileCount)))
     },
   )
 

@@ -130,12 +130,12 @@ pnpm run publish
 
 <!-- configs -->
 
-| Key                                 | Description                                                       | Type      | Default                                                        |
-| ----------------------------------- | ----------------------------------------------------------------- | --------- | -------------------------------------------------------------- |
-| `json-string-code.include`          | Glob patterns for files where the extension should be active      | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
-| `json-string-code.forceCodeKeys`    | Array of key names that should always be treated as code snippets | `array`   | `["script","code","template","function","expression","query"]` |
-| `json-string-code.enableLogging`    | Enable debug logging for the extension                            | `boolean` | `false`                                                        |
-| `json-string-code.autoCloseTempTab` | Automatically close temporary tab after saving changes            | `boolean` | `false`                                                        |
+| Key                                 | Description                                  | Type      | Default                                                        |
+| ----------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
+| `json-string-code.include`          | %configuration.include.description%          | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
+| `json-string-code.forceCodeKeys`    | %configuration.forceCodeKeys.description%    | `array`   | `["script","code","template","function","expression","query"]` |
+| `json-string-code.enableLogging`    | %configuration.enableLogging.description%    | `boolean` | `false`                                                        |
+| `json-string-code.autoCloseTempTab` | %configuration.autoCloseTempTab.description% | `boolean` | `false`                                                        |
 
 <!-- configs -->
 
@@ -143,13 +143,13 @@ pnpm run publish
 
 <!-- commands -->
 
-| Command                                 | Title                                              |
-| --------------------------------------- | -------------------------------------------------- |
-| `json-string-code.editAsCode`           | JSON String Code: Edit as Code                     |
-| `json-string-code.editSnippetFromHover` | JSON String Code: Edit Code Snippet from Hover     |
-| `json-string-code.copySnippetCode`      | JSON String Code: Copy Code Snippet                |
-| `json-string-code.refreshDecorations`   | JSON String Code: Refresh Code Snippet Decorations |
-| `json-string-code.cleanupTempFiles`     | JSON String Code: Cleanup Temporary Files          |
+| Command                                 | Title                                                           |
+| --------------------------------------- | --------------------------------------------------------------- |
+| `json-string-code.editAsCode`           | %category.jsonStringCode%: %command.editAsCode.title%           |
+| `json-string-code.editSnippetFromHover` | %category.jsonStringCode%: %command.editSnippetFromHover.title% |
+| `json-string-code.copySnippetCode`      | %category.jsonStringCode%: %command.copySnippetCode.title%      |
+| `json-string-code.refreshDecorations`   | %category.jsonStringCode%: %command.refreshDecorations.title%   |
+| `json-string-code.cleanupTempFiles`     | %category.jsonStringCode%: %command.cleanupTempFiles.title%     |
 
 <!-- commands -->
 

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { config } from './config'
 import { decorationManager } from './decorations'
+import { i18n } from './i18n'
 import { tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
@@ -40,8 +41,7 @@ export class ClickHandler {
       if (editor) {
         // 显示成功消息
         vscode.window.showInformationMessage(
-          `Opened code editor for "${snippet.key}". Save the file to sync changes back to JSON.`,
-          'Got it',
+          i18n.t('notification.openedEditor', snippet.key),
         )
       }
     }
@@ -49,7 +49,7 @@ export class ClickHandler {
       if (config.enableLogging) {
         logger.error(`Failed to handle code snippet click: ${error}`)
       }
-      vscode.window.showErrorMessage(`Failed to open code editor: ${error}`)
+      vscode.window.showErrorMessage(i18n.t('notification.failedToOpen', String(error)))
     }
   }
 
@@ -63,7 +63,7 @@ export class ClickHandler {
       await this.handleCodeSnippetClick(snippet, editor.document)
     }
     else {
-      vscode.window.showWarningMessage('No code snippet found at this position.')
+      vscode.window.showWarningMessage(i18n.t('notification.noActiveEditor'))
     }
   }
 
@@ -74,12 +74,12 @@ export class ClickHandler {
     const editor = vscode.window.activeTextEditor
 
     if (!editor) {
-      vscode.window.showWarningMessage('No active editor found.')
+      vscode.window.showWarningMessage(i18n.t('notification.noActiveEditor'))
       return
     }
 
     if (!this.isJsonDocument(editor.document)) {
-      vscode.window.showWarningMessage('This command only works with JSON files.')
+      vscode.window.showWarningMessage(i18n.t('notification.jsonFilesOnly'))
       return
     }
 
@@ -94,19 +94,19 @@ export class ClickHandler {
     const editor = vscode.window.activeTextEditor
 
     if (!editor) {
-      vscode.window.showWarningMessage('No active editor found.')
+      vscode.window.showWarningMessage(i18n.t('notification.noActiveEditor'))
       return
     }
 
     if (!this.isJsonDocument(editor.document)) {
-      vscode.window.showWarningMessage('This command only works with JSON files.')
+      vscode.window.showWarningMessage(i18n.t('notification.jsonFilesOnly'))
       return
     }
 
     const snippets = decorationManager.getActiveSnippets(editor.document.uri.toString())
 
     if (snippets.length === 0) {
-      vscode.window.showInformationMessage('No code snippets found in this document.')
+      vscode.window.showInformationMessage(i18n.t('notification.noCodeSnippet'))
       return
     }
 

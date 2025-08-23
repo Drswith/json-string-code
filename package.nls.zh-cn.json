@@ -1,0 +1,15 @@
+{
+  "displayName": "JSON字符串代码编辑器",
+  "description": "增强的JSON模式代码片段编辑体验，支持临时代码编辑器标签页",
+  "command.editAsCode.title": "编辑为代码",
+  "command.editSnippetFromHover.title": "从悬浮提示编辑代码片段",
+  "command.copySnippetCode.title": "复制代码片段",
+  "command.refreshDecorations.title": "刷新代码片段装饰",
+  "command.cleanupTempFiles.title": "清理临时文件",
+  "category.jsonStringCode": "JSON字符串代码",
+  "configuration.title": "JSON字符串代码编辑器",
+  "configuration.include.description": "扩展应激活的文件的Glob模式",
+  "configuration.forceCodeKeys.description": "应始终被视为代码片段的键名数组",
+  "configuration.enableLogging.description": "启用扩展的调试日志记录",
+  "configuration.autoCloseTempTab.description": "保存更改后自动关闭临时标签页"
+}

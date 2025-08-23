@@ -1,11 +1,11 @@
 {
   "publisher": "Drswith",
   "name": "json-string-code",
-  "displayName": "JSON String Code Editor",
+  "displayName": "%displayName%",
   "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@10.4.1",
-  "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
+  "description": "%description%",
   "author": "Drswith",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Drswith",
@@ -43,28 +43,28 @@
     "commands": [
       {
         "command": "json-string-code.editAsCode",
-        "title": "Edit as Code",
-        "category": "JSON String Code"
+        "title": "%command.editAsCode.title%",
+        "category": "%category.jsonStringCode%"
       },
       {
         "command": "json-string-code.editSnippetFromHover",
-        "title": "Edit Code Snippet from Hover",
-        "category": "JSON String Code"
+        "title": "%command.editSnippetFromHover.title%",
+        "category": "%category.jsonStringCode%"
       },
       {
         "command": "json-string-code.copySnippetCode",
-        "title": "Copy Code Snippet",
-        "category": "JSON String Code"
+        "title": "%command.copySnippetCode.title%",
+        "category": "%category.jsonStringCode%"
       },
       {
         "command": "json-string-code.refreshDecorations",
-        "title": "Refresh Code Snippet Decorations",
-        "category": "JSON String Code"
+        "title": "%command.refreshDecorations.title%",
+        "category": "%category.jsonStringCode%"
       },
       {
         "command": "json-string-code.cleanupTempFiles",
-        "title": "Cleanup Temporary Files",
-        "category": "JSON String Code"
+        "title": "%command.cleanupTempFiles.title%",
+        "category": "%category.jsonStringCode%"
       }
     ],
     "menus": {
@@ -78,7 +78,7 @@
     },
     "configuration": {
       "type": "object",
-      "title": "JSON String Code Editor",
+      "title": "%configuration.title%",
       "properties": {
         "json-string-code.include": {
           "type": "array",
@@ -89,7 +89,7 @@
             "**/*.json",
             "**/*.jsonc"
           ],
-          "description": "Glob patterns for files where the extension should be active"
+          "description": "%configuration.include.description%"
         },
         "json-string-code.forceCodeKeys": {
           "type": "array",
@@ -104,17 +104,17 @@
             "expression",
             "query"
           ],
-          "description": "Array of key names that should always be treated as code snippets"
+          "description": "%configuration.forceCodeKeys.description%"
         },
         "json-string-code.enableLogging": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug logging for the extension"
+          "description": "%configuration.enableLogging.description%"
         },
         "json-string-code.autoCloseTempTab": {
           "type": "boolean",
           "default": false,
-          "description": "Automatically close temporary tab after saving changes"
+          "description": "%configuration.autoCloseTempTab.description%"
         }
       }
     }

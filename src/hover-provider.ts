@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { config } from './config'
 import { decorationManager } from './decorations'
+import { i18n } from './i18n'
 import { tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
@@ -48,27 +49,17 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
 
     // 检测到的语言信息
     const language = this.detectLanguage(snippet.key, snippet.value)
-    markdown.appendMarkdown(`**Language**: ${language}\n\n`)
+    markdown.appendMarkdown(`**${i18n.t('hover.language')}**: ${language}\n\n`)
 
-    // 代码预览
-    const previewLength = 300
-    const preview = snippet.value.length > previewLength
-      ? `${snippet.value.substring(0, previewLength)}...`
-      : snippet.value
-
-    markdown.appendMarkdown('**Preview**:\n\n')
-    markdown.appendCodeblock(preview, language)
-    markdown.appendMarkdown('\n')
-
-    // 操作按钮
+    // 操作按钮 - 移到预览之前
     const editCommand = {
-      title: '✏️ Edit in Temporary Tab',
+      title: i18n.t('hover.editButton'),
       command: 'json-string-code.editSnippetFromHover',
       arguments: [document.uri, snippet],
     }
 
     const copyCommand = {
-      title: '📋 Copy Code',
+      title: i18n.t('hover.copyButton'),
       command: 'json-string-code.copySnippetCode',
       arguments: [snippet.value],
     }
@@ -78,11 +69,22 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
       `[${editCommand.title}](command:${editCommand.command}?${encodeURIComponent(JSON.stringify(editCommand.arguments))}) | `
       + `[${copyCommand.title}](command:${copyCommand.command}?${encodeURIComponent(JSON.stringify(copyCommand.arguments))})`,
     )
+    markdown.appendMarkdown('\n\n---\n\n')
+
+    // 代码预览
+    const previewLength = 300
+    const preview = snippet.value.length > previewLength
+      ? `${snippet.value.substring(0, previewLength)}...`
+      : snippet.value
+
+    markdown.appendMarkdown(`**${i18n.t('hover.preview')}**:\n\n`)
+    markdown.appendCodeblock(preview, language)
+    markdown.appendMarkdown('\n')
 
     // 如果是强制代码片段，添加说明
     if (snippet.isForced) {
       markdown.appendMarkdown('\n\n---\n\n')
-      markdown.appendMarkdown('🔒 This key is configured to always be treated as code in settings.')
+      markdown.appendMarkdown(`🔒 ${i18n.t('hover.forceCodeSnippet')}`)
     }
 
     return new vscode.Hover(markdown, snippet.valueRange)
@@ -165,7 +167,7 @@ export class HoverCommandHandler {
 
           if (editor) {
             vscode.window.showInformationMessage(
-              `Opened code editor for "${snippet.key}". Save to sync changes.`,
+              i18n.t('notification.tempFileCreated', snippet.key),
             )
           }
         }
@@ -173,7 +175,7 @@ export class HoverCommandHandler {
           if (config.enableLogging) {
             logger.error(`Failed to edit snippet from hover: ${error}`)
           }
-          vscode.window.showErrorMessage(`Failed to open code editor: ${error}`)
+          vscode.window.showErrorMessage(i18n.t('notification.failedToOpen', String(error)))
         }
       },
     )
@@ -184,13 +186,13 @@ export class HoverCommandHandler {
       async (code: string) => {
         try {
           await vscode.env.clipboard.writeText(code)
-          vscode.window.showInformationMessage('Code copied to clipboard!')
+          vscode.window.showInformationMessage(i18n.t('notification.codeCopied'))
         }
         catch (error) {
           if (config.enableLogging) {
             logger.error(`Failed to copy code: ${error}`)
           }
-          vscode.window.showErrorMessage(`Failed to copy code: ${error}`)
+          vscode.window.showErrorMessage(i18n.t('notification.failedToCopy', String(error)))
         }
       },
     )

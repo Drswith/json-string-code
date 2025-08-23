@@ -3,8 +3,10 @@ import * as fs from 'node:fs/promises'
 import * as os from 'node:os'
 import * as path from 'node:path'
 import jsesc from 'jsesc'
+import * as jsonc from 'jsonc-parser'
 import * as vscode from 'vscode'
 import { config } from './config'
+import { i18n } from './i18n'
 import { logger } from './utils'
 
 export interface TempFileInfo {
@@ -143,7 +145,7 @@ class TempFileManager {
       if (config.enableLogging) {
         logger.error(`Failed to create temp file: ${error}`)
       }
-      vscode.window.showErrorMessage(`Failed to create temporary file: ${error}`)
+      vscode.window.showErrorMessage(i18n.t('notification.failedToCreate', String(error)))
       return undefined
     }
   }
@@ -179,17 +181,25 @@ class TempFileManager {
       const originalDocument = await vscode.workspace.openTextDocument(tempInfo.originalDocument.uri)
       const edit = new vscode.WorkspaceEdit()
 
+      // 重新解析JSON以获取最新的valueRange，避免使用过期的范围
+      const currentContent = originalDocument.getText()
+      const updatedSnippet = this.findCodeSnippetByKey(currentContent, tempInfo.snippet.key)
+
+      if (!updatedSnippet) {
+        throw new Error(`Key "${tempInfo.snippet.key}" not found in current document`)
+      }
+
       // 替换原始文档中的字符串值（保留引号）
       // valueRange已经包含了完整的字符串值位置，我们需要跳过引号
-      const startPos = originalDocument.offsetAt(tempInfo.snippet.valueRange.start) + 1 // 跳过开始引号
-      const endPos = originalDocument.offsetAt(tempInfo.snippet.valueRange.end) - 1 // 跳过结束引号
+      const startPos = originalDocument.offsetAt(updatedSnippet.valueRange.start) + 1 // 跳过开始引号
+      const endPos = originalDocument.offsetAt(updatedSnippet.valueRange.end) - 1 // 跳过结束引号
       const valueRange = new vscode.Range(
         originalDocument.positionAt(startPos),
         originalDocument.positionAt(endPos),
       )
 
-      // 直接使用JSON.stringify来正确转义内容，然后移除外层引号
-      const escapedContent = JSON.stringify(newContent).slice(1, -1)
+      // 使用专门的转义方法来正确转义内容
+      const escapedContent = this.escapeJsonString(newContent)
       edit.replace(originalDocument.uri, valueRange, escapedContent)
 
       const success = await vscode.workspace.applyEdit(edit)
@@ -205,17 +215,17 @@ class TempFileManager {
         if (config.enableLogging) {
           logger.info(`Synced temp file content to original document for key: ${tempInfo.snippet.key}`)
         }
-        vscode.window.showInformationMessage(`Updated JSON value for "${tempInfo.snippet.key}"`)
+        vscode.window.showInformationMessage(i18n.t('notification.changesSynced'))
       }
       else {
-        vscode.window.showErrorMessage(`Failed to update JSON value for "${tempInfo.snippet.key}"`)
+        vscode.window.showErrorMessage(i18n.t('notification.syncFailed', tempInfo.snippet.key))
       }
     }
     catch (error) {
       if (config.enableLogging) {
         logger.error(`Failed to sync temp file: ${error}`)
       }
-      vscode.window.showErrorMessage(`Failed to sync changes: ${error}`)
+      vscode.window.showErrorMessage(i18n.t('notification.syncFailed', String(error)))
     }
   }
 
@@ -228,6 +238,89 @@ class TempFileManager {
       json: true, // 确保输出是有效的JSON
       wrap: false, // 不包含外层引号，因为我们只替换引号内的内容
     })
+  }
+
+  /**
+   * 在JSON内容中查找指定键的代码片段
+   */
+  private findCodeSnippetByKey(content: string, targetKey: string): CodeSnippet | null {
+    try {
+      const tree = jsonc.parseTree(content)
+      if (!tree)
+        return null
+
+      function visitNode(node: jsonc.Node): CodeSnippet | null {
+        if (node.type === 'object' && node.children) {
+          for (const child of node.children) {
+            if (child.type === 'property' && child.children && child.children.length === 2) {
+              const keyNode = child.children[0]
+              const valueNode = child.children[1]
+
+              if (keyNode.type === 'string' && valueNode.type === 'string') {
+                const key = keyNode.value as string
+                const value = valueNode.value as string
+
+                if (key === targetKey) {
+                  // 创建一个临时文档来计算位置
+                  const lines = content.split('\n')
+                  const positionAt = (offset: number): vscode.Position => {
+                    let currentOffset = 0
+                    for (let line = 0; line < lines.length; line++) {
+                      const lineLength = lines[line].length
+                      if (currentOffset + lineLength >= offset) {
+                        return new vscode.Position(line, offset - currentOffset)
+                      }
+                      currentOffset += lineLength + 1 // +1 for newline
+                    }
+                    return new vscode.Position(lines.length - 1, lines[lines.length - 1].length)
+                  }
+
+                  const keyRange = new vscode.Range(
+                    positionAt(keyNode.offset),
+                    positionAt(keyNode.offset + keyNode.length),
+                  )
+
+                  const valueRange = new vscode.Range(
+                    positionAt(valueNode.offset),
+                    positionAt(valueNode.offset + valueNode.length),
+                  )
+
+                  const range = new vscode.Range(
+                    keyRange.start,
+                    valueRange.end,
+                  )
+
+                  return {
+                    key,
+                    value,
+                    range,
+                    keyRange,
+                    valueRange,
+                    isForced: false, // 这里简化处理
+                  }
+                }
+              }
+
+              // 递归搜索嵌套对象和数组
+              if (valueNode.type === 'object' || valueNode.type === 'array') {
+                const result = visitNode(valueNode)
+                if (result)
+                  return result
+              }
+            }
+          }
+        }
+        return null
+      }
+
+      return visitNode(tree)
+    }
+    catch (error) {
+      if (config.enableLogging) {
+        logger.error(`Failed to find code snippet by key: ${error}`)
+      }
+      return null
+    }
   }
 
   /**
@@ -283,6 +376,13 @@ class TempFileManager {
         logger.error(`Failed to cleanup temp file: ${error}`)
       }
     }
+  }
+
+  /**
+   * 获取当前临时文件数量
+   */
+  getTempFileCount(): number {
+    return this.tempFiles.size
   }
 
   /**
