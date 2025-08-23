@@ -47,30 +47,6 @@ jobs:
       - name: Build
         run: nr build
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            dist/
-            package.json
-            CHANGELOG.md
-            README.md
-            LICENSE.md
-            res/
-          retention-days: 1
-
-  publish-vsce:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: build-artifacts
-
       - name: Package vsce extension
         run: npx vsce package --no-dependencies
 
@@ -78,23 +54,11 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: npx vsce publish --no-dependencies
-
-  publish-ovsx:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: build-artifacts
-
+      
       - name: Package ovsx extension
         run: npx ovsx package --no-dependencies
 
       - name: Publish ovsx extension
         env:
           OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
-        run: npx ovsx publish --no-dependencies -p process.env.OVSX_TOKEN
-
+        run: npx ovsx publish -p process.env.OVSX_TOKEN
