@@ -167,8 +167,6 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 
 ## Configurations
 
-<!-- configs -->
-
 | Key                                               | Description                                  | Type      | Default                                                        |
 | ------------------------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
 | `vscode-json-string-code-editor.include`          | Glob patterns for files where the extension should be active | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
@@ -177,11 +175,7 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 | `vscode-json-string-code-editor.autoCloseTempTab` | Automatically close temporary tab when original file is closed | `boolean` | `false`                                                        |
 | `vscode-json-string-code-editor.defaultLanguage`  | Default programming language for temporary edit windows when language cannot be auto-detected | `string`  | `"javascript"`                                                 |
 
-<!-- configs -->
-
 ## Commands
-
-<!-- commands -->
 
 | Command                                               | Title                                                           |
 | ----------------------------------------------------- | --------------------------------------------------------------- |
@@ -190,8 +184,6 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 | `vscode-json-string-code-editor.copySnippetCode`      | Copy Code Snippet                                      |
 | `vscode-json-string-code-editor.refreshDecorations`   | Refresh Code Snippet Decorations                                   |
 | `vscode-json-string-code-editor.cleanupTempFiles`     | Cleanup Temporary Files                                      |
-
-<!-- commands -->
 
 ## License
 

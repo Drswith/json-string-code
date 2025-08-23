@@ -167,8 +167,6 @@ pnpm run publish:ovsx
 
 ## 配置项
 
-<!-- configs -->
-
 | Key                                               | Description                                  | Type      | Default                                                        |
 | ------------------------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
 | `vscode-json-string-code-editor.include`          | 扩展应激活的文件的Glob模式                      | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
@@ -177,11 +175,7 @@ pnpm run publish:ovsx
 | `vscode-json-string-code-editor.autoCloseTempTab` | 保存更改后自动关闭临时标签页                       | `boolean` | `false`                                                        |
 | `vscode-json-string-code-editor.defaultLanguage`  | 当无法自动检测语言时，临时编辑窗口使用的默认编程语言                | `string`  | `"javascript"`                                                 |
 
-<!-- configs -->
-
 ## 命令
-
-<!-- commands -->
 
 | Command                                               | Title                                                           |
 | ----------------------------------------------------- | --------------------------------------------------------------- |
@@ -190,8 +184,6 @@ pnpm run publish:ovsx
 | `vscode-json-string-code-editor.copySnippetCode`      | 复制代码片段                                      |
 | `vscode-json-string-code-editor.refreshDecorations`   | 刷新代码片段装饰                                   |
 | `vscode-json-string-code-editor.cleanupTempFiles`     | 清理临时文件                                      |
-
-<!-- commands -->
 
 ## License
 
