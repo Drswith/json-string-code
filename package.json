@@ -2,7 +2,7 @@
   "publisher": "drswith",
   "name": "vscode-json-string-code-editor",
   "displayName": "%displayName%",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "packageManager": "pnpm@10.4.1",
   "description": "%description%",
