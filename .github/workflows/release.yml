@@ -25,14 +25,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  build:
+  update-copyright:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Update copyright year
         run: |
           CURRENT_YEAR=$(date +%Y)
+          echo "Current year: $CURRENT_YEAR"
+          
+          # Update copyright year in README files
           sed -i "s/© [0-9]\{4\}/© $CURRENT_YEAR/g" README.md
           sed -i "s/© [0-9]\{4\}/© $CURRENT_YEAR/g" README.zh-CN.md
           
@@ -45,8 +51,14 @@ jobs:
             git config --local user.name "GitHub Action"
             git add README.md README.zh-CN.md
             git commit -m "chore: update copyright year to $CURRENT_YEAR"
-            git push
+            git push origin HEAD:${{ github.ref_name }}
           fi
+
+  build:
+    needs: update-copyright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
