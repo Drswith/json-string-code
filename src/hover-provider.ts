@@ -54,13 +54,13 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
     // 操作按钮 - 移到预览之前
     const editCommand = {
       title: i18n.t('hover.editButton'),
-      command: 'vscode-json-string-code.editSnippetFromHover',
+      command: 'vscode-json-string-code-editor.editSnippetFromHover',
       arguments: [document.uri, snippet],
     }
 
     const copyCommand = {
       title: i18n.t('hover.copyButton'),
-      command: 'vscode-json-string-code.copySnippetCode',
+      command: 'vscode-json-string-code-editor.copySnippetCode',
       arguments: [snippet.value],
     }
 
@@ -159,7 +159,7 @@ export class HoverCommandHandler {
   private registerCommands(): void {
     // 从悬停面板编辑代码片段
     const editCommand = vscode.commands.registerCommand(
-      'vscode-json-string-code.editSnippetFromHover',
+      'vscode-json-string-code-editor.editSnippetFromHover',
       async (documentUri: vscode.Uri, snippet: any) => {
         try {
           const document = await vscode.workspace.openTextDocument(documentUri)
@@ -182,7 +182,7 @@ export class HoverCommandHandler {
 
     // 复制代码片段
     const copyCommand = vscode.commands.registerCommand(
-      'vscode-json-string-code.copySnippetCode',
+      'vscode-json-string-code-editor.copySnippetCode',
       async (code: string) => {
         try {
           await vscode.env.clipboard.writeText(code)

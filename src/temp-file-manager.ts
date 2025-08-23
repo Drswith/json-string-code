@@ -22,7 +22,7 @@ class TempFileManager {
   private disposables: vscode.Disposable[] = []
 
   constructor() {
-    this.tempDir = path.join(os.tmpdir(), 'vscode-json-string-code')
+    this.tempDir = path.join(os.tmpdir(), 'vscode-json-string-code-editor')
     this.ensureTempDir()
     this.setupFileWatcher()
   }

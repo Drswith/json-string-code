@@ -1,6 +1,6 @@
 # JSON String Code Editor
 
-<a href="https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code" target="__blank"><img src="https://img.shields.io/visual-studio-marketplace/v/Drswith.vscode-json-string-code.svg?color=eee&amp;label=VS%20Code%20Marketplace&logo=visual-studio-code" alt="Visual Studio Marketplace Version" /></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor" target="__blank"><img src="https://img.shields.io/visual-studio-marketplace/v/Drswith.vscode-json-string-code-editor.svg?color=eee&amp;label=VS%20Code%20Marketplace&logo=visual-studio-code" alt="Visual Studio Marketplace Version" /></a>
 <a href="https://kermanx.github.io/reactive-vscode/" target="__blank"><img src="https://img.shields.io/badge/made_with-reactive--vscode-%23007ACC?style=flat&labelColor=%23229863"  alt="Made with reactive-vscode" /></a>
 
 一个基于 reactive-vscode 开发的 VS Code 插件，用于优化 JSON Schema 中代码片段的编辑体验。
@@ -34,17 +34,17 @@
 
 ```json
 {
-  "vscode-json-string-code.include": [
+  "vscode-json-string-code-editor.include": [
     "**/*.json",
     "**/*.jsonc"
   ],
-  "vscode-json-string-code.forceCodeKeys": [
+  "vscode-json-string-code-editor.forceCodeKeys": [
     "script",
     "code",
     "template",
     "query"
   ],
-  "vscode-json-string-code.enableLogging": false
+  "vscode-json-string-code-editor.enableLogging": false
 }
 ```
 
@@ -132,11 +132,11 @@ pnpm run publish
 
 | Key                                 | Description                                  | Type      | Default                                                        |
 | ----------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
-| `vscode-json-string-code.include`          | %configuration.include.description%          | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
-| `vscode-json-string-code.forceCodeKeys`    | %configuration.forceCodeKeys.description%    | `array`   | `["script","code","template","function","expression","query"]` |
-| `vscode-json-string-code.enableLogging`    | %configuration.enableLogging.description%    | `boolean` | `false`                                                        |
-| `vscode-json-string-code.autoCloseTempTab` | %configuration.autoCloseTempTab.description% | `boolean` | `false`                                                        |
-| `vscode-json-string-code.defaultLanguage`  | %configuration.defaultLanguage.description%  | `string`  | `"javascript"`                                                 |
+| `vscode-json-string-code-editor.include`          | %configuration.include.description%          | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
+| `vscode-json-string-code-editor.forceCodeKeys`    | %configuration.forceCodeKeys.description%    | `array`   | `["script","code","template","function","expression","query"]` |
+| `vscode-json-string-code-editor.enableLogging`    | %configuration.enableLogging.description%    | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.autoCloseTempTab` | %configuration.autoCloseTempTab.description% | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.defaultLanguage`  | %configuration.defaultLanguage.description%  | `string`  | `"javascript"`                                                 |
 
 <!-- configs -->
 
@@ -146,11 +146,11 @@ pnpm run publish
 
 | Command                                 | Title                                                           |
 | --------------------------------------- | --------------------------------------------------------------- |
-| `vscode-json-string-code.editAsCode`           | %category.jsonStringCode%: %command.editAsCode.title%           |
-| `vscode-json-string-code.editSnippetFromHover` | %category.jsonStringCode%: %command.editSnippetFromHover.title% |
-| `vscode-json-string-code.copySnippetCode`      | %category.jsonStringCode%: %command.copySnippetCode.title%      |
-| `vscode-json-string-code.refreshDecorations`   | %category.jsonStringCode%: %command.refreshDecorations.title%   |
-| `vscode-json-string-code.cleanupTempFiles`     | %category.jsonStringCode%: %command.cleanupTempFiles.title%     |
+| `vscode-json-string-code-editor.editAsCode`           | %category.jsonStringCode%: %command.editAsCode.title%           |
+| `vscode-json-string-code-editor.editSnippetFromHover` | %category.jsonStringCode%: %command.editSnippetFromHover.title% |
+| `vscode-json-string-code-editor.copySnippetCode`      | %category.jsonStringCode%: %command.copySnippetCode.title%      |
+| `vscode-json-string-code-editor.refreshDecorations`   | %category.jsonStringCode%: %command.refreshDecorations.title%   |
+| `vscode-json-string-code-editor.cleanupTempFiles`     | %category.jsonStringCode%: %command.cleanupTempFiles.title%     |
 
 <!-- commands -->
 

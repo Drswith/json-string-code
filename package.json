@@ -1,6 +1,6 @@
 {
   "publisher": "Drswith",
-  "name": "vscode-json-string-code",
+  "name": "vscode-json-string-code-editor",
   "displayName": "%displayName%",
   "version": "0.0.1",
   "private": true,
@@ -9,13 +9,13 @@
   "author": "Drswith",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Drswith",
-  "homepage": "https://github.com/Drswith/vscode-json-string-code#readme",
+  "homepage": "https://github.com/Drswith/vscode-json-string-code-editor#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Drswith/vscode-json-string-code"
+    "url": "https://github.com/Drswith/vscode-json-string-code-editor"
   },
   "bugs": {
-    "url": "https://github.com/Drswith/vscode-json-string-code/issues"
+    "url": "https://github.com/Drswith/vscode-json-string-code-editor/issues"
   },
   "sponsor": {
     "url": "https://github.com/sponsors/Drswith"
@@ -42,27 +42,27 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-json-string-code.editAsCode",
+        "command": "vscode-json-string-code-editor.editAsCode",
         "title": "%command.editAsCode.title%",
         "category": "%category.jsonStringCode%"
       },
       {
-        "command": "vscode-json-string-code.editSnippetFromHover",
+        "command": "vscode-json-string-code-editor.editSnippetFromHover",
         "title": "%command.editSnippetFromHover.title%",
         "category": "%category.jsonStringCode%"
       },
       {
-        "command": "vscode-json-string-code.copySnippetCode",
+        "command": "vscode-json-string-code-editor.copySnippetCode",
         "title": "%command.copySnippetCode.title%",
         "category": "%category.jsonStringCode%"
       },
       {
-        "command": "vscode-json-string-code.refreshDecorations",
+        "command": "vscode-json-string-code-editor.refreshDecorations",
         "title": "%command.refreshDecorations.title%",
         "category": "%category.jsonStringCode%"
       },
       {
-        "command": "vscode-json-string-code.cleanupTempFiles",
+        "command": "vscode-json-string-code-editor.cleanupTempFiles",
         "title": "%command.cleanupTempFiles.title%",
         "category": "%category.jsonStringCode%"
       }
@@ -70,7 +70,7 @@
     "menus": {
       "editor/context": [
         {
-          "command": "vscode-json-string-code.editAsCode",
+          "command": "vscode-json-string-code-editor.editAsCode",
           "when": "resourceExtname =~ /\\.(json|jsonc)$/ && editorTextFocus",
           "group": "1_modification"
         }
@@ -80,7 +80,7 @@
       "type": "object",
       "title": "%configuration.title%",
       "properties": {
-        "vscode-json-string-code.include": {
+        "vscode-json-string-code-editor.include": {
           "type": "array",
           "items": {
             "type": "string"
@@ -91,7 +91,7 @@
           ],
           "description": "%configuration.include.description%"
         },
-        "vscode-json-string-code.forceCodeKeys": {
+        "vscode-json-string-code-editor.forceCodeKeys": {
           "type": "array",
           "items": {
             "type": "string"
@@ -106,17 +106,17 @@
           ],
           "description": "%configuration.forceCodeKeys.description%"
         },
-        "vscode-json-string-code.enableLogging": {
+        "vscode-json-string-code-editor.enableLogging": {
           "type": "boolean",
           "default": false,
           "description": "%configuration.enableLogging.description%"
         },
-        "vscode-json-string-code.autoCloseTempTab": {
+        "vscode-json-string-code-editor.autoCloseTempTab": {
           "type": "boolean",
           "default": false,
           "description": "%configuration.autoCloseTempTab.description%"
         },
-        "vscode-json-string-code.defaultLanguage": {
+        "vscode-json-string-code-editor.defaultLanguage": {
           "type": "string",
           "enum": [
             "javascript",

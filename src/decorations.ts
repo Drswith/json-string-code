@@ -117,7 +117,7 @@ class DecorationManager {
       if (this.isJsonDocument(editor.document)) {
         // 这里需要重新解析文档并更新装饰
         // 这个方法会在主模块中调用
-        vscode.commands.executeCommand('vscode-json-string-code.refreshDecorations', editor.document.uri)
+        vscode.commands.executeCommand('vscode-json-string-code-editor.refreshDecorations', editor.document.uri)
       }
     })
   }

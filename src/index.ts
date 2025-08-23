@@ -28,7 +28,7 @@ const { activate, deactivate } = defineExtension(async () => {
 
   // 注册右键菜单命令
   const editAsCodeCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code.editAsCode',
+    'vscode-json-string-code-editor.editAsCode',
     async () => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
@@ -51,7 +51,7 @@ const { activate, deactivate } = defineExtension(async () => {
 
   // 注册刷新装饰命令（用于调试）
   const refreshDecorationsCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code.refreshDecorations',
+    'vscode-json-string-code-editor.refreshDecorations',
     () => {
       decorationManager.refreshAllDecorations()
       if (config.enableLogging) {
@@ -62,7 +62,7 @@ const { activate, deactivate } = defineExtension(async () => {
 
   // 注册清理临时文件命令
   const cleanupTempFilesCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code.cleanupTempFiles',
+    'vscode-json-string-code-editor.cleanupTempFiles',
     async () => {
       const tempFileCount = tempFileManager.getTempFileCount()
       await tempFileManager.dispose()

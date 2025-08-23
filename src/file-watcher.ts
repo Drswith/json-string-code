@@ -43,7 +43,7 @@ class FileWatcher {
 
     // 监听配置变化
     const configChangeDisposable = vscode.workspace.onDidChangeConfiguration((event) => {
-      if (event.affectsConfiguration('vscode-json-string-code')) {
+      if (event.affectsConfiguration('vscode-json-string-code-editor')) {
         this.handleConfigurationChange()
       }
     })
