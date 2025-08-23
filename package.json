@@ -152,8 +152,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "version": "bumpp",
-    "release": "nr version && nr publish"
+    "bumpp": "bumpp",
+    "release": "bumpp && nr publish"
   },
   "dependencies": {
     "jsesc": "^3.1.0",
