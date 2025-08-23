@@ -24,7 +24,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -32,10 +32,10 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
 
-      - name: Set node version to ${{ matrix.node }}
+      - name: Set node version to lts/*
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: lts/*
           cache: pnpm
 
       - name: Setup
@@ -47,11 +47,54 @@ jobs:
       - name: Build
         run: nr build
 
-      - name: Package extension
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            dist/
+            package.json
+            CHANGELOG.md
+            README.md
+            LICENSE.md
+            res/
+          retention-days: 1
+
+  publish-vsce:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: Package vsce extension
         run: npx vsce package --no-dependencies
 
-      - name: Publish extension
+      - name: Publish vsce extension
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: npx vsce publish --no-dependencies
+
+  publish-ovsx:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: Package ovsx extension
+        run: npx ovsx package --no-dependencies
+
+      - name: Publish ovsx extension
+        env:
+          OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
+        run: npx ovsx publish --no-dependencies -p process.env.OVSX_TOKEN
 
