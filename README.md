@@ -169,11 +169,11 @@ pnpm run publish:ovsx
 
 | Key                                               | Description                                  | Type      | Default                                                        |
 | ------------------------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
-| `vscode-json-string-code-editor.include`          | %configuration.include.description%          | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
-| `vscode-json-string-code-editor.forceCodeKeys`    | %configuration.forceCodeKeys.description%    | `array`   | `["script","code","template","function","expression","query"]` |
-| `vscode-json-string-code-editor.enableLogging`    | %configuration.enableLogging.description%    | `boolean` | `false`                                                        |
-| `vscode-json-string-code-editor.autoCloseTempTab` | %configuration.autoCloseTempTab.description% | `boolean` | `false`                                                        |
-| `vscode-json-string-code-editor.defaultLanguage`  | %configuration.defaultLanguage.description%  | `string`  | `"javascript"`                                                 |
+| `vscode-json-string-code-editor.include`          | 指定插件生效的文件 glob 模式                      | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
+| `vscode-json-string-code-editor.forceCodeKeys`    | 强制识别为代码片段的键名数组                        | `array`   | `["script","code","template","function","expression","query"]` |
+| `vscode-json-string-code-editor.enableLogging`    | 是否启用调试日志                               | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.autoCloseTempTab` | 保存更改后自动关闭临时标签页                       | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.defaultLanguage`  | 当无法自动检测语言时使用的默认编程语言                | `string`  | `"javascript"`                                                 |
 
 <!-- configs -->
 
@@ -183,11 +183,11 @@ pnpm run publish:ovsx
 
 | Command                                               | Title                                                           |
 | ----------------------------------------------------- | --------------------------------------------------------------- |
-| `vscode-json-string-code-editor.editAsCode`           | %category.jsonStringCode%: %command.editAsCode.title%           |
-| `vscode-json-string-code-editor.editSnippetFromHover` | %category.jsonStringCode%: %command.editSnippetFromHover.title% |
-| `vscode-json-string-code-editor.copySnippetCode`      | %category.jsonStringCode%: %command.copySnippetCode.title%      |
-| `vscode-json-string-code-editor.refreshDecorations`   | %category.jsonStringCode%: %command.refreshDecorations.title%   |
-| `vscode-json-string-code-editor.cleanupTempFiles`     | %category.jsonStringCode%: %command.cleanupTempFiles.title%     |
+| `vscode-json-string-code-editor.editAsCode`           | JSON 字符串代码: 编辑为代码                                        |
+| `vscode-json-string-code-editor.editSnippetFromHover` | JSON 字符串代码: 从悬浮提示编辑代码片段                              |
+| `vscode-json-string-code-editor.copySnippetCode`      | JSON 字符串代码: 复制代码片段                                      |
+| `vscode-json-string-code-editor.refreshDecorations`   | JSON 字符串代码: 刷新代码片段装饰                                   |
+| `vscode-json-string-code-editor.cleanupTempFiles`     | JSON 字符串代码: 清理临时文件                                      |
 
 <!-- commands -->
 
