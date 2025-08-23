@@ -61,4 +61,4 @@ jobs:
       - name: Publish ovsx extension
         env:
           OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
-        run: npx ovsx publish -p process.env.OVSX_TOKEN
+        run: npx ovsx publish -p $OVSX_TOKEN
