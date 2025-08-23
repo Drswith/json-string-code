@@ -56,7 +56,7 @@ jobs:
         run: npx vsce publish --no-dependencies
       
       - name: Package ovsx extension
-        run: npx ovsx package --no-dependencies
+        run: npx ovsx package
 
       - name: Publish ovsx extension
         env:
