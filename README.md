@@ -1,37 +1,39 @@
 # JSON String Code Editor
 
-<a href="https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor" target="__blank"><img src="https://img.shields.io/visual-studio-marketplace/v/Drswith.vscode-json-string-code-editor.svg?color=eee&amp;label=VS%20Code%20Marketplace&logo=visual-studio-code" alt="Visual Studio Marketplace Version" /></a>
-<a href="https://kermanx.github.io/reactive-vscode/" target="__blank"><img src="https://img.shields.io/badge/made_with-reactive--vscode-%23007ACC?style=flat&labelColor=%23229863"  alt="Made with reactive-vscode" /></a>
+[English](./README.md) | [简体中文](./README.zh-CN.md)
 
-一个用于优化 JSON Schema 中代码片段的编辑体验的 VS Code 插件。
+[![VS Code Marketplace](https://img.shields.io/vscode-marketplace/v/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
+[![Open VSX Registry](https://img.shields.io/open-vsx/v/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=Open%20VSX)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
 
-## 功能特性
+A VS Code extension for optimizing the editing experience of code snippets in JSON Schema.
 
-### 🎯 核心功能
+## Features
 
-1. **智能代码片段识别**
-   - 自动识别 JSON 字符串值中的代码片段
-   - 支持多种编程语言（JavaScript、SQL、HTML、CSS、正则表达式等）
-   - 可配置强制识别的键名列表
+### 🎯 Core Features
 
-2. **可视化标识**
-   - 识别为代码片段的值会显示下划线装饰
-   - 强制识别的代码片段有特殊的视觉标识
-   - 支持不同类型代码片段的差异化显示
+1. **Smart Code Snippet Recognition**
+   - Automatically recognizes code snippets in JSON string values
+   - Supports multiple programming languages (JavaScript, SQL, HTML, CSS, regular expressions, etc.)
+   - Configurable list of key names for forced recognition
 
-3. **便捷编辑方式**
-   - **鼠标悬停**：悬停显示代码预览和编辑按钮
-   - **右键菜单**：通过上下文菜单进入编辑模式
+2. **Visual Indicators**
+   - Values recognized as code snippets display underline decorations
+   - Forced recognition code snippets have special visual indicators
+   - Supports differentiated display for different types of code snippets
 
-4. **临时文件管理**
-   - 自动创建临时编辑文件
-   - 智能语言检测（基于代码内容和键名）
-   - 支持语法高亮和代码补全
-   - 保存时自动同步回原 JSON 文件
-   - 自动清理临时文件
-   - 可配置自动关闭临时标签页
+3. **Convenient Editing Methods**
+   - **Mouse Hover**: Hover to display code preview and edit button
+   - **Right-click Menu**: Enter edit mode through context menu
 
-### ⚙️ 配置选项
+4. **Temporary File Management**
+   - Automatically creates temporary editing files
+   - Smart language detection (based on code content and key names)
+   - Supports syntax highlighting and code completion
+   - Automatically syncs back to original JSON file on save
+   - Automatic cleanup of temporary files
+   - Configurable auto-close temporary tabs
+
+### ⚙️ Configuration Options
 
 ```json
 {
@@ -53,115 +55,115 @@
 }
 ```
 
-- `include`: 指定插件生效的文件 glob 模式
-- `forceCodeKeys`: 强制识别为代码片段的键名数组
-- `enableLogging`: 是否启用调试日志
-- `autoCloseTempTab`: 保存更改后自动关闭临时标签页
-- `defaultLanguage`: 当无法自动检测语言时使用的默认编程语言（支持：javascript、typescript、python、sql、html、css、xml、yaml、markdown、json、plaintext）
+- `include`: Specifies the file glob patterns where the plugin takes effect
+- `forceCodeKeys`: Array of key names to be forcibly recognized as code snippets
+- `enableLogging`: Whether to enable debug logging
+- `autoCloseTempTab`: Automatically close temporary tabs after saving changes
+- `defaultLanguage`: Default programming language when auto-detection fails (supports: javascript, typescript, python, sql, html, css, xml, yaml, markdown, json, plaintext)
 
-## 使用方法
+## Usage
 
-### 1. 自动识别
+### 1. Automatic Recognition
 
-插件会自动识别以下模式的代码片段：
-- 函数定义（function、箭头函数）
-- 控制结构（if、for、while、switch）
-- 变量声明（const、let、var）
-- 模块导入导出（import、export）
-- 对象和数组字面量
-- 模板字符串
-- 控制语句（return、throw、break、continue）
-- 注释（单行和多行）
-- SQL 查询语句
-- HTML 标签
-- CSS 样式
-- 正则表达式
-- 多行代码块
+The plugin automatically recognizes code snippets with the following patterns:
+- Function definitions (function, arrow functions)
+- Control structures (if, for, while, switch)
+- Variable declarations (const, let, var)
+- Module imports/exports (import, export)
+- Object and array literals
+- Template strings
+- Control statements (return, throw, break, continue)
+- Comments (single-line and multi-line)
+- SQL query statements
+- HTML tags
+- CSS styles
+- Regular expressions
+- Multi-line code blocks
 
-### 2. 编辑代码片段
+### 2. Editing Code Snippets
 
-#### 方式一：鼠标悬停
-1. 将鼠标悬停在代码片段上
-2. 在弹出的悬停面板中点击"在临时标签页编辑"
-3. 或点击"复制代码"按钮复制代码到剪贴板
+#### Method 1: Mouse Hover
+1. Hover your mouse over a code snippet
+2. Click "Edit in temporary tab" in the popup hover panel
+3. Or click the "Copy code" button to copy code to clipboard
 
-#### 方式二：右键菜单
-1. 在 JSON 文件中右键点击
-2. 选择"Edit as Code"菜单项
-3. 如果光标位置有代码片段则直接编辑
+#### Method 2: Right-click Menu
+1. Right-click in a JSON file
+2. Select the "Edit as Code" menu item
+3. If there's a code snippet at the cursor position, it will be edited directly
 
-### 3. 命令面板
+### 3. Command Palette
 
-可通过命令面板（Ctrl+Shift+P）执行以下命令：
+You can execute the following commands through the command palette (Ctrl+Shift+P):
 
-- `JSON String Code: Edit as Code` - 编辑当前位置的代码片段
-- `JSON String Code: Edit Code Snippet from Hover` - 从悬浮提示编辑代码片段
-- `JSON String Code: Copy Code Snippet` - 复制代码片段
-- `JSON String Code: Refresh Code Snippet Decorations` - 刷新代码片段装饰
-- `JSON String Code: Cleanup Temporary Files` - 清理临时文件
+- `JSON String Code: Edit as Code` - Edit code snippet at current position
+- `JSON String Code: Edit Code Snippet from Hover` - Edit code snippet from hover
+- `JSON String Code: Copy Code Snippet` - Copy code snippet
+- `JSON String Code: Refresh Code Snippet Decorations` - Refresh code snippet decorations
+- `JSON String Code: Cleanup Temporary Files` - Cleanup temporary files
 
-## 支持的文件类型
+## Supported File Types
 
-- `.json` - 标准 JSON 文件
-- `.jsonc` - 带注释的 JSON 文件
+- `.json` - Standard JSON files
+- `.jsonc` - JSON files with comments
 
-## 技术实现
+## Technical Implementation
 
-- 基于 `reactive-vscode` 框架开发
-- 使用 `jsonc-parser` 进行 JSON AST 解析，支持带注释的 JSON
-- 使用 `minimatch` 进行文件路径匹配和过滤
-- 使用 `jsesc` 进行 JavaScript 字符串转义处理
-- TypeScript 开发，提供完整的类型支持
-- 使用 `tsdown` 进行高效的构建打包
-- 使用 `vitest` 进行单元测试
+- Built on the `reactive-vscode` framework
+- Uses `jsonc-parser` for JSON AST parsing, supporting JSON with comments
+- Uses `minimatch` for file path matching and filtering
+- Uses `jsesc` for JavaScript string escaping
+- Developed in TypeScript with complete type support
+- Uses `tsdown` for efficient build packaging
+- Uses `vitest` for unit testing
 
-## 开发和构建
+## Development and Build
 
 ```bash
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 开发模式（监听文件变化）
+# Development mode (watch file changes)
 pnpm run dev
 
-# 构建
+# Build
 pnpm run build
 
-# 测试
+# Test
 pnpm run test
 
-# 监听测试
+# Watch tests
 pnpm run test:watch
 
-# 代码检查
+# Lint code
 pnpm run lint
 
-# 修复代码格式
+# Fix code format
 pnpm run lint:fix
 
-# 类型检查
+# Type check
 pnpm run typecheck
 
-# 打包扩展
+# Package extension
 pnpm run pack:vsce
 
-# 发布到 VS Code Marketplace
+# Publish to VS Code Marketplace
 pnpm run publish:vsce
 
-# 发布到 Open VSX
+# Publish to Open VSX
 pnpm run publish:ovsx
 ```
 
-## 示例
+## Examples
 
-查看 `test-example.json` 文件以了解插件如何识别和处理不同类型的代码片段。该文件包含了以下示例：
+Check the `test-example.json` file to understand how the plugin recognizes and handles different types of code snippets. The file contains the following examples:
 
-- **JavaScript 函数**：自动识别函数定义和复杂逻辑
-- **SQL 查询**：支持简单和复杂的 SQL 语句
-- **HTML 模板**：识别 HTML 标签和模板语法
-- **CSS 样式**：支持 CSS 规则和选择器
-- **正则表达式**：识别常见的正则模式
-- **配置脚本**：npm scripts 和构建配置
+- **JavaScript Functions**: Automatically recognizes function definitions and complex logic
+- **SQL Queries**: Supports simple and complex SQL statements
+- **HTML Templates**: Recognizes HTML tags and template syntax
+- **CSS Styles**: Supports CSS rules and selectors
+- **Regular Expressions**: Recognizes common regex patterns
+- **Configuration Scripts**: npm scripts and build configurations
 
 ## Configurations
 
@@ -169,11 +171,11 @@ pnpm run publish:ovsx
 
 | Key                                               | Description                                  | Type      | Default                                                        |
 | ------------------------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
-| `vscode-json-string-code-editor.include`          | 指定插件生效的文件 glob 模式                      | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
-| `vscode-json-string-code-editor.forceCodeKeys`    | 强制识别为代码片段的键名数组                        | `array`   | `["script","code","template","function","expression","query"]` |
-| `vscode-json-string-code-editor.enableLogging`    | 是否启用调试日志                               | `boolean` | `false`                                                        |
-| `vscode-json-string-code-editor.autoCloseTempTab` | 保存更改后自动关闭临时标签页                       | `boolean` | `false`                                                        |
-| `vscode-json-string-code-editor.defaultLanguage`  | 当无法自动检测语言时使用的默认编程语言                | `string`  | `"javascript"`                                                 |
+| `vscode-json-string-code-editor.include`          | Specifies the file glob patterns where the plugin takes effect | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
+| `vscode-json-string-code-editor.forceCodeKeys`    | Array of key names to be forcibly recognized as code snippets | `array`   | `["script","code","template","function","expression","query"]` |
+| `vscode-json-string-code-editor.enableLogging`    | Whether to enable debug logging | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.autoCloseTempTab` | Automatically close temporary tabs after saving changes | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.defaultLanguage`  | Default programming language when auto-detection fails | `string`  | `"javascript"`                                                 |
 
 <!-- configs -->
 
@@ -183,11 +185,11 @@ pnpm run publish:ovsx
 
 | Command                                               | Title                                                           |
 | ----------------------------------------------------- | --------------------------------------------------------------- |
-| `vscode-json-string-code-editor.editAsCode`           | JSON 字符串代码: 编辑为代码                                        |
-| `vscode-json-string-code-editor.editSnippetFromHover` | JSON 字符串代码: 从悬浮提示编辑代码片段                              |
-| `vscode-json-string-code-editor.copySnippetCode`      | JSON 字符串代码: 复制代码片段                                      |
-| `vscode-json-string-code-editor.refreshDecorations`   | JSON 字符串代码: 刷新代码片段装饰                                   |
-| `vscode-json-string-code-editor.cleanupTempFiles`     | JSON 字符串代码: 清理临时文件                                      |
+| `vscode-json-string-code-editor.editAsCode`           | JSON String Code: Edit as Code                                        |
+| `vscode-json-string-code-editor.editSnippetFromHover` | JSON String Code: Edit Code Snippet from Hover                              |
+| `vscode-json-string-code-editor.copySnippetCode`      | JSON String Code: Copy Code Snippet                                      |
+| `vscode-json-string-code-editor.refreshDecorations`   | JSON String Code: Refresh Code Snippet Decorations                                   |
+| `vscode-json-string-code-editor.cleanupTempFiles`     | JSON String Code: Cleanup Temporary Files                                      |
 
 <!-- commands -->
 
