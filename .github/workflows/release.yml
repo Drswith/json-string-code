@@ -47,7 +47,11 @@ jobs:
       - name: Build
         run: nr build
 
-      - name: Publish vsce
-        run: nr publish:vsce
+      - name: Package extension
+        run: npx vsce package --no-dependencies
+
+      - name: Publish extension
         env:
-          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish --no-dependencies
+
