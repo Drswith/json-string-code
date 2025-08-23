@@ -11,5 +11,6 @@
   "configuration.include.description": "扩展应激活的文件的Glob模式",
   "configuration.forceCodeKeys.description": "应始终被视为代码片段的键名数组",
   "configuration.enableLogging.description": "启用扩展的调试日志记录",
-  "configuration.autoCloseTempTab.description": "保存更改后自动关闭临时标签页"
+  "configuration.autoCloseTempTab.description": "保存更改后自动关闭临时标签页",
+  "configuration.defaultLanguage.description": "当无法自动检测语言时，临时编辑窗口使用的默认编程语言"
 }

@@ -98,8 +98,8 @@ class TempFileManager {
       return 'html'
     }
 
-    // 默认为JavaScript
-    return 'javascript'
+    // 默认使用配置中的默认语言
+    return config.defaultLanguage || 'javascript'
   }
 
   /**

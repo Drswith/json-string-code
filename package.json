@@ -115,6 +115,24 @@
           "type": "boolean",
           "default": false,
           "description": "%configuration.autoCloseTempTab.description%"
+        },
+        "json-string-code.defaultLanguage": {
+          "type": "string",
+          "enum": [
+            "javascript",
+            "typescript",
+            "python",
+            "sql",
+            "html",
+            "css",
+            "xml",
+            "yaml",
+            "markdown",
+            "json",
+            "plaintext"
+          ],
+          "default": "javascript",
+          "description": "%configuration.defaultLanguage.description%"
         }
       }
     }

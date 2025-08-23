@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { config } from './config'
 import { decorationManager } from './decorations'
 import { i18n } from './i18n'
+import { parseJsonKeyValueAtPosition } from './json-parser'
 import { tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
@@ -57,13 +58,19 @@ export class ClickHandler {
    * 手动触发代码片段编辑（用于右键菜单等）
    */
   async editCodeSnippetAtPosition(editor: vscode.TextEditor, position: vscode.Position): Promise<void> {
-    const snippet = decorationManager.isPositionInCodeSnippet(editor, position)
+    // 首先尝试从装饰管理器获取代码片段
+    let snippet = decorationManager.isPositionInCodeSnippet(editor, position)
+
+    // 如果没有找到代码片段装饰，尝试解析位置上的JSON键值对
+    if (!snippet) {
+      snippet = parseJsonKeyValueAtPosition(editor.document, position)
+    }
 
     if (snippet) {
       await this.handleCodeSnippetClick(snippet, editor.document)
     }
     else {
-      vscode.window.showWarningMessage(i18n.t('notification.noActiveEditor'))
+      vscode.window.showWarningMessage(i18n.t('notification.noCodeSnippet'))
     }
   }
 

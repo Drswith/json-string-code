@@ -149,3 +149,101 @@ export function findCodeSnippetAtRange(snippets: CodeSnippet[], range: Range): C
     snippet.range.intersection(range) !== undefined,
   )
 }
+
+/**
+ * 解析指定位置的JSON键值对（即使不是代码片段）
+ */
+export function parseJsonKeyValueAtPosition(document: TextDocument, position: Position): CodeSnippet | undefined {
+  const text = document.getText()
+
+  try {
+    const tree = jsonc.parseTree(text)
+    if (!tree)
+      return undefined
+
+    function findNodeAtPosition(node: jsonc.Node): CodeSnippet | undefined {
+      if (node.type === 'object' && node.children) {
+        for (const child of node.children) {
+          if (child.type === 'property' && child.children && child.children.length === 2) {
+            const keyNode = child.children[0]
+            const valueNode = child.children[1]
+
+            const keyRange = new Range(
+              document.positionAt(keyNode.offset),
+              document.positionAt(keyNode.offset + keyNode.length),
+            )
+
+            const valueRange = new Range(
+              document.positionAt(valueNode.offset),
+              document.positionAt(valueNode.offset + valueNode.length),
+            )
+
+            const fullRange = new Range(
+              keyRange.start,
+              valueRange.end,
+            )
+
+            // 检查位置是否在这个键值对范围内
+            if (fullRange.contains(position)) {
+              const key = keyNode.type === 'string' ? keyNode.value as string : 'unknown'
+              let value = ''
+
+              // 处理不同类型的值
+              if (valueNode.type === 'string') {
+                value = valueNode.value as string
+              }
+              else if (valueNode.type === 'number') {
+                value = valueNode.value?.toString() || ''
+              }
+              else if (valueNode.type === 'boolean') {
+                value = valueNode.value?.toString() || ''
+              }
+              else if (valueNode.type === 'null') {
+                value = 'null'
+              }
+              else {
+                // 对于对象或数组，获取原始文本
+                value = text.substring(valueNode.offset, valueNode.offset + valueNode.length)
+              }
+
+              return {
+                key,
+                value,
+                range: fullRange,
+                keyRange,
+                valueRange,
+                isForced: false,
+              }
+            }
+
+            // 递归搜索嵌套结构
+            if (valueNode.type === 'object' || valueNode.type === 'array') {
+              const nested = findNodeAtPosition(valueNode)
+              if (nested)
+                return nested
+            }
+          }
+        }
+      }
+      else if (node.type === 'array' && node.children) {
+        for (const child of node.children) {
+          if (child.type === 'object' || child.type === 'array') {
+            const nested = findNodeAtPosition(child)
+            if (nested)
+              return nested
+          }
+        }
+      }
+
+      return undefined
+    }
+
+    return findNodeAtPosition(tree)
+  }
+  catch (error) {
+    if (config.enableLogging) {
+      logger.error(`Error parsing JSON at position: ${error}`)
+    }
+    return undefined
+  }
+}

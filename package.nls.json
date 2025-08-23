@@ -11,5 +11,6 @@
   "configuration.include.description": "Glob patterns for files where the extension should be active",
   "configuration.forceCodeKeys.description": "Array of key names that should always be treated as code snippets",
   "configuration.enableLogging.description": "Enable debug logging for the extension",
-  "configuration.autoCloseTempTab.description": "Automatically close temporary tab after saving changes"
+  "configuration.autoCloseTempTab.description": "Automatically close temporary tab when original file is closed",
+  "configuration.defaultLanguage.description": "Default programming language for temporary edit windows when language cannot be auto-detected"
 }

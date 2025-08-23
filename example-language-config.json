@@ -1,0 +1,15 @@
+{
+  "description": "示例：测试默认语言配置",
+  "emptyString": "",
+  "nullValue": null,
+  "numberValue": 42,
+  "booleanValue": true,
+  "pythonCode": "def hello():\n    print('Hello World')",
+  "sqlQuery": "SELECT * FROM users WHERE active = 1",
+  "htmlContent": "<div>Hello World</div>",
+  "cssStyles": ".container { margin: 0 auto; }",
+  "yamlConfig": "name: example\nversion: 1.0",
+  "markdownText": "# Hello\n\nThis is **bold** text.",
+  "xmlData": "<?xml version='1.0'?>\n<root><item>value</item></root>",
+  "plainText": "This is just plain text without any special formatting."
+}

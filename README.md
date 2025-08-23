@@ -136,6 +136,7 @@ pnpm run publish
 | `json-string-code.forceCodeKeys`    | %configuration.forceCodeKeys.description%    | `array`   | `["script","code","template","function","expression","query"]` |
 | `json-string-code.enableLogging`    | %configuration.enableLogging.description%    | `boolean` | `false`                                                        |
 | `json-string-code.autoCloseTempTab` | %configuration.autoCloseTempTab.description% | `boolean` | `false`                                                        |
+| `json-string-code.defaultLanguage`  | %configuration.defaultLanguage.description%  | `string`  | `"javascript"`                                                 |
 
 <!-- configs -->
 
