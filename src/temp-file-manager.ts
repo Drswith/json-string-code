@@ -189,18 +189,78 @@ class TempFileManager {
         throw new Error(`Key "${tempInfo.snippet.key}" not found in current document`)
       }
 
-      // 替换原始文档中的字符串值（保留引号）
-      // valueRange已经包含了完整的字符串值位置，我们需要跳过引号
-      const startPos = originalDocument.offsetAt(updatedSnippet.valueRange.start) + 1 // 跳过开始引号
-      const endPos = originalDocument.offsetAt(updatedSnippet.valueRange.end) - 1 // 跳过结束引号
-      const valueRange = new vscode.Range(
-        originalDocument.positionAt(startPos),
-        originalDocument.positionAt(endPos),
-      )
+      // 检测原始值的类型来决定如何处理
+      const tree = jsonc.parseTree(currentContent)
+      let originalValueType = 'string' // 默认为字符串
+      let valueRange: vscode.Range
+      let replacementContent: string
 
-      // 使用专门的转义方法来正确转义内容
-      const escapedContent = this.escapeJsonString(newContent)
-      edit.replace(originalDocument.uri, valueRange, escapedContent)
+      if (tree) {
+        // 查找对应的值节点来确定类型
+        function findValueNode(node: jsonc.Node): jsonc.Node | null {
+          if (node.type === 'object' && node.children) {
+            for (const child of node.children) {
+              if (child.type === 'property' && child.children && child.children.length === 2) {
+                const keyNode = child.children[0]
+                const valueNode = child.children[1]
+                if (keyNode.type === 'string' && keyNode.value === tempInfo.snippet.key) {
+                  return valueNode
+                }
+              }
+              // 递归搜索
+              if (child.children && child.children[1] && (child.children[1].type === 'object' || child.children[1].type === 'array')) {
+                const result = findValueNode(child.children[1])
+                if (result)
+                  return result
+              }
+            }
+          }
+          return null
+        }
+
+        const valueNode = findValueNode(tree)
+        if (valueNode) {
+          originalValueType = valueNode.type
+        }
+      }
+
+      // 根据原始值类型决定如何处理替换
+      if (originalValueType === 'string') {
+        // 字符串值：跳过引号，只替换内容
+        const startPos = originalDocument.offsetAt(updatedSnippet.valueRange.start) + 1 // 跳过开始引号
+        const endPos = originalDocument.offsetAt(updatedSnippet.valueRange.end) - 1 // 跳过结束引号
+        valueRange = new vscode.Range(
+          originalDocument.positionAt(startPos),
+          originalDocument.positionAt(endPos),
+        )
+        // 使用专门的转义方法来正确转义内容
+        replacementContent = this.escapeJsonString(newContent)
+      }
+      else {
+        // 非字符串值：替换整个值，需要根据内容决定新的类型
+        valueRange = updatedSnippet.valueRange
+
+        // 尝试解析新内容为合适的JSON值
+        const trimmedContent = newContent.trim()
+        if (trimmedContent === 'true' || trimmedContent === 'false') {
+          // 布尔值
+          replacementContent = trimmedContent
+        }
+        else if (trimmedContent === 'null') {
+          // null值
+          replacementContent = 'null'
+        }
+        else if (/^-?\d+(?:\.\d+)?$/.test(trimmedContent)) {
+          // 数字
+          replacementContent = trimmedContent
+        }
+        else {
+          // 其他情况，作为字符串处理
+          replacementContent = `"${this.escapeJsonString(newContent)}"`
+        }
+      }
+
+      edit.replace(originalDocument.uri, valueRange, replacementContent)
 
       const success = await vscode.workspace.applyEdit(edit)
       if (success) {
@@ -256,9 +316,30 @@ class TempFileManager {
               const keyNode = child.children[0]
               const valueNode = child.children[1]
 
-              if (keyNode.type === 'string' && valueNode.type === 'string') {
+              // 支持所有类型的键值对，不仅仅是字符串
+              if (keyNode.type === 'string') {
                 const key = keyNode.value as string
-                const value = valueNode.value as string
+                let value: string
+
+                // 根据值的类型进行不同处理
+                if (valueNode.type === 'string') {
+                  value = valueNode.value as string
+                }
+                else if (valueNode.type === 'number') {
+                  value = String(valueNode.value)
+                }
+                else if (valueNode.type === 'boolean') {
+                  value = String(valueNode.value)
+                }
+                else if (valueNode.type === 'null') {
+                  value = 'null'
+                }
+                else {
+                  // 对于对象、数组等复杂类型，使用原始文本
+                  const startOffset = valueNode.offset
+                  const endOffset = valueNode.offset + valueNode.length
+                  value = content.substring(startOffset, endOffset)
+                }
 
                 if (key === targetKey) {
                   // 创建一个临时文档来计算位置
