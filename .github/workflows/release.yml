@@ -48,14 +48,24 @@ jobs:
         run: nr build
 
       - name: Package extension
-        run: npx vsce package --no-dependencies
+        id: package
+        run: |
+          PACKAGE_FILE=$(npx vsce package --no-dependencies --out . | grep -o '[^/]*\.vsix$')
+          echo "package_file=$PACKAGE_FILE" >> $GITHUB_OUTPUT
+          echo "Generated package: $PACKAGE_FILE"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-package
+          path: ${{ steps.package.outputs.package_file }}
 
       - name: Publish to VSCode Marketplace
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: npx vsce publish --no-dependencies
+        run: npx vsce publish --packagePath ${{ steps.package.outputs.package_file }}
     
       - name: Publish to Open VSX
         env:
           OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
-        run: npx ovsx publish -p $OVSX_TOKEN
+        run: npx ovsx publish ${{ steps.package.outputs.package_file }} -p $OVSX_TOKEN

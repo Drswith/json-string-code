@@ -144,16 +144,14 @@
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "vscode:prepublish": "nr build",
-    "pack:vsce": "vsce package --no-dependencies",
-    "pack:ovsx": "ovsx package --no-dependencies",
+    "pack": "vsce package --no-dependencies",
     "publish:vsce": "vsce publish --no-dependencies",
-    "publish:ovsx": "ovsx publish --no-dependencies",
+    "publish:ovsx": "ovsx publish",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "bumpp": "bumpp",
-    "release": "bumpp && nr publish"
+    "release": "bumpp && nr build && nr publish"
   },
   "dependencies": {
     "jsesc": "^3.1.0",
@@ -165,7 +163,7 @@
     "@antfu/ni": "^23.3.1",
     "@types/jsesc": "^3.0.3",
     "@types/node": "^22.13.4",
-    "@types/vscode": "^1.97.0",
+    "@types/vscode": "^1.87.0",
     "@vscode/vsce": "^3.2.2",
     "bumpp": "^10.0.3",
     "eslint": "^9.20.1",
