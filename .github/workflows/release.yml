@@ -47,18 +47,15 @@ jobs:
       - name: Build
         run: nr build
 
-      - name: Package vsce extension
+      - name: Package extension
         run: npx vsce package --no-dependencies
 
-      - name: Publish vsce extension
+      - name: Publish to VSCode Marketplace
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: npx vsce publish --no-dependencies
-      
-      - name: Package ovsx extension
-        run: npx ovsx package
-
-      - name: Publish ovsx extension
+    
+      - name: Publish to Open VSX
         env:
           OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
         run: npx ovsx publish -p $OVSX_TOKEN
