@@ -171,11 +171,11 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 
 | Key                                               | Description                                  | Type      | Default                                                        |
 | ------------------------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
-| `vscode-json-string-code-editor.include`          | Specifies the file glob patterns where the plugin takes effect | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
-| `vscode-json-string-code-editor.forceCodeKeys`    | Array of key names to be forcibly recognized as code snippets | `array`   | `["script","code","template","function","expression","query"]` |
-| `vscode-json-string-code-editor.enableLogging`    | Whether to enable debug logging | `boolean` | `false`                                                        |
-| `vscode-json-string-code-editor.autoCloseTempTab` | Automatically close temporary tabs after saving changes | `boolean` | `false`                                                        |
-| `vscode-json-string-code-editor.defaultLanguage`  | Default programming language when auto-detection fails | `string`  | `"javascript"`                                                 |
+| `vscode-json-string-code-editor.include`          | Glob patterns for files where the extension should be active | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
+| `vscode-json-string-code-editor.forceCodeKeys`    | Array of key names that should always be treated as code snippets | `array`   | `["script","code","template","function","expression","query"]` |
+| `vscode-json-string-code-editor.enableLogging`    | Enable debug logging for the extension | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.autoCloseTempTab` | Automatically close temporary tab when original file is closed | `boolean` | `false`                                                        |
+| `vscode-json-string-code-editor.defaultLanguage`  | Default programming language for temporary edit windows when language cannot be auto-detected | `string`  | `"javascript"`                                                 |
 
 <!-- configs -->
 
@@ -185,11 +185,11 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 
 | Command                                               | Title                                                           |
 | ----------------------------------------------------- | --------------------------------------------------------------- |
-| `vscode-json-string-code-editor.editAsCode`           | JSON String Code: Edit as Code                                        |
-| `vscode-json-string-code-editor.editSnippetFromHover` | JSON String Code: Edit Code Snippet from Hover                              |
-| `vscode-json-string-code-editor.copySnippetCode`      | JSON String Code: Copy Code Snippet                                      |
-| `vscode-json-string-code-editor.refreshDecorations`   | JSON String Code: Refresh Code Snippet Decorations                                   |
-| `vscode-json-string-code-editor.cleanupTempFiles`     | JSON String Code: Cleanup Temporary Files                                      |
+| `vscode-json-string-code-editor.editAsCode`           | Edit as Code                                        |
+| `vscode-json-string-code-editor.editSnippetFromHover` | Edit Code Snippet from Hover                              |
+| `vscode-json-string-code-editor.copySnippetCode`      | Copy Code Snippet                                      |
+| `vscode-json-string-code-editor.refreshDecorations`   | Refresh Code Snippet Decorations                                   |
+| `vscode-json-string-code-editor.cleanupTempFiles`     | Cleanup Temporary Files                                      |
 
 <!-- commands -->
 
