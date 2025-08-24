@@ -148,61 +148,11 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
 
 /**
  * 悬停命令处理器
+ * 注意：命令注册现在在 index.ts 中统一管理
  */
 export class HoverCommandHandler {
-  private disposables: vscode.Disposable[] = []
-
-  constructor() {
-    this.registerCommands()
-  }
-
-  private registerCommands(): void {
-    // 从悬停面板编辑代码片段
-    const editCommand = vscode.commands.registerCommand(
-      'vscode-json-string-code-editor.editSnippetFromHover',
-      async (documentUri: vscode.Uri, snippet: any) => {
-        try {
-          const document = await vscode.workspace.openTextDocument(documentUri)
-          const editor = await tempFileManager.createTempFile(snippet, document)
-
-          if (editor) {
-            vscode.window.showInformationMessage(
-              i18n.t('notification.tempFileCreated', snippet.key),
-            )
-          }
-        }
-        catch (error) {
-          if (config.enableLogging) {
-            logger.error(`Failed to edit snippet from hover: ${error}`)
-          }
-          vscode.window.showErrorMessage(i18n.t('notification.failedToOpen', String(error)))
-        }
-      },
-    )
-
-    // 复制代码片段
-    const copyCommand = vscode.commands.registerCommand(
-      'vscode-json-string-code-editor.copySnippetCode',
-      async (code: string) => {
-        try {
-          await vscode.env.clipboard.writeText(code)
-          vscode.window.showInformationMessage(i18n.t('notification.codeCopied'))
-        }
-        catch (error) {
-          if (config.enableLogging) {
-            logger.error(`Failed to copy code: ${error}`)
-          }
-          vscode.window.showErrorMessage(i18n.t('notification.failedToCopy', String(error)))
-        }
-      },
-    )
-
-    this.disposables.push(editCommand, copyCommand)
-  }
-
   dispose(): void {
-    this.disposables.forEach(d => d.dispose())
-    this.disposables = []
+    // 命令现在在 index.ts 中注册和管理，这里不需要额外的清理
   }
 }
 
