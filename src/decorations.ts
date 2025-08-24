@@ -1,13 +1,12 @@
 import type { Position, Range, TextDocument, TextEditor } from 'vscode'
 import type { CodeSnippet } from './json-parser'
-import { ref, useActiveEditorDecorations } from 'reactive-vscode'
+import { ref, useActiveEditorDecorations, useActiveTextEditor } from 'reactive-vscode'
 import { commands, window } from 'vscode'
 import { config } from './config'
 import { logger } from './utils'
 
 // 响应式状态
 const activeDecorations = ref<Map<string, CodeSnippet[]>>(new Map())
-const currentSnippets = ref<CodeSnippet[]>([])
 
 /**
  * 初始化响应式装饰器
@@ -22,7 +21,13 @@ function initializeDecorations() {
       borderRadius: '2px',
     },
     () => {
-      const normalSnippets = currentSnippets.value.filter(s => !s.isForced)
+      const editor = useActiveTextEditor().value
+      if (!editor)
+        return []
+
+      const documentUri = editor.document.uri.toString()
+      const snippets = activeDecorations.value.get(documentUri) || []
+      const normalSnippets = snippets.filter(s => !s.isForced)
       return normalSnippets.map(snippet => snippet.range)
     },
   )
@@ -37,7 +42,13 @@ function initializeDecorations() {
       border: '1px solid rgba(255, 107, 53, 0.3)',
     },
     () => {
-      const forcedSnippets = currentSnippets.value.filter(s => s.isForced)
+      const editor = useActiveTextEditor().value
+      if (!editor)
+        return []
+
+      const documentUri = editor.document.uri.toString()
+      const snippets = activeDecorations.value.get(documentUri) || []
+      const forcedSnippets = snippets.filter(s => s.isForced)
       return forcedSnippets.map(snippet => snippet.range)
     },
   )
@@ -54,8 +65,8 @@ export function updateDecorations(editor: TextEditor, snippets: CodeSnippet[]): 
   const documentUri = editor.document.uri.toString()
   activeDecorations.value.set(documentUri, snippets)
 
-  // 更新当前代码片段，这将触发 useActiveEditorDecorations 的重新计算
-  currentSnippets.value = snippets
+  // 触发装饰器重新计算（通过修改 activeDecorations 的引用）
+  activeDecorations.value = new Map(activeDecorations.value)
 
   if (config.enableLogging) {
     const normalSnippets = snippets.filter(s => !s.isForced)
@@ -75,8 +86,8 @@ export function clearDecorations(editor: TextEditor): void {
   const documentUri = editor.document.uri.toString()
   activeDecorations.value.delete(documentUri)
 
-  // 清空当前代码片段，这将触发 useActiveEditorDecorations 清除装饰
-  currentSnippets.value = []
+  // 触发装饰器重新计算（通过修改 activeDecorations 的引用）
+  activeDecorations.value = new Map(activeDecorations.value)
 
   if (config.enableLogging) {
     logger.info(`Cleared decorations for ${documentUri}`)
@@ -136,9 +147,8 @@ function isJsonDocument(document: TextDocument): boolean {
  * Release resources
  */
 export function dispose(): void {
-  // Clear active decorations and current snippets
+  // Clear active decorations
   activeDecorations.value.clear()
-  currentSnippets.value = []
 }
 
 // 初始化装饰器类型
