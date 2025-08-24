@@ -17,42 +17,73 @@ const debounceTimers = new Map<string, any>()
  * 设置文件监听器
  */
 export function setupFileWatchers(): void {
-  // 使用 reactive-vscode 的 useFsWatcher 来监听 JSON 文件变化
-  const includePatterns = config.include || ['**/*.json', '**/*.jsonc']
+  try {
+    // 使用 reactive-vscode 的 useFsWatcher 来监听 JSON 文件变化
+    const includePatterns = config.include || ['**/*.json', '**/*.jsonc']
 
-  includePatterns.forEach((pattern) => {
-    const watcher = useFsWatcher(pattern)
+    includePatterns.forEach((pattern) => {
+      try {
+        const watcher = useFsWatcher(pattern)
 
-    watcher.onDidChange((uri: Uri) => {
-      if (config.enableLogging) {
-        logger.info(`File changed: ${uri.fsPath}`)
+        watcher.onDidChange((uri: Uri) => {
+          try {
+            if (config.enableLogging) {
+              logger.info(`File changed: ${uri.fsPath}`)
+            }
+
+            // 当文件变化时，刷新对应的编辑器
+            const editor = window.visibleTextEditors.find(e =>
+              e.document.uri.toString() === uri.toString(),
+            )
+
+            if (editor && shouldProcessDocument(editor.document)) {
+              processDocument(editor)
+            }
+          }
+          catch (error) {
+            if (config.enableLogging) {
+              logger.error(`Error handling file change: ${error}`)
+            }
+          }
+        })
+
+        watcher.onDidDelete((uri: Uri) => {
+          try {
+            if (config.enableLogging) {
+              logger.info(`File deleted: ${uri.fsPath}`)
+            }
+
+            // 当文件删除时，处理文档关闭
+            const editor = window.visibleTextEditors.find(e =>
+              e.document.uri.toString() === uri.toString(),
+            )
+
+            if (editor && shouldProcessDocument(editor.document)) {
+              handleDocumentClose(editor.document)
+            }
+          }
+          catch (error) {
+            if (config.enableLogging) {
+              logger.error(`Error handling file deletion: ${error}`)
+            }
+          }
+        })
       }
-
-      // 当文件变化时，刷新对应的编辑器
-      const editor = window.visibleTextEditors.find(e =>
-        e.document.uri.toString() === uri.toString(),
-      )
-
-      if (editor && shouldProcessDocument(editor.document)) {
-        processDocument(editor)
+      catch (error) {
+        if (config.enableLogging) {
+          logger.error(`Failed to create file watcher for pattern ${pattern}: ${error}`)
+        }
+        // 继续处理其他模式，不让单个模式的失败影响整个功能
       }
     })
-
-    watcher.onDidDelete((uri: Uri) => {
-      if (config.enableLogging) {
-        logger.info(`File deleted: ${uri.fsPath}`)
-      }
-
-      // 当文件删除时，处理文档关闭
-      const editor = window.visibleTextEditors.find(e =>
-        e.document.uri.toString() === uri.toString(),
-      )
-
-      if (editor && shouldProcessDocument(editor.document)) {
-        handleDocumentClose(editor.document)
-      }
-    })
-  })
+  }
+  catch (error) {
+    if (config.enableLogging) {
+      logger.error(`Failed to setup file watchers: ${error}`)
+    }
+    // 文件监听器设置失败不应该阻止扩展启动
+    window.showWarningMessage('File watching feature is disabled due to initialization error')
+  }
 
   // Listen for active editor changes
   useDisposable(

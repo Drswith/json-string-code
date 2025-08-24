@@ -25,16 +25,29 @@ function getTempDir(): string {
   if (workspaceFolder) {
     return Uri.joinPath(workspaceFolder.uri, '.vscode', 'temp', 'json-string-editor').fsPath
   }
-  // 如果没有工作区，使用
-  return 'tmp'
+  // 如果没有工作区，使用一个相对路径作为临时目录
+  // 这将在当前工作目录下创建临时文件夹
+  return Uri.file('./tmp/vscode-json-string-code-editor').fsPath
 }
 
 /**
  * 设置临时文件管理器
  */
-export function setupTempFileManager(): void {
-  ensureTempDir()
-  setupFileWatcher()
+export async function setupTempFileManager(): Promise<void> {
+  try {
+    await ensureTempDir()
+    setupFileWatcher()
+    if (config.enableLogging) {
+      logger.info('Temp file manager initialized successfully')
+    }
+  }
+  catch (error) {
+    if (config.enableLogging) {
+      logger.error(`Failed to setup temp file manager: ${error}`)
+    }
+    // 不抛出错误，允许扩展继续运行但禁用临时文件功能
+    window.showWarningMessage('Temporary file editing feature is disabled due to initialization error')
+  }
 }
 
 /**
