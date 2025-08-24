@@ -9,7 +9,7 @@ class DecorationManager {
   private activeDecorations = new Map<string, CodeSnippet[]>()
 
   constructor() {
-    // 创建普通代码片段装饰类型
+    // Create normal code snippet decoration type
     this.codeSnippetDecorationType = vscode.window.createTextEditorDecorationType({
       textDecoration: 'underline',
       cursor: 'pointer',
@@ -17,7 +17,7 @@ class DecorationManager {
       borderRadius: '2px',
     })
 
-    // 创建强制识别代码片段装饰类型（与普通代码片段相同背景色，但保留边框）
+    // Create forced code snippet decoration type (same background as normal snippets, but with border)
     this.forcedCodeSnippetDecorationType = vscode.window.createTextEditorDecorationType({
       textDecoration: 'underline',
       cursor: 'pointer',
@@ -28,7 +28,7 @@ class DecorationManager {
   }
 
   /**
-   * 更新编辑器中的装饰
+   * Update decorations in the editor
    */
   updateDecorations(editor: vscode.TextEditor, snippets: CodeSnippet[]): void {
     if (!editor || !editor.document) {
@@ -38,21 +38,21 @@ class DecorationManager {
     const documentUri = editor.document.uri.toString()
     this.activeDecorations.set(documentUri, snippets)
 
-    // 分离普通代码片段和强制代码片段
+    // Separate normal and forced code snippets
     const normalSnippets = snippets.filter(s => !s.isForced)
     const forcedSnippets = snippets.filter(s => s.isForced)
 
-    // 创建普通代码片段装饰
+    // Create normal code snippet decorations
     const normalDecorations: vscode.DecorationOptions[] = normalSnippets.map(snippet => ({
       range: snippet.valueRange,
     }))
 
-    // 创建强制代码片段装饰
+    // Create forced code snippet decorations
     const forcedDecorations: vscode.DecorationOptions[] = forcedSnippets.map(snippet => ({
       range: snippet.valueRange,
     }))
 
-    // 应用装饰
+    // Apply decorations
     editor.setDecorations(this.codeSnippetDecorationType, normalDecorations)
     editor.setDecorations(this.forcedCodeSnippetDecorationType, forcedDecorations)
 
@@ -62,7 +62,7 @@ class DecorationManager {
   }
 
   /**
-   * 清除编辑器中的装饰
+   * Clear decorations in the editor
    */
   clearDecorations(editor: vscode.TextEditor): void {
     if (!editor) {
@@ -81,14 +81,14 @@ class DecorationManager {
   }
 
   /**
-   * 获取指定文档的活动代码片段
+   * Get active code snippets for the specified document
    */
   getActiveSnippets(documentUri: string): CodeSnippet[] {
     return this.activeDecorations.get(documentUri) || []
   }
 
   /**
-   * 检查位置是否在代码片段装饰范围内
+   * Check if position is within code snippet decoration range
    */
   isPositionInCodeSnippet(editor: vscode.TextEditor, position: vscode.Position): CodeSnippet | undefined {
     const documentUri = editor.document.uri.toString()
@@ -98,7 +98,7 @@ class DecorationManager {
   }
 
   /**
-   * 获取指定范围内的代码片段
+   * Get code snippets within the specified range
    */
   getSnippetsInRange(editor: vscode.TextEditor, range: vscode.Range): CodeSnippet[] {
     const documentUri = editor.document.uri.toString()
@@ -110,27 +110,27 @@ class DecorationManager {
   }
 
   /**
-   * 刷新所有活动编辑器的装饰
+   * Refresh decorations for all active editors
    */
   refreshAllDecorations(): void {
     vscode.window.visibleTextEditors.forEach((editor) => {
       if (this.isJsonDocument(editor.document)) {
-        // 这里需要重新解析文档并更新装饰
-        // 这个方法会在主模块中调用
+        // Need to re-parse document and update decorations
+        // This method will be called from the main module
         vscode.commands.executeCommand('vscode-json-string-code-editor.refreshDecorations', editor.document.uri)
       }
     })
   }
 
   /**
-   * 检查文档是否为JSON文档
+   * Check if document is a JSON document
    */
   private isJsonDocument(document: vscode.TextDocument): boolean {
     return document.languageId === 'json' || document.languageId === 'jsonc'
   }
 
   /**
-   * 释放资源
+   * Release resources
    */
   dispose(): void {
     this.codeSnippetDecorationType.dispose()

@@ -1,11 +1,11 @@
 {
   "publisher": "drswith",
   "name": "vscode-json-string-code-editor",
-  "displayName": "%displayName%",
-  "version": "0.1.7",
+  "displayName": "JSON String Code Editor",
+  "version": "0.1.12",
   "private": true,
   "packageManager": "pnpm@10.4.1",
-  "description": "%description%",
+  "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
   "author": "Drswith",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Drswith",
@@ -25,17 +25,10 @@
     "Formatters",
     "Snippets"
   ],
-  "main": "./dist/index.js",
+  "main": "./out/index.js",
   "icon": "res/icon.png",
-  "files": [
-    "LICENSE.md",
-    "dist/*",
-    "package.nls.*.json",
-    "package.nls.json",
-    "res/*"
-  ],
   "engines": {
-    "vscode": "^1.87.0"
+    "vscode": "^1.100.0"
   },
   "activationEvents": [
     "onLanguage:json",
@@ -44,29 +37,33 @@
   "contributes": {
     "commands": [
       {
+        "command": "extension.helloWorld",
+        "title": "Hello World"
+      },
+      {
         "command": "vscode-json-string-code-editor.editAsCode",
-        "title": "%command.editAsCode.title%",
-        "category": "%category.jsonStringCode%"
+        "title": "Edit as Code",
+        "category": "JSON String Code"
       },
       {
         "command": "vscode-json-string-code-editor.editSnippetFromHover",
-        "title": "%command.editSnippetFromHover.title%",
-        "category": "%category.jsonStringCode%"
+        "title": "Edit Code Snippet from Hover",
+        "category": "JSON String Code"
       },
       {
         "command": "vscode-json-string-code-editor.copySnippetCode",
-        "title": "%command.copySnippetCode.title%",
-        "category": "%category.jsonStringCode%"
+        "title": "Copy Code Snippet",
+        "category": "JSON String Code"
       },
       {
         "command": "vscode-json-string-code-editor.refreshDecorations",
-        "title": "%command.refreshDecorations.title%",
-        "category": "%category.jsonStringCode%"
+        "title": "Refresh Code Snippet Decorations",
+        "category": "JSON String Code"
       },
       {
         "command": "vscode-json-string-code-editor.cleanupTempFiles",
-        "title": "%command.cleanupTempFiles.title%",
-        "category": "%category.jsonStringCode%"
+        "title": "Cleanup Temporary Files",
+        "category": "JSON String Code"
       }
     ],
     "menus": {
@@ -80,7 +77,7 @@
     },
     "configuration": {
       "type": "object",
-      "title": "%configuration.title%",
+      "title": "JSON String Code Editor",
       "properties": {
         "vscode-json-string-code-editor.include": {
           "type": "array",
@@ -91,7 +88,7 @@
             "**/*.json",
             "**/*.jsonc"
           ],
-          "description": "%configuration.include.description%"
+          "description": "Glob patterns for files where the extension should be active"
         },
         "vscode-json-string-code-editor.forceCodeKeys": {
           "type": "array",
@@ -106,17 +103,17 @@
             "expression",
             "query"
           ],
-          "description": "%configuration.forceCodeKeys.description%"
+          "description": "Array of key names that should always be treated as code snippets"
         },
         "vscode-json-string-code-editor.enableLogging": {
           "type": "boolean",
           "default": true,
-          "description": "%configuration.enableLogging.description%"
+          "description": "Enable debug logging for the extension"
         },
         "vscode-json-string-code-editor.autoCloseTempTab": {
           "type": "boolean",
           "default": false,
-          "description": "%configuration.autoCloseTempTab.description%"
+          "description": "Automatically close temporary tab when original file is closed"
         },
         "vscode-json-string-code-editor.defaultLanguage": {
           "type": "string",
@@ -134,7 +131,7 @@
             "plaintext"
           ],
           "default": "javascript",
-          "description": "%configuration.defaultLanguage.description%"
+          "description": "Default programming language for temporary edit windows when language cannot be auto-detected"
         }
       }
     }
@@ -166,7 +163,7 @@
     "@swc/core": "^1.13.4",
     "@types/jsesc": "^3.0.3",
     "@types/node": "^22.13.4",
-    "@types/vscode": "^1.87.0",
+    "@types/vscode": "^1.100.0",
     "@vscode/vsce": "^3.2.2",
     "bumpp": "^10.0.3",
     "eslint": "^9.20.1",

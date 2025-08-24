@@ -1,7 +1,5 @@
 # JSON String Code Editor
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
-
 [![VS Code Marketplace](https://img.shields.io/vscode-marketplace/v/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
 [![Open VSX Registry](https://img.shields.io/open-vsx/v/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=Open%20VSX)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
 
@@ -164,27 +162,29 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 - **CSS Styles**: Supports CSS rules and selectors
 - **Regular Expressions**: Recognizes common regex patterns
 - **Configuration Scripts**: npm scripts and build configurations
+<!-- commands -->
 
-## Configurations
+| Command                                               | Title                                              |
+| ----------------------------------------------------- | -------------------------------------------------- |
+| `extension.helloWorld`                                | Hello World                                        |
+| `vscode-json-string-code-editor.editAsCode`           | JSON String Code: Edit as Code                     |
+| `vscode-json-string-code-editor.editSnippetFromHover` | JSON String Code: Edit Code Snippet from Hover     |
+| `vscode-json-string-code-editor.copySnippetCode`      | JSON String Code: Copy Code Snippet                |
+| `vscode-json-string-code-editor.refreshDecorations`   | JSON String Code: Refresh Code Snippet Decorations |
+| `vscode-json-string-code-editor.cleanupTempFiles`     | JSON String Code: Cleanup Temporary Files          |
 
-| Key                                               | Description                                  | Type      | Default                                                        |
-| ------------------------------------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------- |
-| `vscode-json-string-code-editor.include`          | Glob patterns for files where the extension should be active | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
-| `vscode-json-string-code-editor.forceCodeKeys`    | Array of key names that should always be treated as code snippets | `array`   | `["script","code","template","function","expression","query"]` |
-| `vscode-json-string-code-editor.enableLogging`    | Enable debug logging for the extension | `boolean` | `false`                                                        |
-| `vscode-json-string-code-editor.autoCloseTempTab` | Automatically close temporary tab when original file is closed | `boolean` | `false`                                                        |
+<!-- commands -->
+<!-- configs -->
+
+| Key                                               | Description                                                                                   | Type      | Default                                                        |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- |
+| `vscode-json-string-code-editor.include`          | Glob patterns for files where the extension should be active                                  | `array`   | `["**/*.json","**/*.jsonc"]`                                   |
+| `vscode-json-string-code-editor.forceCodeKeys`    | Array of key names that should always be treated as code snippets                             | `array`   | `["script","code","template","function","expression","query"]` |
+| `vscode-json-string-code-editor.enableLogging`    | Enable debug logging for the extension                                                        | `boolean` | `true`                                                         |
+| `vscode-json-string-code-editor.autoCloseTempTab` | Automatically close temporary tab when original file is closed                                | `boolean` | `false`                                                        |
 | `vscode-json-string-code-editor.defaultLanguage`  | Default programming language for temporary edit windows when language cannot be auto-detected | `string`  | `"javascript"`                                                 |
 
-## Commands
-
-| Command                                               | Title                                                           |
-| ----------------------------------------------------- | --------------------------------------------------------------- |
-| `vscode-json-string-code-editor.editAsCode`           | Edit as Code                                        |
-| `vscode-json-string-code-editor.editSnippetFromHover` | Edit Code Snippet from Hover                              |
-| `vscode-json-string-code-editor.copySnippetCode`      | Copy Code Snippet                                      |
-| `vscode-json-string-code-editor.refreshDecorations`   | Refresh Code Snippet Decorations                                   |
-| `vscode-json-string-code-editor.cleanupTempFiles`     | Cleanup Temporary Files                                      |
-
+<!-- configs -->
 ## License
 
 [MIT](./LICENSE.md) License © 2025 [Drswith](https://github.com/Drswith)

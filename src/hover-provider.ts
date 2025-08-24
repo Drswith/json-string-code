@@ -1,9 +1,5 @@
 import * as vscode from 'vscode'
-import { config } from './config'
 import { decorationManager } from './decorations'
-import { i18n } from './i18n'
-import { tempFileManager } from './temp-file-manager'
-import { logger } from './utils'
 
 export class JsonCodeHoverProvider implements vscode.HoverProvider {
   async provideHover(
@@ -11,12 +7,12 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
     position: vscode.Position,
     token: vscode.CancellationToken,
   ): Promise<vscode.Hover | undefined> {
-    // 只处理JSON文档
+    // Only handle JSON documents
     if (!this.isJsonDocument(document)) {
       return undefined
     }
 
-    // 检查位置是否在代码片段范围内
+    // Check if position is within code snippet range
     const editor = vscode.window.activeTextEditor
     if (!editor || editor.document !== document) {
       return undefined
@@ -27,7 +23,7 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
       return undefined
     }
 
-    // 只在值范围内显示悬停
+    // Only show hover within value range
     if (!snippet.valueRange.contains(position)) {
       return undefined
     }
@@ -40,58 +36,58 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
     markdown.isTrusted = true
     markdown.supportHtml = true
 
-    // 标题
+    // Title
     const title = snippet.isForced
       ? `🔒 **Forced Code Snippet**: \`${snippet.key}\``
       : `💡 **Code Snippet**: \`${snippet.key}\``
 
     markdown.appendMarkdown(`${title}\n\n`)
 
-    // 检测到的语言信息
+    // Detected language information
     const language = this.detectLanguage(snippet.key, snippet.value)
-    markdown.appendMarkdown(`**${i18n.t('hover.language')}**: ${language}\n\n`)
+    markdown.appendMarkdown(`**Language**: ${language}\n\n`)
 
-    // 操作按钮 - 移到预览之前
+    // Action buttons - moved before preview
     const editCommand = {
-      title: i18n.t('hover.editButton'),
+      title: '✏️ Edit in Temporary Tab',
       command: 'vscode-json-string-code-editor.editSnippetFromHover',
       arguments: [document.uri, snippet],
     }
 
     const copyCommand = {
-      title: i18n.t('hover.copyButton'),
+      title: '📋 Copy Code',
       command: 'vscode-json-string-code-editor.copySnippetCode',
       arguments: [snippet.value],
     }
 
-    // 添加命令链接
+    // Add command links
     markdown.appendMarkdown(
       `[${editCommand.title}](command:${editCommand.command}?${encodeURIComponent(JSON.stringify(editCommand.arguments))}) | `
       + `[${copyCommand.title}](command:${copyCommand.command}?${encodeURIComponent(JSON.stringify(copyCommand.arguments))})`,
     )
     markdown.appendMarkdown('\n\n---\n\n')
 
-    // 代码预览
+    // Code preview
     const previewLength = 300
     const preview = snippet.value.length > previewLength
       ? `${snippet.value.substring(0, previewLength)}...`
       : snippet.value
 
-    markdown.appendMarkdown(`**${i18n.t('hover.preview')}**:\n\n`)
+    markdown.appendMarkdown(`**Preview**:\n\n`)
     markdown.appendCodeblock(preview, language)
     markdown.appendMarkdown('\n')
 
-    // 如果是强制代码片段，添加说明
+    // If it's a forced code snippet, add explanation
     if (snippet.isForced) {
       markdown.appendMarkdown('\n\n---\n\n')
-      markdown.appendMarkdown(`🔒 ${i18n.t('hover.forceCodeSnippet')}`)
+      markdown.appendMarkdown(`🔒 This is a force code snippet (key matches configured patterns)`)
     }
 
     return new vscode.Hover(markdown, snippet.valueRange)
   }
 
   /**
-   * 检测代码语言类型
+   * Detect code language type
    */
   private detectLanguage(key: string, value: string): string {
     const keyLower = key.toLowerCase()
@@ -121,7 +117,7 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
       return 'typescript'
     }
 
-    // 根据内容推断语言
+    // Infer language based on content
     if (value.includes('function') || value.includes('=>') || value.includes('const ') || value.includes('let ')) {
       return 'javascript'
     }
@@ -139,7 +135,7 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
   }
 
   /**
-   * 检查文档是否为JSON文档
+   * Check if document is a JSON document
    */
   private isJsonDocument(document: vscode.TextDocument): boolean {
     return document.languageId === 'json' || document.languageId === 'jsonc'
@@ -147,15 +143,15 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
 }
 
 /**
- * 悬停命令处理器
- * 注意：命令注册现在在 index.ts 中统一管理
+ * Hover command handler
+ * Note: Command registration is now managed centrally in index.ts
  */
 export class HoverCommandHandler {
   dispose(): void {
-    // 命令现在在 index.ts 中注册和管理，这里不需要额外的清理
+    // Commands are now registered and managed in index.ts, no additional cleanup needed here
   }
 }
 
 export const hoverProvider = new JsonCodeHoverProvider()
-// HoverCommandHandler 实例应该在 index.ts 中创建，避免重复注册命令
+// HoverCommandHandler instance should be created in index.ts to avoid duplicate command registration
 // export const hoverCommandHandler = new HoverCommandHandler()

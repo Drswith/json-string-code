@@ -14,34 +14,34 @@ class FileWatcher {
   }
 
   private setupWatchers(): void {
-    // 监听活动编辑器变化
+    // Listen for active editor changes
     const activeEditorDisposable = vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (editor) {
         this.handleEditorActivation(editor)
       }
     })
 
-    // 监听可见编辑器变化
+    // Listen for visible editor changes
     const visibleEditorsDisposable = vscode.window.onDidChangeVisibleTextEditors((editors) => {
       editors.forEach(editor => this.handleEditorActivation(editor))
     })
 
-    // 监听文档内容变化
+    // Listen for document content changes
     const documentChangeDisposable = vscode.workspace.onDidChangeTextDocument((event) => {
       this.handleDocumentChange(event)
     })
 
-    // 监听文档打开
+    // Listen for document open
     const documentOpenDisposable = vscode.workspace.onDidOpenTextDocument((document) => {
       this.handleDocumentOpen(document)
     })
 
-    // 监听文档关闭
+    // Listen for document close
     const documentCloseDisposable = vscode.workspace.onDidCloseTextDocument((document) => {
       this.handleDocumentClose(document)
     })
 
-    // 监听配置变化
+    // Listen for configuration changes
     const configChangeDisposable = vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration('vscode-json-string-code-editor')) {
         this.handleConfigurationChange()
@@ -57,7 +57,7 @@ class FileWatcher {
       configChangeDisposable,
     )
 
-    // 初始化当前打开的编辑器
+    // Initialize currently open editors
     this.initializeOpenEditors()
   }
 
@@ -74,7 +74,7 @@ class FileWatcher {
       this.processDocument(editor)
     }
     else {
-      // 清除非JSON文档的装饰
+      // Clear decorations for non-JSON documents
       decorationManager.clearDecorations(editor)
     }
   }
@@ -86,7 +86,7 @@ class FileWatcher {
       return
     }
 
-    // 防抖处理，避免频繁更新
+    // Debounce to avoid frequent updates
     this.debounceProcessDocument(document)
   }
 
@@ -113,7 +113,7 @@ class FileWatcher {
       logger.info('Configuration changed, refreshing all decorations')
     }
 
-    // 重新处理所有活动文档
+    // Reprocess all active documents
     vscode.window.visibleTextEditors.forEach((editor) => {
       if (this.shouldProcessDocument(editor.document)) {
         this.processDocument(editor)
@@ -125,12 +125,12 @@ class FileWatcher {
   }
 
   private shouldProcessDocument(document: vscode.TextDocument): boolean {
-    // 检查文档类型
+    // Check document type
     if (!this.isJsonDocument(document)) {
       return false
     }
 
-    // 检查文件路径是否匹配include模式
+    // Check if file path matches include patterns
     const includePatterns = config.include || ['**/*.json', '**/*.jsonc']
     const filePath = document.uri.fsPath
 
@@ -156,13 +156,13 @@ class FileWatcher {
     const documentUri = document.uri.toString()
 
     try {
-      // 解析JSON文档并识别代码片段
+      // Parse JSON document and identify code snippets
       const snippets = parseJsonDocument(document)
 
-      // 更新装饰
+      // Update decorations
       decorationManager.updateDecorations(editor, snippets)
 
-      // 标记为活动文档
+      // Mark as active document
       this.activeDocuments.add(documentUri)
 
       if (config.enableLogging) {
@@ -174,37 +174,37 @@ class FileWatcher {
         logger.error(`Failed to process document ${document.fileName}: ${error}`)
       }
 
-      // 清除装饰以防出错
+      // Clear decorations in case of error
       decorationManager.clearDecorations(editor)
     }
   }
 
-  // 防抖处理文档变化
+  // Debounce document changes
   private debounceTimers = new Map<string, NodeJS.Timeout>()
 
   private debounceProcessDocument(document: vscode.TextDocument): void {
     const documentUri = document.uri.toString()
 
-    // 清除之前的定时器
+    // Clear previous timer
     const existingTimer = this.debounceTimers.get(documentUri)
     if (existingTimer) {
       clearTimeout(existingTimer)
     }
 
-    // 设置新的定时器
+    // Set new timer
     const timer = setTimeout(() => {
       const editor = vscode.window.visibleTextEditors.find(e => e.document === document)
       if (editor) {
         this.processDocument(editor)
       }
       this.debounceTimers.delete(documentUri)
-    }, 500) // 500ms 防抖延迟
+    }, 500) // 500ms debounce delay
 
     this.debounceTimers.set(documentUri, timer)
   }
 
   /**
-   * 手动刷新指定文档的装饰
+   * Manually refresh decorations for specified document
    */
   refreshDocument(documentUri: vscode.Uri): void {
     const editor = vscode.window.visibleTextEditors.find(e =>
@@ -217,25 +217,25 @@ class FileWatcher {
   }
 
   /**
-   * 获取活动文档列表
+   * Get list of active documents
    */
   getActiveDocuments(): string[] {
     return Array.from(this.activeDocuments)
   }
 
   /**
-   * 释放资源
+   * Dispose resources
    */
   dispose(): void {
-    // 清除所有防抖定时器
+    // Clear all debounce timers
     this.debounceTimers.forEach(timer => clearTimeout(timer))
     this.debounceTimers.clear()
 
-    // 清除事件监听器
+    // Clear event listeners
     this.disposables.forEach(d => d.dispose())
     this.disposables = []
 
-    // 清除活动文档记录
+    // Clear active document records
     this.activeDocuments.clear()
   }
 }

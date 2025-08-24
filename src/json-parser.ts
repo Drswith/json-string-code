@@ -14,33 +14,33 @@ export interface CodeSnippet {
 }
 
 /**
- * 检查字符串是否可能是代码片段
+ * Check if string might be a code snippet
  */
 function isLikelyCode(value: string): boolean {
   if (!value || typeof value !== 'string')
     return false
 
-  // 检查是否包含常见的代码模式
+  // Check if contains common code patterns
   const codePatterns = [
-    /function\s*\(/, // 函数定义
-    /=>\s*[{(]/, // 箭头函数
-    /\b(if|for|while|switch)\s*\(/, // 控制结构
-    /\b(const|let|var)\s+\w+/, // 变量声明
-    /\b(import|export)\s+/, // 模块导入导出
-    /\{[^}]*\}/, // 对象字面量
-    /\[[^\]]*\]/, // 数组字面量
-    /\$\{[^}]+\}/, // 模板字符串
-    /\b(return|throw|break|continue)\b/, // 控制语句
-    /[;{}]\s*$/m, // 语句结束符
-    /^\s*\/\//m, // 单行注释
-    /\/\*[\s\S]*?\*\//, // 多行注释
+    /function\s*\(/, // Function definition
+    /=>\s*[{(]/, // Arrow function
+    /\b(if|for|while|switch)\s*\(/, // Control structures
+    /\b(const|let|var)\s+\w+/, // Variable declaration
+    /\b(import|export)\s+/, // Module import/export
+    /\{[^}]*\}/, // Object literal
+    /\[[^\]]*\]/, // Array literal
+    /\$\{[^}]+\}/, // Template string
+    /\b(return|throw|break|continue)\b/, // Control statements
+    /[;{}]\s*$/m, // Statement terminator
+    /^\s*\/\//m, // Single line comment
+    /\/\*[\s\S]*?\*\//, // Multi-line comment
   ]
 
   return codePatterns.some(pattern => pattern.test(value))
 }
 
 /**
- * 检查键名是否在强制代码键列表中
+ * Check if key name is in the forced code keys list
  */
 function isForceCodeKey(key: string): boolean {
   const forceKeys = config.forceCodeKeys || []
@@ -50,7 +50,7 @@ function isForceCodeKey(key: string): boolean {
 }
 
 /**
- * 解析JSON文档并识别代码片段
+ * Parse JSON document and identify code snippets
  */
 export function parseJsonDocument(document: TextDocument): CodeSnippet[] {
   const text = document.getText()
@@ -106,7 +106,7 @@ export function parseJsonDocument(document: TextDocument): CodeSnippet[] {
               }
             }
 
-            // 递归处理嵌套对象
+            // Recursively process nested objects
             if (valueNode.type === 'object' || valueNode.type === 'array') {
               visitNode(valueNode, [...path, keyNode.value as string])
             }
@@ -135,14 +135,14 @@ export function parseJsonDocument(document: TextDocument): CodeSnippet[] {
 }
 
 /**
- * 根据位置查找代码片段
+ * Find code snippet by position
  */
 export function findCodeSnippetAtPosition(snippets: CodeSnippet[], position: Position): CodeSnippet | undefined {
   return snippets.find(snippet => snippet.range.contains(position))
 }
 
 /**
- * 根据范围查找代码片段
+ * Find code snippet by range
  */
 export function findCodeSnippetAtRange(snippets: CodeSnippet[], range: Range): CodeSnippet | undefined {
   return snippets.find(snippet =>
@@ -151,7 +151,7 @@ export function findCodeSnippetAtRange(snippets: CodeSnippet[], range: Range): C
 }
 
 /**
- * 解析指定位置的JSON键值对（即使不是代码片段）
+ * Parse JSON key-value pair at specified position (even if not a code snippet)
  */
 export function parseJsonKeyValueAtPosition(document: TextDocument, position: Position): CodeSnippet | undefined {
   const text = document.getText()
@@ -183,12 +183,12 @@ export function parseJsonKeyValueAtPosition(document: TextDocument, position: Po
               valueRange.end,
             )
 
-            // 检查位置是否在这个键值对范围内
+            // Check if position is within this key-value pair range
             if (fullRange.contains(position)) {
               const key = keyNode.type === 'string' ? keyNode.value as string : 'unknown'
               let value = ''
 
-              // 处理不同类型的值
+              // Handle different types of values
               if (valueNode.type === 'string') {
                 value = valueNode.value as string
               }
@@ -202,7 +202,7 @@ export function parseJsonKeyValueAtPosition(document: TextDocument, position: Po
                 value = 'null'
               }
               else {
-                // 对于对象或数组，获取原始文本
+                // For objects or arrays, get original text
                 value = text.substring(valueNode.offset, valueNode.offset + valueNode.length)
               }
 
@@ -216,7 +216,7 @@ export function parseJsonKeyValueAtPosition(document: TextDocument, position: Po
               }
             }
 
-            // 递归搜索嵌套结构
+            // Recursively search nested structures
             if (valueNode.type === 'object' || valueNode.type === 'array') {
               const nested = findNodeAtPosition(valueNode)
               if (nested)

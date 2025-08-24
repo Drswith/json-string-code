@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { displayName } from './generated/meta'
 
-// 创建简单的日志记录器，使用原生 VS Code API
+// Create a simple logger using native VS Code API
 class Logger {
   private outputChannel: vscode.OutputChannel
 
@@ -28,6 +28,10 @@ class Logger {
     const logMessage = `[${timestamp}] ERROR: ${message}`
     this.outputChannel.appendLine(logMessage)
     console.error(logMessage)
+  }
+
+  show(): void {
+    this.outputChannel.show()
   }
 
   dispose(): void {

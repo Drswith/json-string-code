@@ -4,6 +4,7 @@ import antfu from '@antfu/eslint-config'
 export default antfu(
   {
     ignores: [
+      'out/**',
       '.github/**',
       // eslint ignore globs here
     ],

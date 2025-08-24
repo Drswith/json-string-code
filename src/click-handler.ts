@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import { config } from './config'
 import { decorationManager } from './decorations'
-import { i18n } from './i18n'
 import { parseJsonKeyValueAtPosition } from './json-parser'
 import { tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
@@ -14,7 +13,7 @@ export class ClickHandler {
   }
 
   private setupClickHandler(): void {
-    // 监听编辑器选择变化事件（包括点击）
+    // Listen for editor selection change events (including clicks)
     const selectionChangeDisposable = vscode.window.onDidChangeTextEditorSelection(async (event) => {
       await this.handleSelectionChange(event)
     })
@@ -23,9 +22,9 @@ export class ClickHandler {
   }
 
   private async handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent): Promise<void> {
-    // 移除自动点击处理功能
-    // 用户现在只能通过右键菜单、命令面板或悬停按钮来编辑代码片段
-    // 这样可以避免左键点击时意外打开临时编辑器
+    // Remove automatic click handling functionality
+    // Users can now only edit code snippets through right-click menu, command palette, or hover buttons
+    // This prevents accidentally opening temporary editor on left clicks
     // eslint-disable-next-line no-useless-return
     return
   }
@@ -36,13 +35,13 @@ export class ClickHandler {
         logger.info(`Code snippet clicked: ${snippet.key}`)
       }
 
-      // 创建并打开临时文件
+      // Create and open temporary file
       const editor = await tempFileManager.createTempFile(snippet, document)
 
       if (editor) {
-        // 显示成功消息
+        // Show success message
         vscode.window.showInformationMessage(
-          i18n.t('notification.openedEditor', snippet.key),
+          `Opened code editor for "${snippet.key}". Save to sync changes.`,
         )
       }
     }
@@ -50,18 +49,18 @@ export class ClickHandler {
       if (config.enableLogging) {
         logger.error(`Failed to handle code snippet click: ${error}`)
       }
-      vscode.window.showErrorMessage(i18n.t('notification.failedToOpen', String(error)))
+      vscode.window.showErrorMessage(`Failed to open code editor: ${String(error)}`)
     }
   }
 
   /**
-   * 手动触发代码片段编辑（用于右键菜单等）
+   * Manually trigger code snippet editing (for context menu, etc.)
    */
   async editCodeSnippetAtPosition(editor: vscode.TextEditor, position: vscode.Position): Promise<void> {
-    // 首先尝试从装饰管理器获取代码片段
+    // First try to get code snippet from decoration manager
     let snippet = decorationManager.isPositionInCodeSnippet(editor, position)
 
-    // 如果没有找到代码片段装饰，尝试解析位置上的JSON键值对
+    // If no code snippet decoration found, try parsing JSON key-value pair at position
     if (!snippet) {
       snippet = parseJsonKeyValueAtPosition(editor.document, position)
     }
@@ -70,23 +69,23 @@ export class ClickHandler {
       await this.handleCodeSnippetClick(snippet, editor.document)
     }
     else {
-      vscode.window.showWarningMessage(i18n.t('notification.noCodeSnippet'))
+      vscode.window.showWarningMessage('No code snippet found at cursor position')
     }
   }
 
   /**
-   * 手动触发代码片段编辑（用于命令面板等）
+   * Manually trigger code snippet editing (for command palette, etc.)
    */
   async editCodeSnippetAtCursor(): Promise<void> {
     const editor = vscode.window.activeTextEditor
 
     if (!editor) {
-      vscode.window.showWarningMessage(i18n.t('notification.noActiveEditor'))
+      vscode.window.showWarningMessage('No active editor found')
       return
     }
 
     if (!this.isJsonDocument(editor.document)) {
-      vscode.window.showWarningMessage(i18n.t('notification.jsonFilesOnly'))
+      vscode.window.showWarningMessage('This command only works with JSON/JSONC files')
       return
     }
 
@@ -95,36 +94,36 @@ export class ClickHandler {
   }
 
   /**
-   * 显示所有可用的代码片段供用户选择
+   * Show all available code snippets for user selection
    */
   async showCodeSnippetPicker(): Promise<void> {
     const editor = vscode.window.activeTextEditor
 
     if (!editor) {
-      vscode.window.showWarningMessage(i18n.t('notification.noActiveEditor'))
+      vscode.window.showWarningMessage('No active editor found')
       return
     }
 
     if (!this.isJsonDocument(editor.document)) {
-      vscode.window.showWarningMessage(i18n.t('notification.jsonFilesOnly'))
+      vscode.window.showWarningMessage('This command only works with JSON/JSONC files')
       return
     }
 
     const snippets = decorationManager.getActiveSnippets(editor.document.uri.toString())
 
     if (snippets.length === 0) {
-      vscode.window.showInformationMessage(i18n.t('notification.noCodeSnippet'))
+      vscode.window.showInformationMessage('No code snippet found at cursor position')
       return
     }
 
-    // 创建快速选择项
+    // Create quick pick items
     const quickPickItems: vscode.QuickPickItem[] = snippets.map(snippet => ({
       label: snippet.key,
       description: snippet.isForced ? '🔒 Forced' : 'Auto-detected',
       detail: snippet.value.length > 100
         ? `${snippet.value.substring(0, 100)}...`
         : snippet.value,
-      snippet, // 存储原始片段数据
+      snippet, // Store original snippet data
     } as any))
 
     const selected = await vscode.window.showQuickPick(quickPickItems, {
@@ -139,14 +138,14 @@ export class ClickHandler {
   }
 
   /**
-   * 检查文档是否为JSON文档
+   * Check if document is a JSON document
    */
   private isJsonDocument(document: vscode.TextDocument): boolean {
     return document.languageId === 'json' || document.languageId === 'jsonc'
   }
 
   /**
-   * 释放资源
+   * Dispose resources
    */
   dispose(): void {
     this.disposables.forEach(d => d.dispose())

@@ -6,7 +6,6 @@ import jsesc from 'jsesc'
 import * as jsonc from 'jsonc-parser'
 import * as vscode from 'vscode'
 import { config } from './config'
-import { i18n } from './i18n'
 import { logger } from './utils'
 
 export interface TempFileInfo {
@@ -39,7 +38,7 @@ class TempFileManager {
   }
 
   private setupFileWatcher(): void {
-    // 监听临时文件的保存事件
+    // Listen for temporary file save events
     const saveDisposable = vscode.workspace.onDidSaveTextDocument(async (document) => {
       const tempInfo = this.getTempFileInfo(document.uri)
       if (tempInfo) {
@@ -47,7 +46,7 @@ class TempFileManager {
       }
     })
 
-    // 监听临时文件的关闭事件
+    // Listen for temporary file close events
     const closeDisposable = vscode.workspace.onDidCloseTextDocument((document) => {
       const tempInfo = this.getTempFileInfo(document.uri)
       if (tempInfo) {
@@ -59,10 +58,10 @@ class TempFileManager {
   }
 
   /**
-   * 检测代码语言类型
+   * Detect code language type
    */
   private detectLanguage(key: string, value: string): string {
-    // 根据键名推断语言
+    // Infer language based on key name
     const keyLower = key.toLowerCase()
 
     if (keyLower.includes('sql') || keyLower.includes('query')) {
@@ -84,7 +83,7 @@ class TempFileManager {
       return 'markdown'
     }
 
-    // 根据内容推断语言
+    // Infer language based on content
     if (value.includes('function') || value.includes('=>') || value.includes('const ') || value.includes('let ')) {
       return 'javascript'
     }
@@ -98,12 +97,12 @@ class TempFileManager {
       return 'html'
     }
 
-    // 默认使用配置中的默认语言
+    // Default to configured default language
     return config.defaultLanguage || 'javascript'
   }
 
   /**
-   * 创建临时文件并打开编辑器
+   * Create temporary file and open editor
    */
   async createTempFile(snippet: CodeSnippet, originalDocument: vscode.TextDocument): Promise<vscode.TextEditor | undefined> {
     try {
@@ -113,10 +112,10 @@ class TempFileManager {
       const tempFilePath = path.join(this.tempDir, fileName)
       const tempUri = vscode.Uri.file(tempFilePath)
 
-      // 写入临时文件
+      // Write to temporary file
       await fs.writeFile(tempFilePath, snippet.value, 'utf8')
 
-      // 存储临时文件信息
+      // Store temporary file information
       const tempInfo: TempFileInfo = {
         tempUri,
         originalDocument,
@@ -125,14 +124,14 @@ class TempFileManager {
       }
       this.tempFiles.set(tempUri.toString(), tempInfo)
 
-      // 打开临时文件
+      // Open temporary file
       const document = await vscode.workspace.openTextDocument(tempUri)
       const editor = await vscode.window.showTextDocument(document, {
         preview: false,
         viewColumn: vscode.ViewColumn.Beside,
       })
 
-      // 设置语言模式
+      // Set language mode
       await vscode.languages.setTextDocumentLanguage(document, language)
 
       if (config.enableLogging) {
@@ -145,13 +144,13 @@ class TempFileManager {
       if (config.enableLogging) {
         logger.error(`Failed to create temp file: ${error}`)
       }
-      vscode.window.showErrorMessage(i18n.t('notification.failedToCreate', String(error)))
+      vscode.window.showErrorMessage(`Failed to create temporary file: ${String(error)}`)
       return undefined
     }
   }
 
   /**
-   * 获取文件扩展名
+   * Get file extension
    */
   private getFileExtension(language: string): string {
     const extensions: Record<string, string> = {
@@ -170,18 +169,18 @@ class TempFileManager {
   }
 
   /**
-   * 同步临时文件内容到原始JSON文件
+   * Sync temporary file content to original JSON file
    */
   private async syncTempFileToOriginal(tempInfo: TempFileInfo): Promise<void> {
     try {
       const tempDocument = await vscode.workspace.openTextDocument(tempInfo.tempUri)
       const newContent = tempDocument.getText()
 
-      // 获取原始文档的最新版本
+      // Get the latest version of original document
       const originalDocument = await vscode.workspace.openTextDocument(tempInfo.originalDocument.uri)
       const edit = new vscode.WorkspaceEdit()
 
-      // 重新解析JSON以获取最新的valueRange，避免使用过期的范围
+      // Re-parse JSON to get latest valueRange, avoid using stale ranges
       const currentContent = originalDocument.getText()
       const updatedSnippet = this.findCodeSnippetByKey(currentContent, tempInfo.snippet.key)
 
@@ -189,14 +188,14 @@ class TempFileManager {
         throw new Error(`Key "${tempInfo.snippet.key}" not found in current document`)
       }
 
-      // 检测原始值的类型来决定如何处理
+      // Detect original value type to decide how to handle
       const tree = jsonc.parseTree(currentContent)
-      let originalValueType = 'string' // 默认为字符串
+      let originalValueType = 'string' // Default to string
       let valueRange: vscode.Range
       let replacementContent: string
 
       if (tree) {
-        // 查找对应的值节点来确定类型
+        // Find corresponding value node to determine type
         function findValueNode(node: jsonc.Node): jsonc.Node | null {
           if (node.type === 'object' && node.children) {
             for (const child of node.children) {
@@ -207,7 +206,7 @@ class TempFileManager {
                   return valueNode
                 }
               }
-              // 递归搜索
+              // Recursive search
               if (child.children && child.children[1] && (child.children[1].type === 'object' || child.children[1].type === 'array')) {
                 const result = findValueNode(child.children[1])
                 if (result)
@@ -224,38 +223,38 @@ class TempFileManager {
         }
       }
 
-      // 根据原始值类型决定如何处理替换
+      // Decide how to handle replacement based on original value type
       if (originalValueType === 'string') {
-        // 字符串值：跳过引号，只替换内容
-        const startPos = originalDocument.offsetAt(updatedSnippet.valueRange.start) + 1 // 跳过开始引号
-        const endPos = originalDocument.offsetAt(updatedSnippet.valueRange.end) - 1 // 跳过结束引号
+        // String value: skip quotes, only replace content
+        const startPos = originalDocument.offsetAt(updatedSnippet.valueRange.start) + 1 // Skip start quote
+        const endPos = originalDocument.offsetAt(updatedSnippet.valueRange.end) - 1 // Skip end quote
         valueRange = new vscode.Range(
           originalDocument.positionAt(startPos),
           originalDocument.positionAt(endPos),
         )
-        // 使用专门的转义方法来正确转义内容
+        // Use specialized escape method to properly escape content
         replacementContent = this.escapeJsonString(newContent)
       }
       else {
-        // 非字符串值：替换整个值，需要根据内容决定新的类型
+        // Non-string value: replace entire value, need to decide new type based on content
         valueRange = updatedSnippet.valueRange
 
-        // 尝试解析新内容为合适的JSON值
+        // Try to parse new content as appropriate JSON value
         const trimmedContent = newContent.trim()
         if (trimmedContent === 'true' || trimmedContent === 'false') {
-          // 布尔值
+          // Boolean value
           replacementContent = trimmedContent
         }
         else if (trimmedContent === 'null') {
-          // null值
+          // null value
           replacementContent = 'null'
         }
         else if (/^-?\d+(?:\.\d+)?$/.test(trimmedContent)) {
-          // 数字
+          // Number
           replacementContent = trimmedContent
         }
         else {
-          // 其他情况，作为字符串处理
+          // Other cases, treat as string
           replacementContent = `"${this.escapeJsonString(newContent)}"`
         }
       }
@@ -264,10 +263,10 @@ class TempFileManager {
 
       const success = await vscode.workspace.applyEdit(edit)
       if (success) {
-        // 自动保存原始文档
+        // Auto save original document
         await originalDocument.save()
 
-        // 如果配置了自动关闭临时tab，则关闭临时文件
+        // If configured to auto close temp tab, close temporary file
         if (config.autoCloseTempTab) {
           await this.closeTempFile(tempInfo.tempUri)
         }
@@ -275,33 +274,33 @@ class TempFileManager {
         if (config.enableLogging) {
           logger.info(`Synced temp file content to original document for key: ${tempInfo.snippet.key}`)
         }
-        vscode.window.showInformationMessage(i18n.t('notification.changesSynced'))
+        vscode.window.showInformationMessage('Changes synced to original file')
       }
       else {
-        vscode.window.showErrorMessage(i18n.t('notification.syncFailed', tempInfo.snippet.key))
+        vscode.window.showErrorMessage(`Failed to sync changes: ${tempInfo.snippet.key}`)
       }
     }
     catch (error) {
       if (config.enableLogging) {
         logger.error(`Failed to sync temp file: ${error}`)
       }
-      vscode.window.showErrorMessage(i18n.t('notification.syncFailed', String(error)))
+      vscode.window.showErrorMessage(`Failed to sync changes: ${String(error)}`)
     }
   }
 
   /**
-   * 转义JSON字符串
-   * 使用jsesc库提供更可靠的JSON字符串转义
+   * Escape JSON string
+   * Use jsesc library for more reliable JSON string escaping
    */
   private escapeJsonString(str: string): string {
     return jsesc(str.toString(), {
-      json: true, // 确保输出是有效的JSON
-      wrap: false, // 不包含外层引号，因为我们只替换引号内的内容
+      json: true, // Ensure output is valid JSON
+      wrap: false, // Don't include outer quotes, as we only replace content within quotes
     })
   }
 
   /**
-   * 在JSON内容中查找指定键的代码片段
+   * Find code snippet with specified key in JSON content
    */
   private findCodeSnippetByKey(content: string, targetKey: string): CodeSnippet | null {
     try {
@@ -316,12 +315,12 @@ class TempFileManager {
               const keyNode = child.children[0]
               const valueNode = child.children[1]
 
-              // 支持所有类型的键值对，不仅仅是字符串
+              // Support all types of key-value pairs, not just strings
               if (keyNode.type === 'string') {
                 const key = keyNode.value as string
                 let value: string
 
-                // 根据值的类型进行不同处理
+                // Handle differently based on value type
                 if (valueNode.type === 'string') {
                   value = valueNode.value as string
                 }
@@ -335,14 +334,14 @@ class TempFileManager {
                   value = 'null'
                 }
                 else {
-                  // 对于对象、数组等复杂类型，使用原始文本
+                  // For complex types like objects and arrays, use original text
                   const startOffset = valueNode.offset
                   const endOffset = valueNode.offset + valueNode.length
                   value = content.substring(startOffset, endOffset)
                 }
 
                 if (key === targetKey) {
-                  // 创建一个临时文档来计算位置
+                  // Create a temporary document to calculate positions
                   const lines = content.split('\n')
                   const positionAt = (offset: number): vscode.Position => {
                     let currentOffset = 0
@@ -377,12 +376,12 @@ class TempFileManager {
                     range,
                     keyRange,
                     valueRange,
-                    isForced: false, // 这里简化处理
+                    isForced: false, // Simplified handling here
                   }
                 }
               }
 
-              // 递归搜索嵌套对象和数组
+              // Recursively search nested objects and arrays
               if (valueNode.type === 'object' || valueNode.type === 'array') {
                 const result = visitNode(valueNode)
                 if (result)
@@ -405,18 +404,18 @@ class TempFileManager {
   }
 
   /**
-   * 获取临时文件信息
+   * Get temporary file information
    */
   private getTempFileInfo(uri: vscode.Uri): TempFileInfo | undefined {
     return this.tempFiles.get(uri.toString())
   }
 
   /**
-   * 关闭临时文件tab
+   * Close temporary file tab
    */
   private async closeTempFile(uri: vscode.Uri): Promise<void> {
     try {
-      // 查找并关闭对应的编辑器tab
+      // Find and close corresponding editor tab
       const tabs = vscode.window.tabGroups.all.flatMap(group => group.tabs)
       const tempTab = tabs.find(tab =>
         tab.input instanceof vscode.TabInputText
@@ -438,7 +437,7 @@ class TempFileManager {
   }
 
   /**
-   * 清理临时文件
+   * Clean up temporary files
    */
   private async cleanupTempFile(uri: vscode.Uri): Promise<void> {
     try {
@@ -460,37 +459,37 @@ class TempFileManager {
   }
 
   /**
-   * 获取当前临时文件数量
+   * Get current temporary file count
    */
   getTempFileCount(): number {
     return this.tempFiles.size
   }
 
   /**
-   * 清理所有临时文件
+   * Clean up all temporary files
    */
   async dispose(): Promise<void> {
-    // 清理所有临时文件
+    // Clean up all temporary files
     for (const [, tempInfo] of this.tempFiles) {
       try {
         await fs.unlink(tempInfo.tempUri.fsPath)
       }
       catch (error) {
-        // 忽略删除错误
+        // Ignore deletion errors
       }
     }
     this.tempFiles.clear()
 
-    // 清理事件监听器
+    // Clean up event listeners
     this.disposables.forEach(d => d.dispose())
     this.disposables = []
 
-    // 清理临时目录
+    // Clean up temporary directory
     try {
       await fs.rmdir(this.tempDir)
     }
     catch (error) {
-      // 忽略删除错误
+      // Ignore deletion errors
     }
   }
 }
