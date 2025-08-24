@@ -28,7 +28,7 @@
   "main": "./dist/index.js",
   "icon": "res/icon.png",
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^1.89.0"
   },
   "activationEvents": [
     "onLanguage:json",
@@ -36,10 +36,6 @@
   ],
   "contributes": {
     "commands": [
-      {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
-      },
       {
         "command": "vscode-json-string-code-editor.editAsCode",
         "title": "Edit as Code",
@@ -137,8 +133,8 @@
     }
   },
   "scripts": {
+    "build": "tsdown src/index.ts --external vscode",
     "dev": "nr build --watch --sourcemap",
-    "build": "tsup",
     "prepare": "nr update",
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
@@ -163,7 +159,7 @@
     "@swc/core": "^1.13.4",
     "@types/jsesc": "^3.0.3",
     "@types/node": "^22.13.4",
-    "@types/vscode": "^1.100.0",
+    "@types/vscode": "^1.89.0",
     "@vscode/vsce": "^3.2.2",
     "bumpp": "^10.0.3",
     "eslint": "^9.20.1",

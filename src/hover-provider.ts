@@ -146,11 +146,11 @@ export class JsonCodeHoverProvider implements vscode.HoverProvider {
  * Hover command handler
  * Note: Command registration is now managed centrally in index.ts
  */
-export class HoverCommandHandler {
-  dispose(): void {
-    // Commands are now registered and managed in index.ts, no additional cleanup needed here
-  }
-}
+// export class HoverCommandHandler {
+//   dispose(): void {
+//     // Commands are now registered and managed in index.ts, no additional cleanup needed here
+//   }
+// }
 
 export const hoverProvider = new JsonCodeHoverProvider()
 // HoverCommandHandler instance should be created in index.ts to avoid duplicate command registration

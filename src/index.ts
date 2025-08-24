@@ -1,86 +1,95 @@
-import * as vscode from 'vscode'
+import type { Uri } from 'vscode'
+import { defineExtension, useCommand, useDisposable } from 'reactive-vscode'
+import { env, languages, window, workspace } from 'vscode'
 import { clickHandler } from './click-handler'
 import { config } from './config'
 import { decorationManager } from './decorations'
-import { fileWatcher } from './file-watcher'
-import { HoverCommandHandler, hoverProvider } from './hover-provider'
+import { commands } from './generated/meta'
+import { hoverProvider } from './hover-provider'
 import { tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
-// Store all disposables
-let disposables: vscode.Disposable[] = []
-
-export function activate(context: vscode.ExtensionContext): void {
-  // Show plugin activation info
+const { activate, deactivate } = defineExtension(() => {
+// Show plugin activation info
   console.log('JSON String Code Editor extension is now active!')
   if (config.enableLogging) {
     logger.info('JSON String Code Editor extension activated with logging enabled')
     logger.show()
   }
 
-  // Use imported click handler instance
-  // clickHandler is already initialized at module import
-
   // Register hover provider (using imported instance)
-  const hoverProviderDisposable = vscode.languages.registerHoverProvider(
+  useDisposable(languages.registerHoverProvider(
     [{ language: 'json' }, { language: 'jsonc' }],
     hoverProvider,
-  )
+  ))
 
-  // Register hover command handler
-  const hoverCommandHandler = new HoverCommandHandler()
-
-  // Register hover-related commands
-  const editSnippetFromHoverCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code-editor.editSnippetFromHover',
-    async (documentUri: vscode.Uri, snippet: any) => {
+  // Register hover-related commands edit
+  useCommand(
+    commands.editSnippetFromHover,
+    async (documentUri: Uri, snippet: any) => {
       try {
-        const document = await vscode.workspace.openTextDocument(documentUri)
+        const document = await workspace.openTextDocument(documentUri)
         const editor = await tempFileManager.createTempFile(snippet, document)
 
         if (editor) {
-          vscode.window.showInformationMessage(
-            `Temporary file created: ${snippet.key}`,
-          )
+          const msg = `Temporary file created: ${snippet.key}`
+          window.showInformationMessage(msg)
+          if (config.enableLogging) {
+            logger.info(msg)
+          }
         }
       }
       catch (error) {
+        window.showErrorMessage(`Failed to open code editor: ${String(error)}`)
         if (config.enableLogging) {
           logger.error(`Failed to edit snippet from hover: ${error}`)
         }
-        vscode.window.showErrorMessage(`Failed to open code editor: ${String(error)}`)
       }
     },
   )
 
-  const copySnippetCodeCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code-editor.copySnippetCode',
+  // Register hover-related commands copy
+  useCommand(
+    commands.copySnippetCode,
     async (code: string) => {
       try {
-        await vscode.env.clipboard.writeText(code)
-        vscode.window.showInformationMessage('Code copied to clipboard')
+        await env.clipboard.writeText(code)
+        const msg = 'Code copied to clipboard'
+        window.showInformationMessage(msg)
+        if (config.enableLogging) {
+          logger.info(msg)
+        }
       }
       catch (error) {
         if (config.enableLogging) {
           logger.error(`Failed to copy code: ${error}`)
         }
-        vscode.window.showErrorMessage(`Failed to copy code: ${String(error)}`)
+        window.showErrorMessage(`Failed to copy code: ${String(error)}`)
       }
     },
   )
 
   // Register right-click menu commands
-  const editAsCodeCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code-editor.editAsCode',
+  useCommand(
+    commands.editAsCode,
     async () => {
-      const editor = vscode.window.activeTextEditor
+      const editor = window.activeTextEditor
+
       if (!editor) {
-        vscode.window.showWarningMessage('No active editor found')
+        const msg = 'No active editor found'
+        window.showWarningMessage(msg)
+        if (config.enableLogging) {
+          logger.warn(msg)
+        }
         return
       }
 
       if (editor.document.languageId !== 'json' && editor.document.languageId !== 'jsonc') {
-        vscode.window.showWarningMessage('This command only works with JSON/JSONC files')
+        const msg = 'This command only works with JSON/JSONC files'
+        window.showWarningMessage(msg)
+        if (config.enableLogging) {
+          logger.warn(msg)
+        }
         return
       }
 
@@ -93,8 +102,8 @@ export function activate(context: vscode.ExtensionContext): void {
   )
 
   // Register refresh decorations command (for debugging)
-  const refreshDecorationsCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code-editor.refreshDecorations',
+  useCommand(
+    commands.refreshDecorations,
     () => {
       decorationManager.refreshAllDecorations()
       if (config.enableLogging) {
@@ -104,46 +113,22 @@ export function activate(context: vscode.ExtensionContext): void {
   )
 
   // Register cleanup temporary files command
-  const cleanupTempFilesCommand = vscode.commands.registerCommand(
-    'vscode-json-string-code-editor.cleanupTempFiles',
+  useCommand(
+    commands.cleanupTempFiles,
     async () => {
       const tempFileCount = tempFileManager.getTempFileCount()
       await tempFileManager.dispose()
-      vscode.window.showInformationMessage(`Cleaned up ${String(tempFileCount)} temporary files`)
+      const msg = `Cleaned up ${String(tempFileCount)} temporary files`
+      window.showInformationMessage(msg)
+      if (config.enableLogging) {
+        logger.info(msg)
+      }
     },
   )
-
-  // Store all disposables
-  disposables = [
-    hoverProviderDisposable,
-    editAsCodeCommand,
-    editSnippetFromHoverCommand,
-    copySnippetCodeCommand,
-    refreshDecorationsCommand,
-    cleanupTempFilesCommand,
-  ]
-
-  // Add disposables to context
-  context.subscriptions.push(...disposables)
 
   if (config.enableLogging) {
     logger.info('All components initialized successfully')
   }
-}
+})
 
-export function deactivate(): void {
-  if (config.enableLogging) {
-    logger.info('JSON String Code Editor extension deactivated')
-  }
-
-  // Clean up resources
-  fileWatcher.dispose()
-  decorationManager.dispose()
-  tempFileManager.dispose()
-  clickHandler.dispose()
-  logger.dispose()
-
-  // Clean up all disposables
-  disposables.forEach(d => d.dispose())
-  disposables = []
-}
+export { activate, deactivate }

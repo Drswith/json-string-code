@@ -166,7 +166,6 @@ Check the `test-example.json` file to understand how the plugin recognizes and h
 
 | Command                                               | Title                                              |
 | ----------------------------------------------------- | -------------------------------------------------- |
-| `extension.helloWorld`                                | Hello World                                        |
 | `vscode-json-string-code-editor.editAsCode`           | JSON String Code: Edit as Code                     |
 | `vscode-json-string-code-editor.editSnippetFromHover` | JSON String Code: Edit Code Snippet from Hover     |
 | `vscode-json-string-code-editor.copySnippetCode`      | JSON String Code: Copy Code Snippet                |
