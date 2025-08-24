@@ -1,8 +1,5 @@
 import type { TextDocument } from 'vscode'
 import type { CodeSnippet } from './json-parser'
-import * as fs from 'node:fs/promises'
-import * as os from 'node:os'
-import * as path from 'node:path'
 import jsesc from 'jsesc'
 import * as jsonc from 'jsonc-parser'
 import { useDisposable } from 'reactive-vscode'
@@ -20,7 +17,17 @@ export interface TempFileInfo {
 
 // 临时文件映射
 const tempFiles = new Map<string, TempFileInfo>()
-const tempDir = path.join(os.tmpdir(), 'vscode-json-string-code-editor')
+
+// 获取临时目录
+function getTempDir(): string {
+  // 使用VSCode的全局存储路径作为临时目录
+  const workspaceFolder = workspace.workspaceFolders?.[0]
+  if (workspaceFolder) {
+    return Uri.joinPath(workspaceFolder.uri, '.vscode', 'temp', 'json-string-editor').fsPath
+  }
+  // 如果没有工作区，使用
+  return 'tmp'
+}
 
 /**
  * 设置临时文件管理器
@@ -35,7 +42,17 @@ export function setupTempFileManager(): void {
  */
 async function ensureTempDir(): Promise<void> {
   try {
-    await fs.mkdir(tempDir, { recursive: true })
+    const tempDir = getTempDir()
+    const tempDirUri = Uri.file(tempDir)
+
+    // 使用VSCode的workspace API创建目录
+    try {
+      await workspace.fs.stat(tempDirUri)
+    }
+    catch {
+      // 目录不存在，创建它
+      await workspace.fs.createDirectory(tempDirUri)
+    }
   }
   catch (error) {
     if (config.enableLogging) {
@@ -121,11 +138,12 @@ export async function createTempFile(snippet: CodeSnippet, originalDocument: Tex
     const language = detectLanguage(snippet.key, snippet.value)
     const extension = getFileExtension(language)
     const fileName = `${snippet.key.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}${extension}`
-    const tempFilePath = path.join(tempDir, fileName)
-    const tempUri = Uri.file(tempFilePath)
+    const tempDir = getTempDir()
+    const tempUri = Uri.joinPath(Uri.file(tempDir), fileName)
 
-    // Write to temporary file
-    await fs.writeFile(tempFilePath, snippet.value, 'utf8')
+    // Write to temporary file using VSCode API
+    const content = new TextEncoder().encode(snippet.value)
+    await workspace.fs.writeFile(tempUri, content)
 
     // Store temporary file information
     const tempInfo: TempFileInfo = {
@@ -147,7 +165,7 @@ export async function createTempFile(snippet: CodeSnippet, originalDocument: Tex
     await languages.setTextDocumentLanguage(document, language)
 
     if (config.enableLogging) {
-      logger.info(`Created temp file: ${tempFilePath} for key: ${snippet.key}`)
+      logger.info(`Created temp file: ${tempUri.fsPath} for key: ${snippet.key}`)
     }
 
     return editor
@@ -456,7 +474,14 @@ async function cleanupTempFile(uri: Uri): Promise<void> {
     const tempInfo = tempFiles.get(uri.toString())
     if (tempInfo) {
       tempFiles.delete(uri.toString())
-      await fs.unlink(tempInfo.tempUri.fsPath)
+
+      // 使用VSCode API删除文件
+      try {
+        await workspace.fs.delete(tempInfo.tempUri)
+      }
+      catch {
+        // 忽略删除错误，文件可能已经不存在
+      }
 
       if (config.enableLogging) {
         logger.info(`Cleaned up temp file: ${tempInfo.tempUri.fsPath}`)
@@ -484,7 +509,7 @@ export async function dispose(): Promise<void> {
   // Clean up all temporary files
   for (const [, tempInfo] of tempFiles) {
     try {
-      await fs.unlink(tempInfo.tempUri.fsPath)
+      await workspace.fs.delete(tempInfo.tempUri)
     }
     catch (error) {
       // Ignore deletion errors
@@ -494,7 +519,9 @@ export async function dispose(): Promise<void> {
 
   // Clean up temporary directory
   try {
-    await fs.rmdir(tempDir)
+    const tempDir = getTempDir()
+    const tempDirUri = Uri.file(tempDir)
+    await workspace.fs.delete(tempDirUri, { recursive: true })
   }
   catch (error) {
     // Ignore deletion errors

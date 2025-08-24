@@ -11,7 +11,7 @@ import { logger } from './utils'
 const activeDocuments = new Set<string>()
 
 // Debounce timers
-const debounceTimers = new Map<string, NodeJS.Timeout>()
+const debounceTimers = new Map<string, any>()
 
 /**
  * 设置文件监听器
