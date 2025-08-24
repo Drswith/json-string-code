@@ -1,13 +1,11 @@
 import type { Uri } from 'vscode'
 import { defineExtension, useCommand, useDisposable } from 'reactive-vscode'
-import { env, languages, window, workspace } from 'vscode'
-import { editCodeSnippetAtCursor } from './click-handler'
+import { languages, window, workspace } from 'vscode'
 import { config } from './config'
-import { decorationManager } from './decorations'
 import { fileWatcher } from './file-watcher'
 import { commands } from './generated/meta'
 import { hoverProvider } from './hover-provider'
-import { createTempFile, dispose as disposeTempFiles, getTempFileCount, tempFileManager } from './temp-file-manager'
+import { createTempFile, tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
 const { activate, deactivate } = defineExtension(async () => {
@@ -104,83 +102,83 @@ const { activate, deactivate } = defineExtension(async () => {
       console.error('Command registration failed:', error)
     }
 
-  // Register hover-related commands copy
-  // useCommand(
-  //   commands.copySnippetCode,
-  //   async (code: string) => {
-  //     try {
-  //       await env.clipboard.writeText(code)
-  //       const msg = 'Code copied to clipboard'
-  //       window.showInformationMessage(msg)
-  //       if (config.enableLogging) {
-  //         logger.info(msg)
-  //       }
-  //     }
-  //     catch (error) {
-  //       if (config.enableLogging) {
-  //         logger.error(`Failed to copy code: ${error}`)
-  //       }
-  //       window.showErrorMessage(`Failed to copy code: ${String(error)}`)
-  //     }
-  //   },
-  // )
+    // Register hover-related commands copy
+    // useCommand(
+    //   commands.copySnippetCode,
+    //   async (code: string) => {
+    //     try {
+    //       await env.clipboard.writeText(code)
+    //       const msg = 'Code copied to clipboard'
+    //       window.showInformationMessage(msg)
+    //       if (config.enableLogging) {
+    //         logger.info(msg)
+    //       }
+    //     }
+    //     catch (error) {
+    //       if (config.enableLogging) {
+    //         logger.error(`Failed to copy code: ${error}`)
+    //       }
+    //       window.showErrorMessage(`Failed to copy code: ${String(error)}`)
+    //     }
+    //   },
+    // )
 
-  // Register right-click menu commands
-  // useCommand(
-  //   commands.editAsCode,
-  //   async () => {
-  //     const editor = window.activeTextEditor
+    // Register right-click menu commands
+    // useCommand(
+    //   commands.editAsCode,
+    //   async () => {
+    //     const editor = window.activeTextEditor
 
-  //     if (!editor) {
-  //       const msg = 'No active editor found'
-  //       window.showWarningMessage(msg)
-  //       if (config.enableLogging) {
-  //         logger.warn(msg)
-  //       }
-  //       return
-  //     }
+    //     if (!editor) {
+    //       const msg = 'No active editor found'
+    //       window.showWarningMessage(msg)
+    //       if (config.enableLogging) {
+    //         logger.warn(msg)
+    //       }
+    //       return
+    //     }
 
-  //     if (editor.document.languageId !== 'json' && editor.document.languageId !== 'jsonc') {
-  //       const msg = 'This command only works with JSON/JSONC files'
-  //       window.showWarningMessage(msg)
-  //       if (config.enableLogging) {
-  //         logger.warn(msg)
-  //       }
-  //       return
-  //     }
+    //     if (editor.document.languageId !== 'json' && editor.document.languageId !== 'jsonc') {
+    //       const msg = 'This command only works with JSON/JSONC files'
+    //       window.showWarningMessage(msg)
+    //       if (config.enableLogging) {
+    //         logger.warn(msg)
+    //       }
+    //       return
+    //     }
 
-  //     // Try to edit code snippet at current cursor position, show selector if not found
-  //     await editCodeSnippetAtCursor()
-  //     // If no code snippet at cursor position, editCodeSnippetAtCursor will show warning
-  //     // Here we can choose to show selector as fallback
-  //     // await clickHandler.showCodeSnippetPicker()
-  //   },
-  // )
+    //     // Try to edit code snippet at current cursor position, show selector if not found
+    //     await editCodeSnippetAtCursor()
+    //     // If no code snippet at cursor position, editCodeSnippetAtCursor will show warning
+    //     // Here we can choose to show selector as fallback
+    //     // await clickHandler.showCodeSnippetPicker()
+    //   },
+    // )
 
-  // Register refresh decorations command (for debugging)
-  // useCommand(
-  //   commands.refreshDecorations,
-  //   () => {
-  //     decorationManager.refreshAllDecorations()
-  //     if (config.enableLogging) {
-  //       logger.info('Decorations refreshed manually')
-  //     }
-  //   },
-  // )
+    // Register refresh decorations command (for debugging)
+    // useCommand(
+    //   commands.refreshDecorations,
+    //   () => {
+    //     decorationManager.refreshAllDecorations()
+    //     if (config.enableLogging) {
+    //       logger.info('Decorations refreshed manually')
+    //     }
+    //   },
+    // )
 
-  // Register cleanup temporary files command
-  // useCommand(
-  //   commands.cleanupTempFiles,
-  //   async () => {
-  //     const tempFileCount = getTempFileCount()
-  //     await disposeTempFiles()
-  //     const msg = `Cleaned up ${String(tempFileCount)} temporary files`
-  //     window.showInformationMessage(msg)
-  //     if (config.enableLogging) {
-  //       logger.info(msg)
-  //     }
-  //   },
-  // )
+    // Register cleanup temporary files command
+    // useCommand(
+    //   commands.cleanupTempFiles,
+    //   async () => {
+    //     const tempFileCount = getTempFileCount()
+    //     await disposeTempFiles()
+    //     const msg = `Cleaned up ${String(tempFileCount)} temporary files`
+    //     window.showInformationMessage(msg)
+    //     if (config.enableLogging) {
+    //       logger.info(msg)
+    //     }
+    //   },
+    // )
 
     if (config.enableLogging) {
       logger.info('Extension initialization completed')
