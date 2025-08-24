@@ -247,3 +247,169 @@ export function parseJsonKeyValueAtPosition(document: TextDocument, position: Po
     return undefined
   }
 }
+
+/**
+ * 获取光标位置的最佳键值对
+ * 优先返回光标所在的键值对，如果没有则返回光标所在对象的第一个键值对
+ */
+export function getBestKeyValueAtPosition(document: TextDocument, position: Position): CodeSnippet | undefined {
+  const text = document.getText()
+
+  try {
+    const tree = jsonc.parseTree(text)
+    if (!tree)
+      return undefined
+
+    let bestMatch: CodeSnippet | undefined
+    let fallbackMatch: CodeSnippet | undefined
+
+    function findBestNodeAtPosition(node: jsonc.Node): void {
+      if (node.type === 'object' && node.children) {
+        // 检查当前对象是否包含光标位置
+        const objectRange = new Range(
+          document.positionAt(node.offset),
+          document.positionAt(node.offset + node.length),
+        )
+
+        if (objectRange.contains(position)) {
+          // 遍历所有键值对
+          for (const child of node.children) {
+            if (child.type === 'property' && child.children && child.children.length === 2) {
+              const keyNode = child.children[0]
+              const valueNode = child.children[1]
+
+              const keyRange = new Range(
+                document.positionAt(keyNode.offset),
+                document.positionAt(keyNode.offset + keyNode.length),
+              )
+
+              const valueRange = new Range(
+                document.positionAt(valueNode.offset),
+                document.positionAt(valueNode.offset + valueNode.length),
+              )
+
+              const fullRange = new Range(
+                keyRange.start,
+                valueRange.end,
+              )
+
+              // 如果光标在这个键值对范围内
+              if (fullRange.contains(position)) {
+                const key = keyNode.type === 'string' ? keyNode.value as string : 'unknown'
+                let value = ''
+
+                // 处理不同类型的值
+                if (valueNode.type === 'string') {
+                  value = valueNode.value as string
+                }
+                else if (valueNode.type === 'number') {
+                  value = valueNode.value?.toString() || ''
+                }
+                else if (valueNode.type === 'boolean') {
+                  value = valueNode.value?.toString() || ''
+                }
+                else if (valueNode.type === 'null') {
+                  value = 'null'
+                }
+                else {
+                  // 对于对象或数组，获取原始文本
+                  value = text.substring(valueNode.offset, valueNode.offset + valueNode.length)
+                }
+
+                bestMatch = {
+                  key,
+                  value,
+                  range: fullRange,
+                  keyRange,
+                  valueRange,
+                  isForced: isForceCodeKey(key),
+                }
+
+                // 如果值是对象或数组，继续递归搜索更深层的匹配
+                if (valueNode.type === 'object' || valueNode.type === 'array') {
+                  findBestNodeAtPosition(valueNode)
+                }
+                return
+              }
+
+              // 递归搜索嵌套结构
+              if (valueNode.type === 'object' || valueNode.type === 'array') {
+                findBestNodeAtPosition(valueNode)
+              }
+            }
+          }
+
+          // 如果没有找到精确匹配，但光标在对象内，记录第一个键值对作为备选
+          if (!bestMatch && node.children.length > 0) {
+            const firstChild = node.children[0]
+            if (firstChild.type === 'property' && firstChild.children && firstChild.children.length === 2) {
+              const keyNode = firstChild.children[0]
+              const valueNode = firstChild.children[1]
+
+              const keyRange = new Range(
+                document.positionAt(keyNode.offset),
+                document.positionAt(keyNode.offset + keyNode.length),
+              )
+
+              const valueRange = new Range(
+                document.positionAt(valueNode.offset),
+                document.positionAt(valueNode.offset + valueNode.length),
+              )
+
+              const fullRange = new Range(
+                keyRange.start,
+                valueRange.end,
+              )
+
+              const key = keyNode.type === 'string' ? keyNode.value as string : 'unknown'
+              let value = ''
+
+              // 处理不同类型的值
+              if (valueNode.type === 'string') {
+                value = valueNode.value as string
+              }
+              else if (valueNode.type === 'number') {
+                value = valueNode.value?.toString() || ''
+              }
+              else if (valueNode.type === 'boolean') {
+                value = valueNode.value?.toString() || ''
+              }
+              else if (valueNode.type === 'null') {
+                value = 'null'
+              }
+              else {
+                // 对于对象或数组，获取原始文本
+                value = text.substring(valueNode.offset, valueNode.offset + valueNode.length)
+              }
+
+              fallbackMatch = {
+                key,
+                value,
+                range: fullRange,
+                keyRange,
+                valueRange,
+                isForced: isForceCodeKey(key),
+              }
+            }
+          }
+        }
+      }
+      else if (node.type === 'array' && node.children) {
+        for (const child of node.children) {
+          if (child.type === 'object' || child.type === 'array') {
+            findBestNodeAtPosition(child)
+          }
+        }
+      }
+    }
+
+    findBestNodeAtPosition(tree)
+    return bestMatch || fallbackMatch
+  }
+  catch (error) {
+    if (config.enableLogging) {
+      logger.error(`Error parsing JSON for best key-value at position: ${error}`)
+    }
+    return undefined
+  }
+}

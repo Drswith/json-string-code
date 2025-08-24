@@ -3,7 +3,7 @@ import { useActiveTextEditor, useDisposable } from 'reactive-vscode'
 import { window } from 'vscode'
 import { config } from './config'
 import { decorationManager } from './decorations'
-import { parseJsonKeyValueAtPosition } from './json-parser'
+import { getBestKeyValueAtPosition, parseJsonKeyValueAtPosition } from './json-parser'
 import { tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
@@ -88,7 +88,26 @@ export async function editCodeSnippetAtCursor(): Promise<void> {
   }
 
   const position = editor.selection.active
-  await editCodeSnippetAtPosition(editor, position)
+
+  // 使用新的逻辑获取最佳键值对
+  let snippet = decorationManager.isPositionInCodeSnippet(editor, position)
+
+  if (!snippet) {
+    snippet = getBestKeyValueAtPosition(editor.document, position)
+  }
+
+  if (snippet) {
+    // 检查是否为字符串类型且可能是代码
+    if (typeof snippet.value === 'string' && (snippet.value.length > 10 || snippet.isForced)) {
+      await handleCodeSnippetClick(snippet, editor.document)
+    }
+    else {
+      window.showWarningMessage('选中的键值对不适合作为代码编辑（值太短或不是字符串类型）')
+    }
+  }
+  else {
+    window.showWarningMessage('未找到可编辑的键值对，请确保光标位于JSON对象内')
+  }
 }
 
 /**

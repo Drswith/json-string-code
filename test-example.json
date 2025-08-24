@@ -4,7 +4,12 @@
   "scripts": {
     "build": "npm run compile && npm run bundle",
     "test": "jest --coverage --watchAll=false",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "rules": {
+      "no-console": "warn",
+      "prefer-const": "error",
+      "custom_rule": "function validateInput(input) {\n  if (!input || typeof input !== 'string') {\n    throw new Error('Invalid input');\n  }\n  return input.trim().toLowerCase();\n}"
+    }
   },
   "webpack_config": {
     "entry": "./src/index.js",
