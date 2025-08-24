@@ -1,21 +1,26 @@
 import type { Uri } from 'vscode'
 import { defineExtension, useCommand, useDisposable } from 'reactive-vscode'
 import { env, languages, window, workspace } from 'vscode'
-import { clickHandler } from './click-handler'
+import { editCodeSnippetAtCursor } from './click-handler'
 import { config } from './config'
 import { decorationManager } from './decorations'
+import { fileWatcher } from './file-watcher'
 import { commands } from './generated/meta'
 import { hoverProvider } from './hover-provider'
-import { tempFileManager } from './temp-file-manager'
+import { createTempFile, dispose as disposeTempFiles, getTempFileCount, tempFileManager } from './temp-file-manager'
 import { logger } from './utils'
 
 const { activate, deactivate } = defineExtension(() => {
-// Show plugin activation info
+  // Show plugin activation info
   console.log('JSON String Code Editor extension is now active!')
   if (config.enableLogging) {
     logger.info('JSON String Code Editor extension activated with logging enabled')
     logger.show()
   }
+
+  // Initialize all components
+  fileWatcher.setupFileWatchers()
+  tempFileManager.setupTempFileManager()
 
   // Register hover provider (using imported instance)
   useDisposable(languages.registerHoverProvider(
@@ -29,7 +34,7 @@ const { activate, deactivate } = defineExtension(() => {
     async (documentUri: Uri, snippet: any) => {
       try {
         const document = await workspace.openTextDocument(documentUri)
-        const editor = await tempFileManager.createTempFile(snippet, document)
+        const editor = await createTempFile(snippet, document)
 
         if (editor) {
           const msg = `Temporary file created: ${snippet.key}`
@@ -94,7 +99,7 @@ const { activate, deactivate } = defineExtension(() => {
       }
 
       // Try to edit code snippet at current cursor position, show selector if not found
-      await clickHandler.editCodeSnippetAtCursor()
+      await editCodeSnippetAtCursor()
       // If no code snippet at cursor position, editCodeSnippetAtCursor will show warning
       // Here we can choose to show selector as fallback
       // await clickHandler.showCodeSnippetPicker()
@@ -116,8 +121,8 @@ const { activate, deactivate } = defineExtension(() => {
   useCommand(
     commands.cleanupTempFiles,
     async () => {
-      const tempFileCount = tempFileManager.getTempFileCount()
-      await tempFileManager.dispose()
+      const tempFileCount = getTempFileCount()
+      await disposeTempFiles()
       const msg = `Cleaned up ${String(tempFileCount)} temporary files`
       window.showInformationMessage(msg)
       if (config.enableLogging) {

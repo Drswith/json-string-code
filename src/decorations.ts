@@ -1,142 +1,158 @@
+import type { Position, Range, TextDocument, TextEditor } from 'vscode'
 import type { CodeSnippet } from './json-parser'
-import * as vscode from 'vscode'
+import { ref, useActiveEditorDecorations } from 'reactive-vscode'
+import { commands, window } from 'vscode'
 import { config } from './config'
 import { logger } from './utils'
 
-class DecorationManager {
-  private codeSnippetDecorationType: vscode.TextEditorDecorationType
-  private forcedCodeSnippetDecorationType: vscode.TextEditorDecorationType
-  private activeDecorations = new Map<string, CodeSnippet[]>()
+// 响应式状态
+const activeDecorations = ref<Map<string, CodeSnippet[]>>(new Map())
+const currentSnippets = ref<CodeSnippet[]>([])
 
-  constructor() {
-    // Create normal code snippet decoration type
-    this.codeSnippetDecorationType = vscode.window.createTextEditorDecorationType({
+/**
+ * 初始化响应式装饰器
+ */
+function initializeDecorations() {
+  // 使用 reactive-vscode 的 useActiveEditorDecorations 来管理普通代码片段装饰
+  useActiveEditorDecorations(
+    {
       textDecoration: 'underline',
       cursor: 'pointer',
       backgroundColor: 'rgba(0, 122, 204, 0.1)',
       borderRadius: '2px',
-    })
+    },
+    () => {
+      const normalSnippets = currentSnippets.value.filter(s => !s.isForced)
+      return normalSnippets.map(snippet => snippet.range)
+    },
+  )
 
-    // Create forced code snippet decoration type (same background as normal snippets, but with border)
-    this.forcedCodeSnippetDecorationType = vscode.window.createTextEditorDecorationType({
+  // 使用 reactive-vscode 的 useActiveEditorDecorations 来管理强制代码片段装饰
+  useActiveEditorDecorations(
+    {
       textDecoration: 'underline',
       cursor: 'pointer',
       backgroundColor: 'rgba(0, 122, 204, 0.1)',
       borderRadius: '2px',
       border: '1px solid rgba(255, 107, 53, 0.3)',
-    })
+    },
+    () => {
+      const forcedSnippets = currentSnippets.value.filter(s => s.isForced)
+      return forcedSnippets.map(snippet => snippet.range)
+    },
+  )
+}
+
+/**
+ * Update decorations in the editor
+ */
+export function updateDecorations(editor: TextEditor, snippets: CodeSnippet[]): void {
+  if (!editor || !editor.document) {
+    return
   }
 
-  /**
-   * Update decorations in the editor
-   */
-  updateDecorations(editor: vscode.TextEditor, snippets: CodeSnippet[]): void {
-    if (!editor || !editor.document) {
-      return
-    }
+  const documentUri = editor.document.uri.toString()
+  activeDecorations.value.set(documentUri, snippets)
 
-    const documentUri = editor.document.uri.toString()
-    this.activeDecorations.set(documentUri, snippets)
+  // 更新当前代码片段，这将触发 useActiveEditorDecorations 的重新计算
+  currentSnippets.value = snippets
 
-    // Separate normal and forced code snippets
+  if (config.enableLogging) {
     const normalSnippets = snippets.filter(s => !s.isForced)
     const forcedSnippets = snippets.filter(s => s.isForced)
-
-    // Create normal code snippet decorations
-    const normalDecorations: vscode.DecorationOptions[] = normalSnippets.map(snippet => ({
-      range: snippet.valueRange,
-    }))
-
-    // Create forced code snippet decorations
-    const forcedDecorations: vscode.DecorationOptions[] = forcedSnippets.map(snippet => ({
-      range: snippet.valueRange,
-    }))
-
-    // Apply decorations
-    editor.setDecorations(this.codeSnippetDecorationType, normalDecorations)
-    editor.setDecorations(this.forcedCodeSnippetDecorationType, forcedDecorations)
-
-    if (config.enableLogging) {
-      logger.info(`Applied decorations: ${normalSnippets.length} normal, ${forcedSnippets.length} forced`)
-    }
-  }
-
-  /**
-   * Clear decorations in the editor
-   */
-  clearDecorations(editor: vscode.TextEditor): void {
-    if (!editor) {
-      return
-    }
-
-    const documentUri = editor.document.uri.toString()
-    this.activeDecorations.delete(documentUri)
-
-    editor.setDecorations(this.codeSnippetDecorationType, [])
-    editor.setDecorations(this.forcedCodeSnippetDecorationType, [])
-
-    if (config.enableLogging) {
-      logger.info('Cleared decorations')
-    }
-  }
-
-  /**
-   * Get active code snippets for the specified document
-   */
-  getActiveSnippets(documentUri: string): CodeSnippet[] {
-    return this.activeDecorations.get(documentUri) || []
-  }
-
-  /**
-   * Check if position is within code snippet decoration range
-   */
-  isPositionInCodeSnippet(editor: vscode.TextEditor, position: vscode.Position): CodeSnippet | undefined {
-    const documentUri = editor.document.uri.toString()
-    const snippets = this.activeDecorations.get(documentUri) || []
-
-    return snippets.find(snippet => snippet.valueRange.contains(position))
-  }
-
-  /**
-   * Get code snippets within the specified range
-   */
-  getSnippetsInRange(editor: vscode.TextEditor, range: vscode.Range): CodeSnippet[] {
-    const documentUri = editor.document.uri.toString()
-    const snippets = this.activeDecorations.get(documentUri) || []
-
-    return snippets.filter(snippet =>
-      snippet.valueRange.intersection(range) !== undefined,
-    )
-  }
-
-  /**
-   * Refresh decorations for all active editors
-   */
-  refreshAllDecorations(): void {
-    vscode.window.visibleTextEditors.forEach((editor) => {
-      if (this.isJsonDocument(editor.document)) {
-        // Need to re-parse document and update decorations
-        // This method will be called from the main module
-        vscode.commands.executeCommand('vscode-json-string-code-editor.refreshDecorations', editor.document.uri)
-      }
-    })
-  }
-
-  /**
-   * Check if document is a JSON document
-   */
-  private isJsonDocument(document: vscode.TextDocument): boolean {
-    return document.languageId === 'json' || document.languageId === 'jsonc'
-  }
-
-  /**
-   * Release resources
-   */
-  dispose(): void {
-    this.codeSnippetDecorationType.dispose()
-    this.forcedCodeSnippetDecorationType.dispose()
-    this.activeDecorations.clear()
+    logger.info(`Updated decorations for ${documentUri}: ${normalSnippets.length} normal, ${forcedSnippets.length} forced`)
   }
 }
 
-export const decorationManager = new DecorationManager()
+/**
+ * Clear decorations from the editor
+ */
+export function clearDecorations(editor: TextEditor): void {
+  if (!editor) {
+    return
+  }
+
+  const documentUri = editor.document.uri.toString()
+  activeDecorations.value.delete(documentUri)
+
+  // 清空当前代码片段，这将触发 useActiveEditorDecorations 清除装饰
+  currentSnippets.value = []
+
+  if (config.enableLogging) {
+    logger.info(`Cleared decorations for ${documentUri}`)
+  }
+}
+
+/**
+ * Get active code snippets for the specified document
+ */
+export function getActiveSnippets(documentUri: string): CodeSnippet[] {
+  return activeDecorations.value.get(documentUri) || []
+}
+
+/**
+ * Check if position is within code snippet decoration range
+ */
+export function isPositionInCodeSnippet(editor: TextEditor, position: Position): CodeSnippet | undefined {
+  const documentUri = editor.document.uri.toString()
+  const snippets = activeDecorations.value.get(documentUri) || []
+
+  return snippets.find(snippet => snippet.valueRange.contains(position))
+}
+
+/**
+ * Get code snippets within the specified range
+ */
+export function getSnippetsInRange(editor: TextEditor, range: Range): CodeSnippet[] {
+  const documentUri = editor.document.uri.toString()
+  const snippets = activeDecorations.value.get(documentUri) || []
+
+  return snippets.filter(snippet =>
+    snippet.valueRange.intersection(range) !== undefined,
+  )
+}
+
+/**
+ * Refresh decorations for all active editors
+ */
+export function refreshAllDecorations(): void {
+  window.visibleTextEditors.forEach((editor) => {
+    if (isJsonDocument(editor.document)) {
+      // Need to re-parse document and update decorations
+      // This method will be called from the main module
+      commands.executeCommand('vscode-json-string-code-editor.refreshDecorations', editor.document.uri)
+    }
+  })
+}
+
+/**
+ * Check if document is a JSON document
+ */
+function isJsonDocument(document: TextDocument): boolean {
+  return document.languageId === 'json' || document.languageId === 'jsonc'
+}
+
+/**
+ * Release resources
+ */
+export function dispose(): void {
+  // Clear active decorations and current snippets
+  activeDecorations.value.clear()
+  currentSnippets.value = []
+}
+
+// 初始化装饰器类型
+initializeDecorations()
+
+/**
+ * 导出装饰器管理器对象
+ */
+export const decorationManager = {
+  updateDecorations,
+  clearDecorations,
+  getActiveSnippets,
+  isPositionInCodeSnippet,
+  getSnippetsInRange,
+  refreshAllDecorations,
+  dispose,
+}
