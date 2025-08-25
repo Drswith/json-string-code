@@ -6,6 +6,7 @@ import { JsonJsDetector } from './jsonJsDetector'
 export function activate(context: vscode.ExtensionContext) {
   // 创建输出通道
   const outputChannel = vscode.window.createOutputChannel('JSON JavaScript Editor')
+  outputChannel.show()
   outputChannel.appendLine('JSON JavaScript Editor extension is now active!')
 
   const detector = new JsonJsDetector()
