@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
+import { CodeDetector } from './codeDetector'
 import { CodeEditorProvider } from './codeEditorProvider'
 import { DecorationProvider } from './decorationProvider'
-import { JsonJsDetector } from './jsonJsDetector'
 
 export function activate(context: vscode.ExtensionContext) {
   // 创建输出通道
@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
   // 显示激活通知（仅用于调试）
   vscode.window.showInformationMessage('JSON JavaScript Editor 扩展已激活！')
 
-  const detector = new JsonJsDetector()
+  const detector = new CodeDetector()
   detector.updateConfiguration() // 初始化配置
 
   // 监听配置变化

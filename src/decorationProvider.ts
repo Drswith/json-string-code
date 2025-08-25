@@ -1,12 +1,12 @@
-import type { JsonJsDetector } from './jsonJsDetector'
+import type { CodeDetector } from './codeDetector'
 import * as vscode from 'vscode'
 
 export class DecorationProvider {
-  private detector: JsonJsDetector
+  private detector: CodeDetector
   private decorationType: vscode.TextEditorDecorationType
   private disposables: vscode.Disposable[] = []
 
-  constructor(detector: JsonJsDetector) {
+  constructor(detector: CodeDetector) {
     this.detector = detector
 
     // 创建装饰类型：下划线样式

@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { JsonJsDetector } from '../src/jsonJsDetector'
+import { CodeDetector } from '../src/codeDetector'
 import { TextDocument } from './vscode-mock'
 
 // 测试语言检测功能
 describe('language Detection', () => {
-  let detector: JsonJsDetector
+  let detector: CodeDetector
   let testDocument: TextDocument
 
   beforeEach(() => {
-    detector = new JsonJsDetector()
+    detector = new CodeDetector()
   })
 
   describe('detectLanguage function', () => {

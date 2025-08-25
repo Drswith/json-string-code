@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { JsonJsDetector } from '../src/jsonJsDetector'
+import { CodeDetector } from '../src/codeDetector'
 import { Position, TextDocument } from './vscode-mock'
 
 describe('jsonJsDetector', () => {
-  let detector: JsonJsDetector
+  let detector: CodeDetector
   let testDocument: TextDocument
 
   beforeEach(() => {
-    detector = new JsonJsDetector()
+    detector = new CodeDetector()
     const testJson = `{
   "adaptor": "function test() { console.log('Hello World'); return true; }",
   "adaptor2": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n",

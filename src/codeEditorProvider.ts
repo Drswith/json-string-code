@@ -1,4 +1,4 @@
-import type { CodeBlockInfo } from './jsonJsDetector'
+import type { CodeBlockInfo } from './codeDetector'
 import { Buffer } from 'node:buffer'
 import * as vscode from 'vscode'
 import jsesc from './custom.jsesc'

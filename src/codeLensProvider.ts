@@ -1,12 +1,12 @@
-import type { JsonJsDetector } from './jsonJsDetector'
+import type { CodeDetector } from './codeDetector'
 import * as vscode from 'vscode'
 
 export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
-  private detector: JsonJsDetector
+  private detector: CodeDetector
   private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>()
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event
 
-  constructor(detector: JsonJsDetector) {
+  constructor(detector: CodeDetector) {
     this.detector = detector
   }
 

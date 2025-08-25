@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { JsonJsDetector } from '../src/jsonJsDetector'
+import { CodeDetector } from '../src/codeDetector'
 import { Position, TextDocument } from './vscode-mock'
 
 describe('right click JavaScript detection', () => {
-  let detector: JsonJsDetector
+  let detector: CodeDetector
   let document: TextDocument
 
   beforeEach(() => {
-    detector = new JsonJsDetector()
+    detector = new CodeDetector()
     detector.updateConfiguration()
   })
 
