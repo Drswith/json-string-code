@@ -29,7 +29,6 @@ export class CodeEditorProvider {
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
       if (!workspaceFolder) {
         logger.error('No workspace folder found')
-        vscode.window.showErrorMessage('No workspace folder found')
         return
       }
 
@@ -103,9 +102,6 @@ export class CodeEditorProvider {
           this.syncChangesToOriginal(tempDocument, originalDocument, originalEditor, codeInfo)
           // 显示同步成功消息
           logger.info(`Changes synced to the original JSON file for field: ${codeInfo.fieldName}`)
-          vscode.window.showInformationMessage(
-            `Changes synced to the original JSON file.`,
-          )
         }
       })
 
@@ -120,13 +116,9 @@ export class CodeEditorProvider {
 
       // 显示成功消息
       logger.info(`Opened code editor for field: ${codeInfo.fieldName}, language: ${codeInfo.language}`)
-      vscode.window.showInformationMessage(
-        `Editing ${codeInfo.language} code from field "${codeInfo.fieldName}". Save or close to sync changes.`,
-      )
     }
     catch (error) {
       logger.error(`Failed to open JavaScript editor: ${error}`)
-      vscode.window.showErrorMessage(`Failed to open JavaScript editor: ${error}`)
     }
   }
 
@@ -170,14 +162,12 @@ export class CodeEditorProvider {
           }
           else {
             logger.error('Failed to sync changes to original document')
-            vscode.window.showErrorMessage('Failed to sync changes to original document')
           }
         })
       }
     }
     catch (error) {
       logger.error(`Failed to sync changes: ${error}`)
-      vscode.window.showErrorMessage(`Failed to sync changes: ${error}`)
     }
   }
 
@@ -247,7 +237,6 @@ export class CodeEditorProvider {
       this.activeEditors.delete(editorId)
 
       logger.info('Code editor closed. Changes have been synced.')
-      vscode.window.showInformationMessage('Code editor closed. Changes have been synced.')
     }
   }
 

@@ -98,7 +98,6 @@ export function activate(context: vscode.ExtensionContext) {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
         if (!workspaceFolder) {
           logger.error('No workspace folder found')
-          vscode.window.showErrorMessage('No workspace folder found')
           return
         }
 
@@ -110,7 +109,6 @@ export function activate(context: vscode.ExtensionContext) {
           await vscode.workspace.fs.stat(tmpDirUri)
         } catch {
           logger.info('No temporary files to clean up')
-          vscode.window.showInformationMessage('No temporary files found')
           return
         }
 
@@ -118,11 +116,9 @@ export function activate(context: vscode.ExtensionContext) {
         const deleteCount = await deleteTempFiles(tmpDirUri)
         
         logger.info(`Cleaned up ${deleteCount} temporary files`)
-        vscode.window.showInformationMessage(`Successfully cleaned up ${deleteCount} temporary files`)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         logger.error(`Failed to clean up temporary files: ${errorMessage}`)
-        vscode.window.showErrorMessage(`Failed to clean up temporary files: ${errorMessage}`)
       }
     },
   )
