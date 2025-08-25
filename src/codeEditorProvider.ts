@@ -102,7 +102,6 @@ export class CodeEditorProvider {
           // 显示同步成功消息
           vscode.window.showInformationMessage(
             `Changes synced to the original JSON file.`,
-            'Got it',
           )
         }
       })
@@ -119,7 +118,6 @@ export class CodeEditorProvider {
       // 显示成功消息
       vscode.window.showInformationMessage(
         `Editing ${codeInfo.language} code from field "${codeInfo.fieldName}". Save or close to sync changes.`,
-        'Got it',
       )
     }
     catch (error) {
