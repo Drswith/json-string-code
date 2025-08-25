@@ -1,4 +1,5 @@
-import * as jsonc from 'jsonc-parser'
+import type { JSONVisitor, ParseError } from 'jsonc-parser'
+import { parseTree, visit } from 'jsonc-parser'
 import * as vscode from 'vscode'
 
 export interface JavaScriptInfo {
@@ -32,8 +33,8 @@ export class JsonJsDetector {
 
     try {
       // 使用jsonc-parser解析JSON，支持注释和容错
-      const parseErrors: jsonc.ParseError[] = []
-      const parsed = jsonc.parse(text, parseErrors, {
+      const parseErrors: ParseError[] = []
+      const parsed = parseTree(text, parseErrors, {
         allowTrailingComma: true,
         allowEmptyContent: true,
         disallowComments: false,
@@ -56,9 +57,9 @@ export class JsonJsDetector {
     const blocks: JavaScriptInfo[] = []
 
     try {
-      // 使用jsonc-parser解析JSON
-      const parseErrors: jsonc.ParseError[] = []
-      const parsed = jsonc.parse(text, parseErrors, {
+      // 使用自定义JSON解析器解析JSON，支持注释和容错
+      const parseErrors: ParseError[] = []
+      const parsed = parseTree(text, parseErrors, {
         allowTrailingComma: true,
         allowEmptyContent: true,
         disallowComments: false,
@@ -84,9 +85,9 @@ export class JsonJsDetector {
     const blocks: CodeBlockInfo[] = []
 
     try {
-      // 使用jsonc-parser解析JSON
-      const parseErrors: jsonc.ParseError[] = []
-      const parsed = jsonc.parse(text, parseErrors, {
+      // 使用自定义JSON解析器解析JSON，支持注释和容错
+      const parseErrors: ParseError[] = []
+      const parsed = parseTree(text, parseErrors, {
         allowTrailingComma: true,
         allowEmptyContent: true,
         disallowComments: false,
@@ -111,7 +112,7 @@ export class JsonJsDetector {
     let result: JavaScriptInfo | null = null
     let currentProperty: string | null = null
 
-    const visitor: jsonc.JSONVisitor = {
+    const visitor: JSONVisitor = {
       onObjectProperty: (property: string) => {
         currentProperty = property
       },
@@ -142,14 +143,14 @@ export class JsonJsDetector {
       },
     }
 
-    jsonc.visit(text, visitor)
+    visit(text, visitor)
     return result
   }
 
   private findAllJavaScriptWithAST(text: string, document: vscode.TextDocument, blocks: JavaScriptInfo[]): void {
     let currentProperty: string | null = null
 
-    const visitor: jsonc.JSONVisitor = {
+    const visitor: JSONVisitor = {
       onObjectProperty: (property: string) => {
         currentProperty = property
       },
@@ -178,13 +179,13 @@ export class JsonJsDetector {
       },
     }
 
-    jsonc.visit(text, visitor)
+    visit(text, visitor)
   }
 
   private findAllCodeBlocksWithAST(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
     let currentProperty: string | null = null
 
-    const visitor: jsonc.JSONVisitor = {
+    const visitor: JSONVisitor = {
       onObjectProperty: (property: string) => {
         currentProperty = property
       },
@@ -215,7 +216,7 @@ export class JsonJsDetector {
       },
     }
 
-    jsonc.visit(text, visitor)
+    visit(text, visitor)
   }
 
   private findAllCodeBlocksWithRegex(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
@@ -436,15 +437,27 @@ export class JsonJsDetector {
   }
 
   private findAllJavaScriptWithRegex(text: string, document: vscode.TextDocument, blocks: JavaScriptInfo[]): void {
-    // 为每个自动检测字段创建正则表达式，支持转义字符
+    // 为每个自动检测字段创建正则表达式，支持转义字符和未闭合字符串
     for (const fieldName of this.autoDetectFields) {
-      // 修改正则表达式以正确处理转义字符和多行内容
-      const regex = new RegExp(`"${fieldName}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, 'g')
+      // 修改正则表达式以正确处理转义字符、多行内容和未闭合字符串
+      const regex = new RegExp(`"${fieldName}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"?`, 'g')
       let match = regex.exec(text)
 
       while (match !== null) {
         const fullMatch = match[0]
-        const jsCode = match[1]
+        let jsCode = match[1]
+
+        // 对于未闭合的字符串，可能包含额外的内容，需要清理
+        // 如果代码以分号结尾，截取到分号为止
+        const semicolonIndex = jsCode.indexOf(';')
+        if (semicolonIndex !== -1) {
+          // 检查分号后是否只有空白字符和换行符
+          const afterSemicolon = jsCode.substring(semicolonIndex + 1).trim()
+          if (afterSemicolon === '' || /^[\s}]*$/.test(afterSemicolon)) {
+            jsCode = jsCode.substring(0, semicolonIndex + 1)
+          }
+        }
+
         const unescapedCode = this.unescapeString(jsCode)
 
         if (this.looksLikeJavaScript(unescapedCode)) {

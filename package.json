@@ -69,8 +69,9 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsup",
+    "vscode:prepublish": "npm run build",
+    "compile": "tsup --sourcemap --clean",
+    "build": "tsup --minify --clean",
     "watch": "tsup --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -81,12 +82,10 @@
     "ext:pack": "vsce package --no-dependencies"
   },
   "dependencies": {
-    "jsesc": "^3.1.0",
     "jsonc-parser": "^3.3.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.2.1",
-    "@types/jsesc": "^3.0.3",
     "@types/node": "22.x",
     "@types/vscode": "^1.74.0",
     "@vitest/ui": "^3.2.4",

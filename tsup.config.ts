@@ -7,9 +7,12 @@ export default defineConfig({
   external: [
     'vscode',
   ],
-  sourcemap: true,
-  clean: true,
+  noExternal: [
+    'jsonc-parser',
+  ],
+  // sourcemap: true,
+  // clean: true,
   outDir: 'out',
-  minify: false,
-  splitting: false,
+  // minify: false,
+  // splitting: false,
 })

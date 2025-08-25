@@ -7,6 +7,7 @@ export default antfu(
     formatters: true,
     markdown: false,
     ignores: [
+      '**/*.test.{js,mjs,ts,mts}',
       'out/**/*',
     ],
   },

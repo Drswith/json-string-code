@@ -1,9 +1,7 @@
 import type { JavaScriptInfo } from './jsonJsDetector'
-
 import { Buffer } from 'node:buffer'
-
-import jsesc from 'jsesc'
 import * as vscode from 'vscode'
+import jsesc from './custom.jsesc'
 
 export class JavaScriptEditorProvider {
   private context: vscode.ExtensionContext
