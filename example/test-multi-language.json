@@ -1,0 +1,18 @@
+{
+  "javascript_code": "function hello() { console.log('Hello World'); }",
+  "python_script": "def hello():\n    print('Hello World')",
+  "sql_query": "SELECT * FROM users WHERE active = 1",
+  "html_template": "<div class='container'><h1>Hello World</h1></div>",
+  "css_styles": ".container { background-color: #f0f0f0; padding: 20px; }",
+  "yaml_config": "name: test\nversion: 1.0\ndependencies:\n  - package1\n  - package2",
+  "xml_data": "<root><item id='1'>Test</item></root>",
+  "dockerfile_content": "FROM node:16\nWORKDIR /app\nCOPY package.json .\nRUN npm install",
+  "shell_script": "#!/bin/bash\necho 'Hello World'\nls -la",
+  "go_code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello World\")\n}",
+  "rust_code": "fn main() {\n    println!(\"Hello World\");\n}",
+  "java_code": "public class Hello {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World\");\n    }\n}",
+  "php_code": "<?php\necho 'Hello World';\n?>",
+  "typescript_code": "interface User {\n    name: string;\n    age: number;\n}\n\nconst user: User = { name: 'John', age: 30 };",
+  "markdown_content": "# Hello World\n\nThis is a **markdown** document with *italic* text.",
+  "json_config": "{\"name\": \"test\", \"version\": \"1.0\"}"
+}

@@ -1,0 +1,145 @@
+{
+  "publisher": "drswith",
+  "name": "vscode-json-string-code-editor",
+  "displayName": "JSON String Code Editor",
+  "version": "0.3.0",
+  "packageManager": "pnpm@9.15.9",
+  "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
+  "author": "Drswith",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/Drswith",
+  "homepage": "https://github.com/Drswith/vscode-json-string-code-editor#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Drswith/vscode-json-string-code-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/Drswith/vscode-json-string-code-editor/issues"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/Drswith"
+  },
+  "categories": [
+    "Formatters",
+    "Programming Languages",
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "icon": "res/icon.png",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:jsonc"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-json-string-code-editor.editCode",
+        "title": "Edit Code in Temporary Editor",
+        "category": "JSON String Code Editor"
+      },
+      {
+        "command": "vscode-json-string-code-editor.editCodeAtRange",
+        "title": "Edit Code at Range",
+        "category": "JSON String Code Editor"
+      },
+      {
+        "command": "vscode-json-string-code-editor.cleanupTempFiles",
+        "title": "Clean Up Temporary Files",
+        "category": "JSON String Code Editor"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "vscode-json-string-code-editor.editCode",
+          "when": "editorLangId == json || editorLangId == jsonc",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "JSON String Code Editor",
+      "properties": {
+        "vscode-json-string-code-editor.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.json",
+            "**/*.jsonc"
+          ],
+          "description": "Glob patterns for files where the extension should be active"
+        },
+        "vscode-json-string-code-editor.autoDetectFields": {
+          "type": "array",
+          "default": [
+            "adaptor",
+            "script",
+            "code",
+            "expression"
+          ],
+          "description": "Field names that should be automatically detected as containing code"
+        },
+        "vscode-json-string-code-editor.enableAutoDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect code in JSON strings"
+        },
+        "vscode-json-string-code-editor.logLevel": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warn",
+            "info",
+            "debug"
+          ],
+          "default": "info",
+          "description": "Set the logging level for the extension"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "prepare": "pnpm run update",
+    "vscode:prepublish": "pnpm run build",
+    "compile": "tsup --sourcemap --clean",
+    "build": "tsup --minify --clean",
+    "dev": "pnpm run compile --watch",
+    "update": "vscode-ext-gen --output src/generated/meta.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "ext:pack": "vsce package --no-dependencies",
+    "ext:publish": "pnpm run ext:publish-vsce && pnpm run ext:publish-ovsx",
+    "ext:publish-vsce": "vsce publish --no-dependencies",
+    "ext:publish-ovsx": "ovsx publish",
+    "ext:tag": "bumpp",
+    "release": "pnpm run ext:tag && pnpm run build && pnpm run ext:publish"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.2.1",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^3.2.2",
+    "bumpp": "^10.0.3",
+    "eslint": "9.29.0",
+    "eslint-plugin-format": "1.0.1",
+    "ovsx": "^0.10.5",
+    "pnpm": "9.15.9",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.4",
+    "vitest": "^3.2.4",
+    "vscode-ext-gen": "^1.1.0"
+  }
+}
