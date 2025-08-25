@@ -2,7 +2,7 @@
   "publisher": "drswith",
   "name": "vscode-json-string-code-editor",
   "displayName": "JSON String Code Editor",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "packageManager": "pnpm@9.15.9",
   "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
   "author": "Drswith",
@@ -103,16 +103,21 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build",
+    "prepare": "nr update",
+    "vscode:prepublish": "pnpm run build",
     "compile": "tsup --sourcemap --clean",
     "build": "tsup --minify --clean",
-    "watch": "tsup --watch",
+    "dev": "pnpm run compile --watch",
+    "update": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
-    "test:watch": "vitest run",
+    "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "ext:pack": "vsce package --no-dependencies"
+    "ext:pack": "vsce package --no-dependencies",
+    "typecheck": "tsc --noEmit",
+    "ext:publish-vsce": "vsce publish --no-dependencies",
+    "ext:publish-ovsx": "ovsx publish"
   },
   "dependencies": {
     "jsonc-parser": "^3.3.1"
@@ -124,9 +129,11 @@
     "@vscode/vsce": "^3.2.2",
     "eslint": "9.29.0",
     "eslint-plugin-format": "1.0.1",
+    "ovsx": "^0.10.5",
     "pnpm": "9.15.9",
     "tsup": "^8.5.0",
     "typescript": "^5.8.4",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "vscode-ext-gen": "^1.1.0"
   }
 }
