@@ -105,7 +105,7 @@
     }
   },
   "scripts": {
-    "prepare": "nr update",
+    "prepare": "pnpm run update",
     "vscode:prepublish": "pnpm run build",
     "compile": "tsup --sourcemap --clean",
     "build": "tsup --minify --clean",
@@ -113,13 +113,16 @@
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "ext:pack": "vsce package --no-dependencies",
-    "typecheck": "tsc --noEmit",
+    "ext:publish": "pnpm run ext:publish-vsce && pnpm run ext:publish-ovsx",
     "ext:publish-vsce": "vsce publish --no-dependencies",
-    "ext:publish-ovsx": "ovsx publish"
+    "ext:publish-ovsx": "ovsx publish",
+    "ext:tag": "bumpp",
+    "release": "pnpm run ext:tag && pnpm run build && pnpm run ext:publish"
   },
   "dependencies": {
     "jsonc-parser": "^3.3.1"
@@ -129,6 +132,7 @@
     "@types/node": "22.x",
     "@types/vscode": "^1.74.0",
     "@vscode/vsce": "^3.2.2",
+    "bumpp": "^10.0.3",
     "eslint": "9.29.0",
     "eslint-plugin-format": "1.0.1",
     "ovsx": "^0.10.5",
