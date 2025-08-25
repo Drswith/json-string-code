@@ -2,15 +2,12 @@ import * as vscode from 'vscode'
 import { CodeDetector } from './codeDetector'
 import { CodeEditorProvider } from './codeEditorProvider'
 import { DecorationProvider } from './decorationProvider'
+import { logger } from './logger'
 
 export function activate(context: vscode.ExtensionContext) {
-  // 创建输出通道
-  const outputChannel = vscode.window.createOutputChannel('JSON JavaScript Editor')
-  outputChannel.appendLine('JSON JavaScript Editor extension is now active!')
+  // 初始化日志服务
+  logger.info('JSON JavaScript Editor extension is now active!')
   console.log('JSON JavaScript Editor extension is now active!')
-
-  // 显示激活通知（仅用于调试）
-  vscode.window.showInformationMessage('JSON JavaScript Editor 扩展已激活！')
 
   const detector = new CodeDetector()
   detector.updateConfiguration() // 初始化配置
@@ -19,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
   const configChangeListener = vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
     if (e.affectsConfiguration('vscode-json-string-code-editor')) {
       detector.updateConfiguration()
+      logger.onConfigurationChanged()
     }
   })
 
@@ -31,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
-        vscode.window.showErrorMessage('No active editor found')
+        logger.error('No active editor found')
         return
       }
 
@@ -42,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
       // 检测当前位置是否包含代码
       const codeInfo = detector.detectCodeAtPosition(document, position)
       if (!codeInfo) {
-        vscode.window.showInformationMessage('No code detected at current position')
+        logger.info('No code detected at current position')
         return
       }
 
@@ -123,7 +121,6 @@ export function activate(context: vscode.ExtensionContext) {
     editCodeCommand,
     editCodeAtRangeCommand,
     codeLensProvider,
-    outputChannel,
     decorationProvider,
     clickHandler,
     configChangeListener,
@@ -131,5 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  // Extension deactivated
+  // 清理日志服务
+  logger.dispose()
+  logger.info('JSON JavaScript Editor extension deactivated')
 }

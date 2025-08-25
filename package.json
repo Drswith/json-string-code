@@ -68,6 +68,12 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically detect code in JSON strings"
+        },
+        "vscode-json-string-code-editor.logLevel": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "debug"],
+          "default": "info",
+          "description": "Set the logging level for the extension"
         }
       }
     }
