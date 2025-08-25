@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
           const codeLens = new vscode.CodeLens(range, {
             title: '✏️ Edit JavaScript',
             command: 'jsonJsEditor.editJavaScriptAtRange',
-            arguments: [block],
+            arguments: [document.uri.toString(), block],
           })
 
           codeLenses.push(codeLens)
@@ -79,36 +79,26 @@ export function activate(context: vscode.ExtensionContext) {
   // 注册范围编辑命令
   const editJavaScriptAtRangeCommand = vscode.commands.registerCommand(
     'jsonJsEditor.editJavaScriptAtRange',
-    async (jsInfo: any) => {
+    async (documentUri: string, blockInfo: any) => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
         return
+      }
+
+      // 将CodeBlockInfo转换为JavaScriptInfo格式
+      const jsInfo = {
+        code: blockInfo.code,
+        start: blockInfo.start,
+        end: blockInfo.end,
+        range: blockInfo.range,
+        fieldName: blockInfo.fieldName
       }
 
       await editorProvider.openJavaScriptEditor(jsInfo, editor.document, editor)
     },
   )
 
-  // 注册悬停提供器
-  const hoverProvider = vscode.languages.registerHoverProvider(
-    ['json', 'jsonc'],
-    {
-      provideHover(document: vscode.TextDocument, position: vscode.Position): vscode.Hover | undefined {
-        const jsInfo = detector.detectJavaScriptAtPosition(document, position)
-        if (!jsInfo) {
-          return undefined
-        }
-
-        const hoverText = new vscode.MarkdownString()
-        hoverText.appendMarkdown('**JavaScript Code Detected**\n\n')
-        hoverText.appendCodeblock(jsInfo.code, 'javascript')
-        hoverText.appendMarkdown('\n\n[Edit in temporary editor](command:jsonJsEditor.editJavaScript)')
-        hoverText.isTrusted = true
-
-        return new vscode.Hover(hoverText)
-      },
-    },
-  )
+  // 注册悬停提供器 - 已移除，现在由 decorationProvider 统一处理悬停信息
 
   // 注册点击处理器
   const clickHandler = vscode.window.onDidChangeTextEditorSelection(async (event) => {
@@ -138,7 +128,6 @@ export function activate(context: vscode.ExtensionContext) {
     editJavaScriptCommand,
     editJavaScriptAtRangeCommand,
     codeLensProvider,
-    hoverProvider,
     outputChannel,
     decorationProvider,
     clickHandler,

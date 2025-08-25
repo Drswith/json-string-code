@@ -302,8 +302,11 @@ export class JsonJsDetector {
     if (keyLower.includes('cpp') || keyLower.includes('c++') || keyLower.includes('cxx')) {
       return 'cpp'
     }
-    if (keyLower.includes('c') && !keyLower.includes('css')) {
+    if ((keyLower === 'c' || keyLower.includes('c_code') || keyLower.includes('c-code')) && !keyLower.includes('css')) {
       return 'c'
+    }
+    if (keyLower.includes('javascript') || keyLower.includes('js')) {
+      return 'javascript'
     }
 
     // 基于内容推断语言类型

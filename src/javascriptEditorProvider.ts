@@ -1,4 +1,6 @@
 import type { JavaScriptInfo } from './jsonJsDetector'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import jsesc from 'jsesc'
 import * as vscode from 'vscode'
 
@@ -22,12 +24,25 @@ export class JavaScriptEditorProvider {
     originalEditor: vscode.TextEditor,
   ): Promise<void> {
     try {
+      // 创建临时文件目录
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
+      if (!workspaceFolder) {
+        throw new Error('No workspace folder found')
+      }
+      
+      const tmpDir = path.join(workspaceFolder.uri.fsPath, 'tmp')
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true })
+      }
+      
       // 创建临时文件
-      const tempUri = vscode.Uri.parse(`untitled:temp-js-${Date.now()}.js`)
-      const tempDocument = await vscode.workspace.openTextDocument({
-        language: 'javascript',
-        content: jsInfo.code,
-      })
+      const tempFileName = `temp-js-${Date.now()}.js`
+      const tempFilePath = path.join(tmpDir, tempFileName)
+      const codeContent = jsInfo.code || ''
+      fs.writeFileSync(tempFilePath, codeContent, 'utf8')
+      
+      const tempUri = vscode.Uri.file(tempFilePath)
+      const tempDocument = await vscode.workspace.openTextDocument(tempUri)
 
       // 打开临时编辑器
       const tempEditor = await vscode.window.showTextDocument(tempDocument, {
@@ -43,20 +58,17 @@ export class JavaScriptEditorProvider {
         vscode.StatusBarAlignment.Left,
         100,
       )
-      statusBarItem.text = `$(sync) Editing: ${jsInfo.fieldName}`
-      statusBarItem.tooltip = 'JavaScript code is being edited. Changes will sync automatically.'
+      statusBarItem.text = `$(edit) Editing: ${jsInfo.fieldName}`
+      statusBarItem.tooltip = 'JavaScript code is being edited. Save or close to sync changes.'
       statusBarItem.show()
 
-      // 监听文档变化以实现实时同步
-      const changeListener = vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
-        if (event.document === tempDocument) {
-          this.syncChangesToOriginal(tempDocument, originalDocument, originalEditor, jsInfo)
-        }
-      })
+      // 不再实时同步，仅在保存和关闭时同步
 
       // 监听文档关闭
       const closeListener = vscode.workspace.onDidCloseTextDocument((document: vscode.TextDocument) => {
         if (document === tempDocument) {
+          // 在关闭时同步更改
+          this.syncChangesToOriginal(tempDocument, originalDocument, originalEditor, jsInfo)
           this.cleanupEditor(editorId)
         }
       })
@@ -65,18 +77,20 @@ export class JavaScriptEditorProvider {
       const editorCloseListener = vscode.window.onDidChangeVisibleTextEditors((editors: readonly vscode.TextEditor[]) => {
         const tempEditorStillOpen = editors.some((editor: vscode.TextEditor) => editor.document === tempDocument)
         if (!tempEditorStillOpen) {
+          // 在关闭时同步更改
+          this.syncChangesToOriginal(tempDocument, originalDocument, originalEditor, jsInfo)
           this.cleanupEditor(editorId)
         }
       })
 
-      // 监听保存事件，拦截临时文件的保存操作
+      // 监听保存事件，在保存时同步到原始文件
       const saveListener = vscode.workspace.onWillSaveTextDocument((event: vscode.TextDocumentWillSaveEvent) => {
         if (event.document === tempDocument) {
-          // 阻止默认保存行为
-          event.waitUntil(Promise.resolve([]))
-          // 显示提示消息
+          // 在保存时同步更改到原始JSON文件
+          this.syncChangesToOriginal(tempDocument, originalDocument, originalEditor, jsInfo)
+          // 显示同步成功消息
           vscode.window.showInformationMessage(
-            `Changes are automatically synced to the original JSON file. No manual save needed for temporary JavaScript editor.`,
+            `Changes synced to the original JSON file.`,
             'Got it',
           )
         }
@@ -88,12 +102,12 @@ export class JavaScriptEditorProvider {
         originalDocument,
         originalEditor,
         jsInfo,
-        disposables: [changeListener, closeListener, editorCloseListener, saveListener, statusBarItem],
+        disposables: [closeListener, editorCloseListener, saveListener, statusBarItem],
       })
 
       // 显示成功消息
       vscode.window.showInformationMessage(
-        `Editing JavaScript code from field "${jsInfo.fieldName}". Changes will sync automatically.`,
+        `Editing JavaScript code from field "${jsInfo.fieldName}". Save or close to sync changes.`,
         'Got it',
       )
     }
@@ -194,6 +208,16 @@ export class JavaScriptEditorProvider {
     if (editorInfo) {
       // 清理所有监听器
       editorInfo.disposables.forEach(disposable => disposable.dispose())
+
+      // 删除临时文件
+      try {
+        const tempFilePath = editorInfo.tempDocument.uri.fsPath
+        if (fs.existsSync(tempFilePath)) {
+          fs.unlinkSync(tempFilePath)
+        }
+      } catch (error) {
+        console.error('Failed to delete temporary file:', error)
+      }
 
       // 从映射中移除
       this.activeEditors.delete(editorId)
