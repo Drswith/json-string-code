@@ -5,9 +5,7 @@ import { DecorationProvider } from './decorationProvider'
 import { logger } from './logger'
 
 export function activate(context: vscode.ExtensionContext) {
-  // 初始化日志服务
-  logger.info('JSON JavaScript Editor extension is now active!')
-  console.log('JSON JavaScript Editor extension is now active!')
+  logger.info('JSON String Code Editor extension is now active!')
 
   const detector = new CodeDetector()
   detector.updateConfiguration() // 初始化配置
@@ -91,8 +89,6 @@ export function activate(context: vscode.ExtensionContext) {
     },
   )
 
-  // 注册悬停提供器 - 已移除，现在由 decorationProvider 统一处理悬停信息
-
   // 注册点击处理器
   const clickHandler = vscode.window.onDidChangeTextEditorSelection(async (event) => {
     const editor = event.textEditor
@@ -130,5 +126,5 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
   // 清理日志服务
   logger.dispose()
-  logger.info('JSON JavaScript Editor extension deactivated')
+  logger.info('JSON String Code Editor extension deactivated')
 }

@@ -1,4 +1,4 @@
-# JSON JavaScript Editor
+# JSON String Code Editor
 
 一个用于在 JSON 文件中编辑嵌入式 JavaScript 代码的 VSCode 扩展。
 

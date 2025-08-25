@@ -92,29 +92,32 @@ export class Logger {
     }
   }
 
-  public error(message: string, showMessage = true): void {
+  public error(message: string, showMessage = false): void {
     this.log(LogLevel.ERROR, message)
     if (showMessage) {
       vscode.window.showErrorMessage(message)
     }
   }
 
-  public warn(message: string, showMessage = true): void {
+  public warn(message: string, showMessage = false): void {
     this.log(LogLevel.WARN, message)
     if (showMessage) {
       vscode.window.showWarningMessage(message)
     }
   }
 
-  public info(message: string, showMessage = true): void {
+  public info(message: string, showMessage = false): void {
     this.log(LogLevel.INFO, message)
     if (showMessage) {
       vscode.window.showInformationMessage(message)
     }
   }
 
-  public debug(message: string): void {
+  public debug(message: string, showMessage = true): void {
     this.log(LogLevel.DEBUG, message)
+    if (showMessage) {
+      vscode.window.showInformationMessage(message)
+    }
   }
 
   public show(): void {
