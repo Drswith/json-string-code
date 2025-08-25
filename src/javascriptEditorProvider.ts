@@ -1,6 +1,4 @@
 import type { JavaScriptInfo } from './jsonJsDetector'
-import * as fs from 'node:fs'
-import * as path from 'node:path'
 import jsesc from 'jsesc'
 import * as vscode from 'vscode'
 
@@ -24,25 +22,33 @@ export class JavaScriptEditorProvider {
     originalEditor: vscode.TextEditor,
   ): Promise<void> {
     try {
-      // 创建临时文件目录
+      // 获取工作区根目录
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
       if (!workspaceFolder) {
-        throw new Error('No workspace folder found')
+        vscode.window.showErrorMessage('No workspace folder found')
+        return
       }
-      
-      const tmpDir = path.join(workspaceFolder.uri.fsPath, 'tmp')
-      if (!fs.existsSync(tmpDir)) {
-        fs.mkdirSync(tmpDir, { recursive: true })
+
+      // 创建临时文件路径
+      const tmpDirUri = vscode.Uri.joinPath(workspaceFolder.uri, 'tmp')
+      const timestamp = Date.now()
+      const tempFileName = `temp_${jsInfo.fieldName}_${timestamp}.js`
+      const tempFileUri = vscode.Uri.joinPath(tmpDirUri, tempFileName)
+
+      // 确保tmp目录存在
+      try {
+        await vscode.workspace.fs.stat(tmpDirUri)
+      } catch {
+        await vscode.workspace.fs.createDirectory(tmpDirUri)
       }
-      
-      // 创建临时文件
-      const tempFileName = `temp-js-${Date.now()}.js`
-      const tempFilePath = path.join(tmpDir, tempFileName)
+
+      // 创建临时文件内容
       const codeContent = jsInfo.code || ''
-      fs.writeFileSync(tempFilePath, codeContent, 'utf8')
-      
-      const tempUri = vscode.Uri.file(tempFilePath)
-      const tempDocument = await vscode.workspace.openTextDocument(tempUri)
+      const encoder = new TextEncoder()
+      await vscode.workspace.fs.writeFile(tempFileUri, encoder.encode(codeContent))
+
+      // 打开临时文件
+      const tempDocument = await vscode.workspace.openTextDocument(tempFileUri)
 
       // 打开临时编辑器
       const tempEditor = await vscode.window.showTextDocument(tempDocument, {
@@ -124,6 +130,14 @@ export class JavaScriptEditorProvider {
   ): void {
     try {
       const newCode = tempDocument.getText()
+      const originalCode = jsInfo.code || ''
+      
+      // 检查内容是否真的发生了变化
+      if (newCode === originalCode) {
+        // 内容没有变化，不需要同步
+        return
+      }
+      
       const escapedCode = this.escapeForJson(newCode)
 
       // 计算原始文档中需要替换的范围
@@ -210,13 +224,13 @@ export class JavaScriptEditorProvider {
       editorInfo.disposables.forEach(disposable => disposable.dispose())
 
       // 删除临时文件
-      try {
-        const tempFilePath = editorInfo.tempDocument.uri.fsPath
-        if (fs.existsSync(tempFilePath)) {
-          fs.unlinkSync(tempFilePath)
-        }
-      } catch (error) {
-        console.error('Failed to delete temporary file:', error)
+      if (editorInfo.tempDocument.uri.scheme === 'file') {
+        vscode.workspace.fs.delete(editorInfo.tempDocument.uri, { useTrash: false }).then(
+          () => {},
+          (error: any) => {
+            console.error('Failed to delete temp file:', error)
+          }
+        )
       }
 
       // 从映射中移除
