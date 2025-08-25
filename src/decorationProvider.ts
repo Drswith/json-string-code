@@ -59,7 +59,7 @@ export class DecorationProvider {
       markdown.appendMarkdown(`**${block.language} Code Detected**\n\n`)
 
       // 添加编辑链接
-      const editCommand = `command:jsonJsEditor.editJavaScriptAtRange?${encodeURIComponent(JSON.stringify([document.uri.toString(), block]))}`
+      const editCommand = `command:jsonJsEditor.editCodeAtRange?${encodeURIComponent(JSON.stringify([document.uri.toString(), block]))}`
       markdown.appendMarkdown(`[✏️ Edit in temporary editor](${editCommand})\n\n`)
 
       // 添加代码预览（限制行数）

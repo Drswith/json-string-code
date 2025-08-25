@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
+import { CodeEditorProvider } from './codeEditorProvider'
 import { DecorationProvider } from './decorationProvider'
-import { JavaScriptEditorProvider } from './javascriptEditorProvider'
 import { JsonJsDetector } from './jsonJsDetector'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -22,12 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
     }
   })
 
-  const editorProvider = new JavaScriptEditorProvider(context)
+  const editorProvider = new CodeEditorProvider(context)
   const decorationProvider = new DecorationProvider(detector)
 
-  // 注册命令：编辑JavaScript代码
-  const editJavaScriptCommand = vscode.commands.registerCommand(
-    'jsonJsEditor.editJavaScript',
+  // 注册命令：编辑代码
+  const editCodeCommand = vscode.commands.registerCommand(
+    'jsonJsEditor.editCode',
     async () => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
@@ -39,15 +39,15 @@ export function activate(context: vscode.ExtensionContext) {
       const selection = editor.selection
       const position = selection.active
 
-      // 检测当前位置是否包含JavaScript代码
-      const jsInfo = detector.detectJavaScriptAtPosition(document, position)
-      if (!jsInfo) {
-        vscode.window.showInformationMessage('No JavaScript code detected at current position')
+      // 检测当前位置是否包含代码
+      const codeInfo = detector.detectCodeAtPosition(document, position)
+      if (!codeInfo) {
+        vscode.window.showInformationMessage('No code detected at current position')
         return
       }
 
       // 打开临时编辑器
-      await editorProvider.openJavaScriptEditor(jsInfo, document, editor)
+      await editorProvider.openCodeEditor(codeInfo, document, editor)
     },
   )
 
@@ -57,17 +57,17 @@ export function activate(context: vscode.ExtensionContext) {
     {
       provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
         const codeLenses: vscode.CodeLens[] = []
-        const jsBlocks = detector.detectAllJavaScriptBlocks(document)
+        const codeBlocks = detector.detectAllCodeBlocks(document)
 
-        for (const block of jsBlocks) {
+        for (const block of codeBlocks) {
           const range = new vscode.Range(
             document.positionAt(block.start),
             document.positionAt(block.end),
           )
 
           const codeLens = new vscode.CodeLens(range, {
-            title: '✏️ Edit JavaScript',
-            command: 'jsonJsEditor.editJavaScriptAtRange',
+            title: `✏️ Edit ${block.language.charAt(0).toUpperCase() + block.language.slice(1)}`,
+            command: 'jsonJsEditor.editCodeAtRange',
             arguments: [document.uri.toString(), block],
           })
 
@@ -80,24 +80,16 @@ export function activate(context: vscode.ExtensionContext) {
   )
 
   // 注册范围编辑命令
-  const editJavaScriptAtRangeCommand = vscode.commands.registerCommand(
-    'jsonJsEditor.editJavaScriptAtRange',
+  const editCodeAtRangeCommand = vscode.commands.registerCommand(
+    'jsonJsEditor.editCodeAtRange',
     async (documentUri: string, blockInfo: any) => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
         return
       }
 
-      // 将CodeBlockInfo转换为JavaScriptInfo格式
-      const jsInfo = {
-        code: blockInfo.code,
-        start: blockInfo.start,
-        end: blockInfo.end,
-        range: blockInfo.range,
-        fieldName: blockInfo.fieldName,
-      }
-
-      await editorProvider.openJavaScriptEditor(jsInfo, editor.document, editor)
+      // blockInfo 已经是 CodeBlockInfo 格式，直接使用
+      await editorProvider.openCodeEditor(blockInfo, editor.document, editor)
     },
   )
 
@@ -110,26 +102,26 @@ export function activate(context: vscode.ExtensionContext) {
       return
     }
 
-    // 检查是否点击了JavaScript代码
+    // 检查是否点击了代码
     const selection = event.selections[0]
     if (selection && selection.isEmpty) {
       const position = selection.active
-      const jsInfo = detector.detectJavaScriptAtPosition(editor.document, position)
+      const codeInfo = detector.detectCodeAtPosition(editor.document, position)
 
-      if (jsInfo) {
+      if (codeInfo) {
         // 检查是否是单击（而不是拖拽选择）
         const timeSinceLastClick = Date.now() - (clickHandler as any).lastClickTime || 0
         if (timeSinceLastClick > 100) { // 防止重复触发
           (clickHandler as any).lastClickTime = Date.now()
-          await editorProvider.openJavaScriptEditor(jsInfo, editor.document, editor)
+          await editorProvider.openCodeEditor(codeInfo, editor.document, editor)
         }
       }
     }
   })
 
   context.subscriptions.push(
-    editJavaScriptCommand,
-    editJavaScriptAtRangeCommand,
+    editCodeCommand,
+    editCodeAtRangeCommand,
     codeLensProvider,
     outputChannel,
     decorationProvider,

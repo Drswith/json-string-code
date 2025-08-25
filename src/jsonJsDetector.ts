@@ -52,6 +52,24 @@ export class JsonJsDetector {
     }
   }
 
+  detectCodeAtPosition(document: vscode.TextDocument, position: vscode.Position): CodeBlockInfo | null {
+    const jsInfo = this.detectJavaScriptAtPosition(document, position)
+    if (!jsInfo) {
+      return null
+    }
+
+    // 将 JavaScriptInfo 转换为 CodeBlockInfo
+    const language = this.detectLanguage(jsInfo.fieldName, jsInfo.code)
+    return {
+      code: jsInfo.code,
+      start: jsInfo.start,
+      end: jsInfo.end,
+      range: jsInfo.range,
+      fieldName: jsInfo.fieldName,
+      language,
+    }
+  }
+
   detectAllJavaScriptBlocks(document: vscode.TextDocument): JavaScriptInfo[] {
     const text = document.getText()
     const blocks: JavaScriptInfo[] = []
