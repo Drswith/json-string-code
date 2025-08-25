@@ -53,20 +53,28 @@ export class JsonJsDetector {
   }
 
   detectCodeAtPosition(document: vscode.TextDocument, position: vscode.Position): CodeBlockInfo | null {
-    const jsInfo = this.detectJavaScriptAtPosition(document, position)
-    if (!jsInfo) {
-      return null
-    }
+    const text = document.getText()
+    const offset = document.offsetAt(position)
 
-    // 将 JavaScriptInfo 转换为 CodeBlockInfo
-    const language = this.detectLanguage(jsInfo.fieldName, jsInfo.code)
-    return {
-      code: jsInfo.code,
-      start: jsInfo.start,
-      end: jsInfo.end,
-      range: jsInfo.range,
-      fieldName: jsInfo.fieldName,
-      language,
+    try {
+      // 使用jsonc-parser解析JSON，支持注释和容错
+      const parseErrors: ParseError[] = []
+      const parsed = parseTree(text, parseErrors, {
+        allowTrailingComma: true,
+        allowEmptyContent: true,
+        disallowComments: false,
+      })
+
+      if (parsed) {
+        return this.findCodeInObjectWithAST(text, offset, document)
+      }
+
+      // 如果解析失败，尝试部分解析
+      return this.findCodeInPartialJson(text, offset, document)
+    }
+    catch (error) {
+      console.error('Error detecting code at position:', error)
+      return null
     }
   }
 
@@ -163,6 +171,81 @@ export class JsonJsDetector {
 
     visit(text, visitor)
     return result
+  }
+
+  private findCodeInObjectWithAST(text: string, offset: number, document: vscode.TextDocument): CodeBlockInfo | null {
+    let result: CodeBlockInfo | null = null
+    let currentProperty: string | null = null
+
+    const visitor: JSONVisitor = {
+      onObjectProperty: (property: string) => {
+        currentProperty = property
+      },
+      onLiteralValue: (value: any, valueOffset: number, valueLength: number) => {
+        if (result || !currentProperty) {
+          return
+        }
+
+        if (offset >= valueOffset && offset <= valueOffset + valueLength) {
+          if (this.isCodeField(currentProperty) && typeof value === 'string') {
+            // valueOffset包含引号，需要+1跳过开始引号，-1跳过结束引号
+            const codeStart = valueOffset + 1
+            const codeEnd = valueOffset + valueLength - 1
+            const startPos = document.positionAt(codeStart)
+            const endPos = document.positionAt(codeEnd)
+            const language = this.detectLanguage(currentProperty, value)
+
+            result = {
+              code: value,
+              start: codeStart,
+              end: codeEnd,
+              range: new vscode.Range(startPos, endPos),
+              fieldName: currentProperty,
+              language,
+            }
+          }
+        }
+      },
+    }
+
+    visit(text, visitor)
+    return result
+  }
+
+  private findCodeInPartialJson(text: string, offset: number, document: vscode.TextDocument): CodeBlockInfo | null {
+    // 简化的部分JSON解析，用于处理格式不完整的JSON
+    const lines = text.split('\n')
+    const position = document.positionAt(offset)
+    const currentLine = lines[position.line]
+    
+    // 查找当前行或附近行的字段名和值
+    const fieldMatch = currentLine.match(/"([^"]+)"\s*:\s*"([^"]*)"/)
+    if (fieldMatch) {
+      const [, fieldName, value] = fieldMatch
+      if (this.isCodeField(fieldName)) {
+        const language = this.detectLanguage(fieldName, value)
+        const valueStart = currentLine.indexOf('"' + value + '"')
+        if (valueStart !== -1) {
+          const lineStart = document.offsetAt(new vscode.Position(position.line, 0))
+          const codeStart = lineStart + valueStart + 1
+          const codeEnd = codeStart + value.length
+          
+          return {
+            code: value,
+            start: codeStart,
+            end: codeEnd,
+            range: new vscode.Range(
+              document.positionAt(codeStart),
+              document.positionAt(codeEnd)
+            ),
+            fieldName,
+            language,
+          }
+        }
+      }
+    }
+    
+    return null
   }
 
   private findAllJavaScriptWithAST(text: string, document: vscode.TextDocument, blocks: JavaScriptInfo[]): void {
@@ -343,9 +426,18 @@ export class JsonJsDetector {
       return 'javascript'
     }
 
+    // C/C++ 检测 (需要在Python之前检测，避免printf被误判)
+    if (/#include\s*</.test(value) || /\bint\s+main\s*\(/.test(value)
+      || /\b(?:printf|scanf|cout|cin)\b/.test(value) || /\b(?:struct|typedef)\b/.test(value)) {
+      if (/\b(?:class|namespace|template|std::)\b/.test(value) || value.includes('cout') || value.includes('cin')) {
+        return 'cpp'
+      }
+      return 'c'
+    }
+
     // Python 检测
     if (value.includes('def ') || value.includes('import ') || value.includes('from ')
-      || /\bprint\s*\(/.test(value) || value.includes('__init__') || value.includes('self.')
+      || (/\bprint\s*\(/.test(value) && !/#include/.test(value)) || value.includes('__init__') || value.includes('self.')
       || /^\s*#/.test(value) || /\bif\s+__name__\s*==\s*['"]__main__['"]/.test(value)) {
       return 'python'
     }
@@ -411,14 +503,7 @@ export class JsonJsDetector {
       return 'rust'
     }
 
-    // C/C++ 检测
-    if (/#include\s*</.test(value) || /\bint\s+main\s*\(/.test(value)
-      || /\b(?:printf|scanf|cout|cin)\b/.test(value) || /\b(?:struct|typedef)\b/.test(value)) {
-      if (/\b(?:class|namespace|template|std::)\b/.test(value) || value.includes('cout') || value.includes('cin')) {
-        return 'cpp'
-      }
-      return 'c'
-    }
+
 
     // YAML 检测
     if (/^\s*\w+:\s*/.test(value) && (value.includes('\n') || value.includes('- '))) {
@@ -500,6 +585,25 @@ export class JsonJsDetector {
 
   private isJavaScriptField(fieldName: string): boolean {
     return this.autoDetectFields.includes(fieldName)
+  }
+
+  private isCodeField(fieldName: string): boolean {
+    // 检查是否为已知的代码字段
+    if (this.autoDetectFields.includes(fieldName)) {
+      return true
+    }
+    
+    // 检查字段名是否包含代码相关的关键词
+    const fieldLower = fieldName.toLowerCase()
+    return fieldLower.includes('code') || fieldLower.includes('script') || 
+           fieldLower.includes('sql') || fieldLower.includes('query') ||
+           fieldLower.includes('html') || fieldLower.includes('css') ||
+           fieldLower.includes('python') || fieldLower.includes('java') ||
+           fieldLower.includes('typescript') || fieldLower.includes('javascript') ||
+           fieldLower.includes('php') || fieldLower.includes('shell') ||
+           fieldLower.includes('bash') || fieldLower.includes('go') ||
+           fieldLower.includes('rust') || fieldLower.includes('cpp') ||
+           fieldLower.includes('c++') || fieldLower === 'c'
   }
 
   private looksLikeJavaScript(code: string): boolean {

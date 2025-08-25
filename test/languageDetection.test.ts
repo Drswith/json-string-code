@@ -1,17 +1,14 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { JsonJsHoverProvider } from '../src/hoverProvider'
 import { JsonJsDetector } from '../src/jsonJsDetector'
 import { TextDocument } from './vscode-mock'
 
 // 测试语言检测功能
 describe('language Detection', () => {
   let detector: JsonJsDetector
-  let hoverProvider: JsonJsHoverProvider
   let testDocument: TextDocument
 
   beforeEach(() => {
     detector = new JsonJsDetector()
-    hoverProvider = new JsonJsHoverProvider(detector)
   })
 
   describe('detectLanguage function', () => {
@@ -75,27 +72,8 @@ describe('language Detection', () => {
 
     testCases.forEach(({ key, value, expectedLanguage, description }) => {
       it(`should detect ${expectedLanguage} for ${description}`, () => {
-        // 创建包含测试数据的JSON文档
-        const testJson = JSON.stringify({ [key]: value }, null, 2)
-        testDocument = new TextDocument(testJson)
-
-        // 查找字段位置
-        const content = testDocument.getText()
-        const fieldIndex = content.indexOf(`"${key}"`)
-        expect(fieldIndex).toBeGreaterThan(-1)
-
-        const position = testDocument.positionAt(fieldIndex + key.length + 1)
-
-        // 获取hover信息
-        const hover = hoverProvider.provideHover(testDocument, position, {} as any) as any
-
-        if (hover && hover.contents && hover.contents.length > 0) {
-          const hoverContent = hover.contents[0] as any
-          if (hoverContent.value) {
-            // 检查代码块是否使用了正确的语言标识符
-            expect(hoverContent.value).toContain(`\`\`\`${expectedLanguage}`)
-          }
-        }
+        const detectedLanguage = detector.detectLanguage(key, value)
+        expect(detectedLanguage).toBe(expectedLanguage)
       })
     })
 
@@ -159,27 +137,8 @@ describe('language Detection', () => {
 
     additionalTestCases.forEach(({ key, value, expectedLanguage, description }) => {
       it(`should detect ${expectedLanguage} for ${description}`, () => {
-        // 创建包含测试数据的JSON文档
-        const testJson = JSON.stringify({ [key]: value }, null, 2)
-        testDocument = new TextDocument(testJson)
-
-        // 查找字段位置
-        const content = testDocument.getText()
-        const fieldIndex = content.indexOf(`"${key}"`)
-        expect(fieldIndex).toBeGreaterThan(-1)
-
-        const position = testDocument.positionAt(fieldIndex + key.length + 1)
-
-        // 获取hover信息
-        const hover = hoverProvider.provideHover(testDocument, position, {} as any) as any
-
-        if (hover && hover.contents && hover.contents.length > 0) {
-          const hoverContent = hover.contents[0] as any
-          if (hoverContent.value) {
-            // 检查代码块是否使用了正确的语言标识符
-            expect(hoverContent.value).toContain(`\`\`\`${expectedLanguage}`)
-          }
-        }
+        const detectedLanguage = detector.detectLanguage(key, value)
+        expect(detectedLanguage).toBe(expectedLanguage)
       })
     })
 
@@ -214,66 +173,89 @@ describe('language Detection', () => {
       ]
 
       contentBasedTests.forEach(({ value, expectedLanguage, description }) => {
-        const testJson = JSON.stringify({ randomKey: value }, null, 2)
-        testDocument = new TextDocument(testJson)
-
-        const content = testDocument.getText()
-        const fieldIndex = content.indexOf('"randomKey"')
-        const position = testDocument.positionAt(fieldIndex + 'randomKey'.length + 1)
-
-        const hover = hoverProvider.provideHover(testDocument, position, {} as any) as any
-
-        if (hover && hover.contents && hover.contents.length > 0) {
-          const hoverContent = hover.contents[0] as any
-          if (hoverContent.value) {
-            expect(hoverContent.value).toContain(`\`\`\`${expectedLanguage}`)
-          }
-        }
+        const detectedLanguage = detector.detectLanguage('randomKey', value)
+        expect(detectedLanguage).toBe(expectedLanguage)
       })
     })
   })
 
-  describe('edge cases', () => {
-    it('should handle null values gracefully', () => {
-      const testJson = JSON.stringify({ nullValue: null }, null, 2)
+  describe('detectAllCodeBlocks function', () => {
+    it('should detect multiple code blocks with correct languages', () => {
+      const testJson = JSON.stringify({
+        pythonCode: 'def hello():\n    print("Hello World")',
+        sqlQuery: 'SELECT * FROM users WHERE active = 1',
+        htmlContent: '<div>Hello World</div>',
+        cssStyles: '.container { margin: 0 auto; }'
+      }, null, 2)
+      
       testDocument = new TextDocument(testJson)
-
-      const content = testDocument.getText()
-      const fieldIndex = content.indexOf('"nullValue"')
-      const position = testDocument.positionAt(fieldIndex + 'nullValue'.length + 1)
-
-      const hover = hoverProvider.provideHover(testDocument, position, {} as any) as any
-
-      // null值不应该触发hover
-      expect(hover).toBeNull()
+      const codeBlocks = detector.detectAllCodeBlocks(testDocument)
+      
+      expect(codeBlocks).toHaveLength(4)
+      
+      const languages = codeBlocks.map(block => block.language)
+      expect(languages).toContain('python')
+      expect(languages).toContain('sql')
+      expect(languages).toContain('html')
+      expect(languages).toContain('css')
     })
 
-    it('should handle numeric values gracefully', () => {
-      const testJson = JSON.stringify({ numberValue: 42 }, null, 2)
-      testDocument = new TextDocument(testJson)
+    it('should handle empty JSON document', () => {
+      testDocument = new TextDocument('{}')
+      const codeBlocks = detector.detectAllCodeBlocks(testDocument)
+      expect(codeBlocks).toHaveLength(0)
+    })
 
+    it('should handle JSON with non-string values', () => {
+      const testJson = JSON.stringify({
+        numberValue: 42,
+        booleanValue: true,
+        nullValue: null,
+        codeValue: 'function test() { return true; }'
+      }, null, 2)
+      
+      testDocument = new TextDocument(testJson)
+      const codeBlocks = detector.detectAllCodeBlocks(testDocument)
+      
+      // 只应该检测到一个代码块（codeValue）
+      expect(codeBlocks).toHaveLength(1)
+      expect(codeBlocks[0].language).toBe('javascript')
+    })
+  })
+
+  describe('detectCodeAtPosition function', () => {
+    it('should detect code at specific position', () => {
+      const testJson = JSON.stringify({
+        pythonCode: 'def hello():\n    print("Hello World")'
+      }, null, 2)
+      
+      testDocument = new TextDocument(testJson)
+      
+      // 查找值的位置（在字符串值内部）
+      const content = testDocument.getText()
+      const valueIndex = content.indexOf('def hello()')
+      const position = testDocument.positionAt(valueIndex + 5) // 在'def hello()'中间
+      
+      const codeInfo = detector.detectCodeAtPosition(testDocument, position)
+      
+      expect(codeInfo).not.toBeNull()
+      expect(codeInfo?.language).toBe('python')
+      expect(codeInfo?.fieldName).toBe('pythonCode')
+    })
+
+    it('should return null for non-code positions', () => {
+      const testJson = JSON.stringify({
+        numberValue: 42
+      }, null, 2)
+      
+      testDocument = new TextDocument(testJson)
+      
       const content = testDocument.getText()
       const fieldIndex = content.indexOf('"numberValue"')
       const position = testDocument.positionAt(fieldIndex + 'numberValue'.length + 1)
-
-      const hover = hoverProvider.provideHover(testDocument, position, {} as any) as any
-
-      // 数值不应该触发hover
-      expect(hover).toBeNull()
-    })
-
-    it('should handle boolean values gracefully', () => {
-      const testJson = JSON.stringify({ booleanValue: true }, null, 2)
-      testDocument = new TextDocument(testJson)
-
-      const content = testDocument.getText()
-      const fieldIndex = content.indexOf('"booleanValue"')
-      const position = testDocument.positionAt(fieldIndex + 'booleanValue'.length + 1)
-
-      const hover = hoverProvider.provideHover(testDocument, position, {} as any) as any
-
-      // 布尔值不应该触发hover
-      expect(hover).toBeNull()
+      
+      const codeInfo = detector.detectCodeAtPosition(testDocument, position)
+      expect(codeInfo).toBeNull()
     })
   })
 })
