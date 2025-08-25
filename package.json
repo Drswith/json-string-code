@@ -35,11 +35,18 @@
     "commands": [
       {
         "command": "vscode-json-string-code-editor.editCode",
-        "title": "Edit Code in Temporary Editor"
+        "title": "Edit Code in Temporary Editor",
+        "category": "JSON String Code Editor"
       },
       {
         "command": "vscode-json-string-code-editor.editCodeAtRange",
-        "title": "Edit Code at Range"
+        "title": "Edit Code at Range",
+        "category": "JSON String Code Editor"
+      },
+      {
+        "command": "vscode-json-string-code-editor.cleanupTempFiles",
+        "title": "Clean Up Temporary Files",
+        "category": "JSON String Code Editor"
       }
     ],
     "menus": {

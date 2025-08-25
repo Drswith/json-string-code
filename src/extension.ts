@@ -89,6 +89,73 @@ export function activate(context: vscode.ExtensionContext) {
     },
   )
 
+  // 注册清理临时文件命令
+  const cleanupTempFilesCommand = vscode.commands.registerCommand(
+    'vscode-json-string-code-editor.cleanupTempFiles',
+    async () => {
+      try {
+        // 获取工作区根目录
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
+        if (!workspaceFolder) {
+          logger.error('No workspace folder found')
+          vscode.window.showErrorMessage('No workspace folder found')
+          return
+        }
+
+        // 临时文件目录路径
+        const tmpDirUri = vscode.Uri.joinPath(workspaceFolder.uri, 'tmp')
+        
+        // 检查临时目录是否存在
+        try {
+          await vscode.workspace.fs.stat(tmpDirUri)
+        } catch {
+          logger.info('No temporary files to clean up')
+          vscode.window.showInformationMessage('No temporary files found')
+          return
+        }
+
+        // 递归删除临时目录中的所有文件
+        const deleteCount = await deleteTempFiles(tmpDirUri)
+        
+        logger.info(`Cleaned up ${deleteCount} temporary files`)
+        vscode.window.showInformationMessage(`Successfully cleaned up ${deleteCount} temporary files`)
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        logger.error(`Failed to clean up temporary files: ${errorMessage}`)
+        vscode.window.showErrorMessage(`Failed to clean up temporary files: ${errorMessage}`)
+      }
+    },
+  )
+
+  // 清理临时文件的辅助函数
+  async function deleteTempFiles(dirUri: vscode.Uri): Promise<number> {
+    let deleteCount = 0
+    
+    try {
+      // 读取目录内容
+      const entries = await vscode.workspace.fs.readDirectory(dirUri)
+      
+      for (const [name, type] of entries) {
+        const entryUri = vscode.Uri.joinPath(dirUri, name)
+        
+        if (type === vscode.FileType.Directory) {
+          // 递归删除子目录
+          deleteCount += await deleteTempFiles(entryUri)
+          await vscode.workspace.fs.delete(entryUri, { recursive: false })
+        } else {
+          // 删除文件
+          await vscode.workspace.fs.delete(entryUri)
+          deleteCount++
+        }
+      }
+      
+      return deleteCount
+    } catch (error) {
+      logger.error(`Failed to delete files in directory ${dirUri.fsPath}: ${error}`)
+      return deleteCount
+    }
+  }
+
   // 注册点击处理器
   const clickHandler = vscode.window.onDidChangeTextEditorSelection(async (event) => {
     const editor = event.textEditor
@@ -116,6 +183,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     editCodeCommand,
     editCodeAtRangeCommand,
+    cleanupTempFilesCommand,
     codeLensProvider,
     decorationProvider,
     clickHandler,
