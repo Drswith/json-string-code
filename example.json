@@ -1,5 +1,0 @@
-{
-  "adapter": "try { \n const adapter = require('./adapter'); } catch (error) { console.error('Error loading adapter:', error); }\n",
-  "code": "const adapter = require('./adapter');\n",
-  "script": "const code = require('./code');\n"
-}
