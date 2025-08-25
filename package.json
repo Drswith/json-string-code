@@ -59,8 +59,20 @@
       ]
     },
     "configuration": {
-      "title": "JSON Code Editor",
+      "type": "object",
+      "title": "JSON String Code Editor",
       "properties": {
+        "vscode-json-string-code-editor.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.json",
+            "**/*.jsonc"
+          ],
+          "description": "Glob patterns for files where the extension should be active"
+        },
         "vscode-json-string-code-editor.autoDetectFields": {
           "type": "array",
           "default": [
@@ -78,7 +90,12 @@
         },
         "vscode-json-string-code-editor.logLevel": {
           "type": "string",
-          "enum": ["error", "warn", "info", "debug"],
+          "enum": [
+            "error",
+            "warn",
+            "info",
+            "debug"
+          ],
           "default": "info",
           "description": "Set the logging level for the extension"
         }
