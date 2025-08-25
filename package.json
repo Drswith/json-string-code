@@ -81,7 +81,8 @@
     "ext:pack": "vsce package --no-dependencies"
   },
   "dependencies": {
-    "jsesc": "^3.1.0"
+    "jsesc": "^3.1.0",
+    "jsonc-parser": "^3.3.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.2.1",
@@ -93,7 +94,6 @@
     "eslint": "9.29.0",
     "eslint-plugin-format": "1.0.1",
     "jsdom": "^26.1.0",
-    "jsonc-parser": "^3.3.1",
     "pnpm": "9.15.9",
     "tsup": "^8.5.0",
     "typescript": "^5.8.4",

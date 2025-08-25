@@ -1,4 +1,4 @@
-import type { CodeBlockInfo, JsonJsDetector } from './jsonJsDetector'
+import type { JsonJsDetector } from './jsonJsDetector'
 import * as vscode from 'vscode'
 
 export class DecorationProvider {
@@ -51,28 +51,28 @@ export class DecorationProvider {
     const codeBlocks = this.detector.detectAllCodeBlocks(document)
 
     // 创建装饰选项
-    const decorations: vscode.DecorationOptions[] = codeBlocks.map(block => {
+    const decorations: vscode.DecorationOptions[] = codeBlocks.map((block) => {
       const markdown = new vscode.MarkdownString()
       markdown.isTrusted = true
-      
+
       // 添加标题
       markdown.appendMarkdown(`**${block.language} Code Detected**\n\n`)
-      
+
       // 添加编辑链接
       const editCommand = `command:jsonJsEditor.editJavaScriptAtRange?${encodeURIComponent(JSON.stringify([document.uri.toString(), block]))}`
       markdown.appendMarkdown(`[✏️ Edit in temporary editor](${editCommand})\n\n`)
-      
+
       // 添加代码预览（限制行数）
       const codeLines = block.code.split('\n')
       const previewLines = codeLines.slice(0, 5)
       const hasMore = codeLines.length > 5
-      
+
       markdown.appendCodeblock(previewLines.join('\n'), block.language.toLowerCase())
-      
+
       if (hasMore) {
         markdown.appendMarkdown(`\n*... and ${codeLines.length - 5} more lines*`)
       }
-      
+
       return {
         range: block.range,
         hoverMessage: markdown,

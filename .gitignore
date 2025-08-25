@@ -104,6 +104,9 @@ StyleCopReport.xml
 *.tmp
 *.tmp_proj
 *_wpftmp.csproj
+
+# Temporary JavaScript editor files
+tmp/
 *.log
 *.tlog
 *.vspscc

@@ -1,4 +1,7 @@
 import type { JavaScriptInfo } from './jsonJsDetector'
+
+import { Buffer } from 'node:buffer'
+
 import jsesc from 'jsesc'
 import * as vscode from 'vscode'
 
@@ -38,14 +41,14 @@ export class JavaScriptEditorProvider {
       // 确保tmp目录存在
       try {
         await vscode.workspace.fs.stat(tmpDirUri)
-      } catch {
+      }
+      catch {
         await vscode.workspace.fs.createDirectory(tmpDirUri)
       }
 
       // 创建临时文件内容
       const codeContent = jsInfo.code || ''
-      const encoder = new TextEncoder()
-      await vscode.workspace.fs.writeFile(tempFileUri, encoder.encode(codeContent))
+      await vscode.workspace.fs.writeFile(tempFileUri, Buffer.from(codeContent, 'utf-8'))
 
       // 打开临时文件
       const tempDocument = await vscode.workspace.openTextDocument(tempFileUri)
@@ -131,13 +134,13 @@ export class JavaScriptEditorProvider {
     try {
       const newCode = tempDocument.getText()
       const originalCode = jsInfo.code || ''
-      
+
       // 检查内容是否真的发生了变化
       if (newCode === originalCode) {
         // 内容没有变化，不需要同步
         return
       }
-      
+
       const escapedCode = this.escapeForJson(newCode)
 
       // 计算原始文档中需要替换的范围
@@ -229,7 +232,7 @@ export class JavaScriptEditorProvider {
           () => {},
           (error: any) => {
             console.error('Failed to delete temp file:', error)
-          }
+          },
         )
       }
 

@@ -11,6 +11,9 @@ importers:
       jsesc:
         specifier: ^3.1.0
         version: 3.1.0
+      jsonc-parser:
+        specifier: ^3.3.1
+        version: 3.3.1
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^4.2.1
@@ -39,9 +42,6 @@ importers:
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
-      jsonc-parser:
-        specifier: ^3.3.1
-        version: 3.3.1
       pnpm:
         specifier: 9.15.9
         version: 9.15.9

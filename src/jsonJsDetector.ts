@@ -196,7 +196,7 @@ export class JsonJsDetector {
         if (typeof value === 'string' && value.trim().length > 0) {
           // 检测语言类型
           const language = this.detectLanguage(currentProperty, value)
-          
+
           // valueOffset包含引号，需要+1跳过开始引号，-1跳过结束引号
           const codeStart = valueOffset + 1
           const codeEnd = valueOffset + valueLength - 1

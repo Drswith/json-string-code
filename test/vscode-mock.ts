@@ -49,10 +49,12 @@ export class Range {
     if (startOrChange instanceof Position) {
       newStart = startOrChange
       newEnd = end || this.end
-    } else if (typeof startOrChange === 'object') {
+    }
+    else if (typeof startOrChange === 'object') {
       newStart = startOrChange.start || this.start
       newEnd = startOrChange.end || this.end
-    } else {
+    }
+    else {
       newStart = this.start
       newEnd = this.end
     }

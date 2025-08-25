@@ -6,8 +6,11 @@ import { JsonJsDetector } from './jsonJsDetector'
 export function activate(context: vscode.ExtensionContext) {
   // 创建输出通道
   const outputChannel = vscode.window.createOutputChannel('JSON JavaScript Editor')
-  outputChannel.show()
   outputChannel.appendLine('JSON JavaScript Editor extension is now active!')
+  console.log('JSON JavaScript Editor extension is now active!')
+
+  // 显示激活通知（仅用于调试）
+  vscode.window.showInformationMessage('JSON JavaScript Editor 扩展已激活！')
 
   const detector = new JsonJsDetector()
   detector.updateConfiguration() // 初始化配置
@@ -91,7 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
         start: blockInfo.start,
         end: blockInfo.end,
         range: blockInfo.range,
-        fieldName: blockInfo.fieldName
+        fieldName: blockInfo.fieldName,
       }
 
       await editorProvider.openJavaScriptEditor(jsInfo, editor.document, editor)
