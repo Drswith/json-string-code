@@ -23,7 +23,7 @@ export class JsonJsDetector {
   private autoDetectFields: string[] = ['adaptor', 'adaptor2', 'script', 'code', 'expression']
 
   updateConfiguration(): void {
-    const config = vscode.workspace.getConfiguration('jsonJsEditor')
+    const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
     this.autoDetectFields = config.get('autoDetectFields', ['adaptor', 'adaptor2', 'script', 'code', 'expression'])
   }
 

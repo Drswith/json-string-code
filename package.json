@@ -34,18 +34,18 @@
   "contributes": {
     "commands": [
       {
-        "command": "jsonJsEditor.editCode",
+        "command": "vscode-json-string-code-editor.editCode",
         "title": "Edit Code in Temporary Editor"
       },
       {
-        "command": "jsonJsEditor.editCodeAtRange",
+        "command": "vscode-json-string-code-editor.editCodeAtRange",
         "title": "Edit Code at Range"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "jsonJsEditor.editCode",
+          "command": "vscode-json-string-code-editor.editCode",
           "when": "editorLangId == json || editorLangId == jsonc",
           "group": "1_modification"
         }
@@ -54,7 +54,7 @@
     "configuration": {
       "title": "JSON Code Editor",
       "properties": {
-        "jsonJsEditor.autoDetectFields": {
+        "vscode-json-string-code-editor.autoDetectFields": {
           "type": "array",
           "default": [
             "adaptor",
@@ -64,7 +64,7 @@
           ],
           "description": "Field names that should be automatically detected as containing code"
         },
-        "jsonJsEditor.enableAutoDetection": {
+        "vscode-json-string-code-editor.enableAutoDetection": {
           "type": "boolean",
           "default": true,
           "description": "Automatically detect code in JSON strings"

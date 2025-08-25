@@ -218,7 +218,7 @@ export class TextDocument {
 export const workspace = {
   getConfiguration: (section: string) => ({
     get: (key: string, defaultValue?: any) => {
-      if (section === 'jsonJsEditor' && key === 'autoDetectFields') {
+      if (section === 'vscode-json-string-code-editor' && key === 'autoDetectFields') {
         return ['adaptor', 'adaptor2', 'script', 'code', 'expression']
       }
       return defaultValue

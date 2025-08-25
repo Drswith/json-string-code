@@ -50,13 +50,13 @@
 
 在 VSCode 设置中可以配置以下选项：
 
-### `jsonJsEditor.autoDetectFields`
+### `vscode-json-string-code-editor.autoDetectFields`
 
 - **类型**: `array`
 - **默认值**: `["adaptor", "script", "code", "expression"]`
 - **描述**: 自动检测为包含 JavaScript 代码的字段名列表
 
-### `jsonJsEditor.enableAutoDetection`
+### `vscode-json-string-code-editor.enableAutoDetection`
 
 - **类型**: `boolean`
 - **默认值**: `true`

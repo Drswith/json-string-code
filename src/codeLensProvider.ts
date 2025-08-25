@@ -37,7 +37,7 @@ export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
 
       const codeLens = new vscode.CodeLens(codeLensRange, {
         title: `$(edit) Edit JavaScript (${jsInfo.fieldName})`,
-        command: 'jsonJsEditor.editCodeAtRange',
+        command: 'vscode-json-string-code-editor.editCodeAtRange',
         arguments: [document.uri, jsInfo],
       })
 

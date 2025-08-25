@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // 监听配置变化
   const configChangeListener = vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
-    if (e.affectsConfiguration('jsonJsEditor')) {
+    if (e.affectsConfiguration('vscode-json-string-code-editor')) {
       detector.updateConfiguration()
     }
   })
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // 注册命令：编辑代码
   const editCodeCommand = vscode.commands.registerCommand(
-    'jsonJsEditor.editCode',
+    'vscode-json-string-code-editor.editCode',
     async () => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
@@ -67,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           const codeLens = new vscode.CodeLens(range, {
             title: `✏️ Edit ${block.language.charAt(0).toUpperCase() + block.language.slice(1)}`,
-            command: 'jsonJsEditor.editCodeAtRange',
+            command: 'vscode-json-string-code-editor.editCodeAtRange',
             arguments: [document.uri.toString(), block],
           })
 
@@ -81,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // 注册范围编辑命令
   const editCodeAtRangeCommand = vscode.commands.registerCommand(
-    'jsonJsEditor.editCodeAtRange',
+    'vscode-json-string-code-editor.editCodeAtRange',
     async (documentUri: string, blockInfo: any) => {
       const editor = vscode.window.activeTextEditor
       if (!editor) {
