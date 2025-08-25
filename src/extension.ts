@@ -4,6 +4,7 @@ import { CodeEditorProvider } from './codeEditorProvider'
 import { DecorationProvider } from './decorationProvider'
 import { shouldProcessFile } from './fileUtils'
 import { logger } from './logger'
+import { getTempDirectoryUri } from './tempUtils'
 
 export function activate(context: vscode.ExtensionContext) {
   logger.info('JSON String Code Editor extension is now active!')
@@ -100,15 +101,8 @@ export function activate(context: vscode.ExtensionContext) {
     'vscode-json-string-code-editor.cleanupTempFiles',
     async () => {
       try {
-        // 获取工作区根目录
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
-        if (!workspaceFolder) {
-          logger.error('No workspace folder found')
-          return
-        }
-
-        // 临时文件目录路径
-        const tmpDirUri = vscode.Uri.joinPath(workspaceFolder.uri, 'tmp')
+        // 获取临时文件目录路径
+        const tmpDirUri = getTempDirectoryUri()
 
         // 检查临时目录是否存在
         try {

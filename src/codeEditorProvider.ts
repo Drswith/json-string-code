@@ -4,6 +4,7 @@ import * as vscode from 'vscode'
 import jsesc from './custom.jsesc'
 import { generateTempFileName } from './languageUtils'
 import { logger } from './logger'
+import { ensureTempDirectoryExists, getTempDirectoryUri } from './tempUtils'
 
 export class CodeEditorProvider {
   private context: vscode.ExtensionContext
@@ -25,26 +26,14 @@ export class CodeEditorProvider {
     originalEditor: vscode.TextEditor,
   ): Promise<void> {
     try {
-      // 获取工作区根目录
-      const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
-      if (!workspaceFolder) {
-        logger.error('No workspace folder found')
-        return
-      }
-
       // 创建临时文件路径
-      const tmpDirUri = vscode.Uri.joinPath(workspaceFolder.uri, 'tmp')
+      const tmpDirUri = getTempDirectoryUri()
       const timestamp = Date.now()
       const tempFileName = generateTempFileName(codeInfo.fieldName, codeInfo.language, timestamp)
       const tempFileUri = vscode.Uri.joinPath(tmpDirUri, tempFileName)
 
-      // 确保tmp目录存在
-      try {
-        await vscode.workspace.fs.stat(tmpDirUri)
-      }
-      catch {
-        await vscode.workspace.fs.createDirectory(tmpDirUri)
-      }
+      // 确保临时目录存在
+      await ensureTempDirectoryExists()
 
       // 创建临时文件内容
       const codeContent = codeInfo.code || ''
