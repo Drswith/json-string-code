@@ -2,7 +2,7 @@ import type { CodeBlockInfo } from './codeDetector'
 import { Buffer } from 'node:buffer'
 import * as vscode from 'vscode'
 import jsesc from './custom.jsesc'
-import { generateTempFileName, getFileExtension } from './languageUtils'
+import { generateTempFileName } from './languageUtils'
 
 export class CodeEditorProvider {
   private context: vscode.ExtensionContext
