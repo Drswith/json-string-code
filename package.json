@@ -125,10 +125,12 @@
     "release": "pnpm run ext:tag && pnpm run build && pnpm run ext:publish"
   },
   "dependencies": {
+    "jsesc": "^3.1.0",
     "jsonc-parser": "^3.3.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.2.1",
+    "@types/jsesc": "^3.0.3",
     "@types/node": "22.x",
     "@types/vscode": "^1.74.0",
     "@vscode/vsce": "^3.2.2",

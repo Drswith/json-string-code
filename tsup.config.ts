@@ -9,10 +9,7 @@ export default defineConfig({
   ],
   noExternal: [
     'jsonc-parser',
+    'jsesc',
   ],
-  // sourcemap: true,
-  // clean: true,
   outDir: 'out',
-  // minify: false,
-  // splitting: false,
 })
