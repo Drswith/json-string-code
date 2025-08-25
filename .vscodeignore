@@ -1,0 +1,17 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+pnpm-lock.yaml
+pnpm-workspace.yaml
+.github/**
+eslint.config.*
+.trae/**
+.npmrc
+.nvmrc

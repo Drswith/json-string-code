@@ -1,0 +1,100 @@
+{
+  "publisher": "drswith",
+  "name": "vscode-json-string-code-editor",
+  "displayName": "JSON String Code Editor",
+  "version": "0.2.5",
+  "packageManager": "pnpm@9.15.9",
+  "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
+  "author": "Drswith",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/Drswith",
+  "homepage": "https://github.com/Drswith/vscode-json-string-code-editor#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Drswith/vscode-json-string-code-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/Drswith/vscode-json-string-code-editor/issues"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/Drswith"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:jsonc"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "jsonJsEditor.editJavaScript",
+        "title": "Edit JavaScript in Temporary Editor"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "jsonJsEditor.editJavaScript",
+          "when": "editorLangId == json || editorLangId == jsonc",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "JSON JavaScript Editor",
+      "properties": {
+        "jsonJsEditor.autoDetectFields": {
+          "type": "array",
+          "default": [
+            "adaptor",
+            "script",
+            "code",
+            "expression"
+          ],
+          "description": "Field names that should be automatically detected as containing JavaScript code"
+        },
+        "jsonJsEditor.enableAutoDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect JavaScript code in JSON strings"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsup",
+    "watch": "tsup --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:watch": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "ext:pack": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "5.2.1",
+    "@oxc-parser/binding-wasm32-wasi": "latest",
+    "@oxc-project/types": "^0.82.3",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.74.0",
+    "@vitest/ui": "^3.2.4",
+    "@vscode/vsce": "^3.2.2",
+    "eslint": "9.23.0",
+    "eslint-plugin-format": "1.0.1",
+    "jsdom": "^26.1.0",
+    "jsonc-parser": "^3.3.1",
+    "oxc-parser": "latest",
+    "pnpm": "9.15.9",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.4",
+    "vitest": "^3.2.4"
+  }
+}
