@@ -9,6 +9,15 @@ export interface JavaScriptInfo {
   fieldName: string
 }
 
+export interface CodeBlockInfo {
+  code: string
+  start: number
+  end: number
+  range: vscode.Range
+  fieldName: string
+  language: string
+}
+
 export class JsonJsDetector {
   private autoDetectFields: string[] = ['adaptor', 'adaptor2', 'script', 'code', 'expression']
 
@@ -65,6 +74,34 @@ export class JsonJsDetector {
     }
     catch (error) {
       this.findAllJavaScriptWithRegex(text, document, blocks)
+    }
+
+    return blocks
+  }
+
+  detectAllCodeBlocks(document: vscode.TextDocument): CodeBlockInfo[] {
+    const text = document.getText()
+    const blocks: CodeBlockInfo[] = []
+
+    try {
+      // 使用jsonc-parser解析JSON
+      const parseErrors: jsonc.ParseError[] = []
+      const parsed = jsonc.parse(text, parseErrors, {
+        allowTrailingComma: true,
+        allowEmptyContent: true,
+        disallowComments: false,
+      })
+
+      if (parsed) {
+        this.findAllCodeBlocksWithAST(text, document, blocks)
+      }
+      else {
+        // 如果解析失败，使用正则表达式查找
+        this.findAllCodeBlocksWithRegex(text, document, blocks)
+      }
+    }
+    catch (error) {
+      this.findAllCodeBlocksWithRegex(text, document, blocks)
     }
 
     return blocks
@@ -144,6 +181,242 @@ export class JsonJsDetector {
     jsonc.visit(text, visitor)
   }
 
+  private findAllCodeBlocksWithAST(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
+    let currentProperty: string | null = null
+
+    const visitor: jsonc.JSONVisitor = {
+      onObjectProperty: (property: string) => {
+        currentProperty = property
+      },
+      onLiteralValue: (value: any, valueOffset: number, valueLength: number) => {
+        if (!currentProperty) {
+          return
+        }
+
+        if (typeof value === 'string' && value.trim().length > 0) {
+          // 检测语言类型
+          const language = this.detectLanguage(currentProperty, value)
+          
+          // valueOffset包含引号，需要+1跳过开始引号，-1跳过结束引号
+          const codeStart = valueOffset + 1
+          const codeEnd = valueOffset + valueLength - 1
+          const startPos = document.positionAt(codeStart)
+          const endPos = document.positionAt(codeEnd)
+
+          blocks.push({
+            code: value,
+            start: codeStart,
+            end: codeEnd,
+            range: new vscode.Range(startPos, endPos),
+            fieldName: currentProperty,
+            language,
+          })
+        }
+      },
+    }
+
+    jsonc.visit(text, visitor)
+  }
+
+  private findAllCodeBlocksWithRegex(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
+    // 匹配所有字符串字段，不限制字段名
+    const regex = /"([^"]+)"\s*:\s*"((?:[^"\\]|\\.)*)"/g
+    let match = regex.exec(text)
+
+    while (match !== null) {
+      const fieldName = match[1]
+      const jsCode = match[2]
+      const unescapedCode = this.unescapeString(jsCode)
+
+      if (unescapedCode.trim().length > 0) {
+        const language = this.detectLanguage(fieldName, unescapedCode)
+        const fullMatch = match[0]
+        const startOffset = match.index + fullMatch.indexOf('"', fullMatch.indexOf(':')) + 1
+        const endOffset = startOffset + jsCode.length
+
+        const startPos = document.positionAt(startOffset)
+        const endPos = document.positionAt(endOffset)
+
+        blocks.push({
+          code: unescapedCode,
+          start: startOffset,
+          end: endOffset,
+          range: new vscode.Range(startPos, endPos),
+          fieldName,
+          language,
+        })
+      }
+      match = regex.exec(text)
+    }
+  }
+
+  public detectLanguage(key: string, value: string): string {
+    const keyLower = key.toLowerCase()
+
+    // 基于键名推断语言类型
+    if (keyLower.includes('sql') || keyLower.includes('query')) {
+      return 'sql'
+    }
+    if (keyLower.includes('html') || keyLower.includes('template')) {
+      return 'html'
+    }
+    if (keyLower.includes('css') || keyLower.includes('style')) {
+      return 'css'
+    }
+    if (keyLower.includes('xml')) {
+      return 'xml'
+    }
+    if (keyLower.includes('yaml') || keyLower.includes('yml')) {
+      return 'yaml'
+    }
+    if (keyLower.includes('markdown') || keyLower.includes('md')) {
+      return 'markdown'
+    }
+    if (keyLower.includes('python') || keyLower.includes('py')) {
+      return 'python'
+    }
+    if (keyLower.includes('typescript') || keyLower.includes('ts')) {
+      return 'typescript'
+    }
+    if (keyLower.includes('java')) {
+      return 'java'
+    }
+    if (keyLower.includes('php')) {
+      return 'php'
+    }
+    if (keyLower.includes('shell') || keyLower.includes('bash') || keyLower.includes('sh')) {
+      return 'shellscript'
+    }
+    if (keyLower.includes('json')) {
+      return 'json'
+    }
+    if (keyLower.includes('dockerfile') || keyLower.includes('docker')) {
+      return 'dockerfile'
+    }
+    if (keyLower.includes('go') || keyLower.includes('golang')) {
+      return 'go'
+    }
+    if (keyLower.includes('rust') || keyLower.includes('rs')) {
+      return 'rust'
+    }
+    if (keyLower.includes('cpp') || keyLower.includes('c++') || keyLower.includes('cxx')) {
+      return 'cpp'
+    }
+    if (keyLower.includes('c') && !keyLower.includes('css')) {
+      return 'c'
+    }
+
+    // 基于内容推断语言类型
+    const valueLower = value.toLowerCase()
+
+    // JavaScript/TypeScript 检测
+    if (value.includes('function') || value.includes('=>') || value.includes('const ') || value.includes('let ')
+      || value.includes('var ') || value.includes('console.') || /\b(?:async|await)\b/.test(value)
+      || /\b(?:import|export)\b/.test(value) || /\$\{[^}]+\}/.test(value)) {
+      // 进一步检测是否为 TypeScript
+      if (/:\s*(?:string|number|boolean|object|any|void)\b/.test(value)
+        || /\b(?:interface|type|enum)\b/.test(value) || value.includes('<T>')) {
+        return 'typescript'
+      }
+      return 'javascript'
+    }
+
+    // Python 检测
+    if (value.includes('def ') || value.includes('import ') || value.includes('from ')
+      || /\bprint\s*\(/.test(value) || value.includes('__init__') || value.includes('self.')
+      || /^\s*#/.test(value) || /\bif\s+__name__\s*==\s*['"]__main__['"]/.test(value)) {
+      return 'python'
+    }
+
+    // SQL 检测
+    if (/\b(?:SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b/i.test(value)
+      || /\b(?:FROM|WHERE|JOIN|GROUP BY|ORDER BY)\b/i.test(value)) {
+      return 'sql'
+    }
+
+    // HTML 检测
+    if (value.includes('<') && value.includes('>')
+      && (/<\/?[a-z][\s\S]*>/i.test(value) || /<!DOCTYPE/i.test(value))) {
+      return 'html'
+    }
+
+    // CSS 检测
+    if (/\{[^}]*\}/.test(value) && (/[a-z-]+:[^;]+;/i.test(value)
+      || /\.\w+\s*\{/.test(value) || /#\w+\s*\{/.test(value))) {
+      return 'css'
+    }
+
+    // Java 检测
+    if (/\b(?:public|private|protected)\s+(?:class|interface)\b/.test(value)
+      || /\bSystem\.out\.print/.test(value) || /\bpublic\s+static\s+void\s+main/.test(value)
+      || /\b(?:extends|implements)\b/.test(value)) {
+      return 'java'
+    }
+
+    // PHP 检测
+    if (value.includes('<?php') || /\$\w+/.test(value) || value.includes('echo ')
+      || (/\b(?:function|class)\s+\w+/.test(value) && value.includes('$'))) {
+      return 'php'
+    }
+
+    // Shell 检测
+    if (value.startsWith('#!') || /\b(?:echo|ls|cd|mkdir|rm)\b/.test(value)
+      || (/\$\{?\w+\}?/.test(value) && !/\$\{[^}]+\}/.test(value))) {
+      return 'shellscript'
+    }
+
+    // JSON 检测
+    if ((value.startsWith('{') && value.endsWith('}'))
+      || (value.startsWith('[') && value.endsWith(']'))) {
+      try {
+        JSON.parse(value)
+        return 'json'
+      }
+      catch {
+        // 不是有效的 JSON
+      }
+    }
+
+    // Go 检测
+    if (/\bpackage\s+\w+/.test(value) || /\bfunc\s+\w+/.test(value)
+      || (/\b(?:import|var|const)\s+/.test(value) && value.includes('fmt.'))) {
+      return 'go'
+    }
+
+    // Rust 检测
+    if (/\bfn\s+\w+/.test(value) || /\blet\s+mut\b/.test(value)
+      || value.includes('println!') || /\b(?:struct|enum|impl)\b/.test(value)) {
+      return 'rust'
+    }
+
+    // C/C++ 检测
+    if (/#include\s*</.test(value) || /\bint\s+main\s*\(/.test(value)
+      || /\b(?:printf|scanf|cout|cin)\b/.test(value) || /\b(?:struct|typedef)\b/.test(value)) {
+      if (/\b(?:class|namespace|template|std::)\b/.test(value) || value.includes('cout') || value.includes('cin')) {
+        return 'cpp'
+      }
+      return 'c'
+    }
+
+    // YAML 检测
+    if (/^\s*\w+:\s*/.test(value) && (value.includes('\n') || value.includes('- '))) {
+      return 'yaml'
+    }
+
+    // XML 检测
+    if (value.includes('<?xml') || (value.includes('<') && value.includes('>')
+      && /<\w[^>]*>.*<\/\w+>/.test(value))) {
+      return 'xml'
+    }
+
+    // Dockerfile 检测
+    if (/^\s*(?:FROM|RUN|COPY|ADD|WORKDIR|EXPOSE|CMD|ENTRYPOINT)\b/im.test(value)) {
+      return 'dockerfile'
+    }
+
+    return 'javascript'
+  }
+
   private findJavaScriptInPartialJson(text: string, offset: number, document: vscode.TextDocument): JavaScriptInfo | null {
     // 回退到正则表达式方法
     const blocks: JavaScriptInfo[] = []
@@ -212,6 +485,18 @@ export class JsonJsDetector {
       /\{[^}]*\}/, // 代码块
       /\([^)]*\)\s*=>/, // 箭头函数参数
       /\.\w*\s*\(/, // 方法调用
+      /\b(?:class|extends|super)\b/, // ES6类语法
+      /\b(?:async|await)\b/, // 异步语法
+      /\b(?:import|export)\b/, // 模块语法
+      /\$\{[^}]+\}/, // 模板字符串
+      /\b(?:typeof|instanceof)\b/, // 类型检查
+      /\b(?:new|delete)\b/, // 对象操作
+      /\b(?:switch|case|default|break|continue)\b/, // 控制流
+      /\b(?:throw|finally)\b/, // 异常处理
+      /\/\*[\s\S]*?\*\//, // 多行注释
+      /\/\/.*$/, // 单行注释
+      /[;{}]\s*$/, // 语句结束符
+      /^\s*[{[]/, // 对象或数组字面量开始
     ]
 
     return jsPatterns.some(pattern => pattern.test(code))
@@ -228,6 +513,30 @@ export class JsonJsDetector {
         case 'n': return '\n'
         case 'r': return '\r'
         case 't': return '\t'
+        case 'u': {
+          // 处理Unicode转义序列 \uXXXX
+          const nextFour = str.substr(str.indexOf(match) + 2, 4)
+          if (/^[0-9a-f]{4}$/i.test(nextFour)) {
+            return String.fromCharCode(Number.parseInt(nextFour, 16))
+          }
+          return char
+        }
+        case 'x': {
+          // 处理十六进制转义序列 \xXX
+          const nextTwo = str.substr(str.indexOf(match) + 2, 2)
+          if (/^[0-9a-f]{2}$/i.test(nextTwo)) {
+            return String.fromCharCode(Number.parseInt(nextTwo, 16))
+          }
+          return char
+        }
+        case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': {
+          // 处理八进制转义序列 \ooo
+          const octal = match.substr(1)
+          if (/^[0-7]{1,3}$/.test(octal)) {
+            return String.fromCharCode(Number.parseInt(octal, 8))
+          }
+          return char
+        }
         default: return char
       }
     })

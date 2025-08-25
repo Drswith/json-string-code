@@ -1,4 +1,4 @@
-import type { JsonJsDetector } from './jsonJsDetector'
+import type { CodeBlockInfo, JsonJsDetector } from './jsonJsDetector'
 import * as vscode from 'vscode'
 
 export class DecorationProvider {
@@ -47,13 +47,13 @@ export class DecorationProvider {
       return
     }
 
-    // 检测所有JavaScript代码块
-    const jsBlocks = this.detector.detectAllJavaScriptBlocks(document)
+    // 检测所有代码块
+    const codeBlocks = this.detector.detectAllCodeBlocks(document)
 
     // 创建装饰选项
-    const decorations: vscode.DecorationOptions[] = jsBlocks.map(block => ({
+    const decorations: vscode.DecorationOptions[] = codeBlocks.map(block => ({
       range: block.range,
-      hoverMessage: new vscode.MarkdownString(`**JavaScript Code**\n\n\`\`\`javascript\n${block.code}\n\`\`\`\n\n*Click to edit*`),
+      hoverMessage: new vscode.MarkdownString(`**${block.language} Code**\n\n\`\`\`${block.language.toLowerCase()}\n${block.code}\n\`\`\`\n\n*Click to edit*`),
     }))
 
     // 应用装饰

@@ -1,4 +1,5 @@
 import type { JavaScriptInfo } from './jsonJsDetector'
+import jsesc from 'jsesc'
 import * as vscode from 'vscode'
 
 export class JavaScriptEditorProvider {
@@ -180,12 +181,12 @@ export class JavaScriptEditorProvider {
   }
 
   private escapeForJson(str: string): string {
-    return str
-      .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
-      .replace(/\n/g, '\\n')
-      .replace(/\r/g, '\\r')
-      .replace(/\t/g, '\\t')
+    return jsesc(str, {
+      json: true, // 确保输出是有效的JSON
+      wrap: false, // 不包含外层引号，因为我们只替换引号内的内容
+      es6: false, // 不使用ES6语法
+      minimal: false, // 不使用最小转义
+    })
   }
 
   private cleanupEditor(editorId: string): void {

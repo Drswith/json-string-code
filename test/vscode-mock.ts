@@ -5,6 +5,60 @@ export class Range {
     public start: Position,
     public end: Position,
   ) {}
+
+  get isEmpty(): boolean {
+    return this.start.isEqual(this.end)
+  }
+
+  get isSingleLine(): boolean {
+    return this.start.line === this.end.line
+  }
+
+  contains(positionOrRange: Position | Range): boolean {
+    if (positionOrRange instanceof Position) {
+      return positionOrRange.isAfterOrEqual(this.start) && positionOrRange.isBeforeOrEqual(this.end)
+    }
+    return this.contains(positionOrRange.start) && this.contains(positionOrRange.end)
+  }
+
+  isEqual(other: Range): boolean {
+    return this.start.isEqual(other.start) && this.end.isEqual(other.end)
+  }
+
+  intersection(range: Range): Range | undefined {
+    const start = this.start.isAfter(range.start) ? this.start : range.start
+    const end = this.end.isBefore(range.end) ? this.end : range.end
+    if (start.isAfterOrEqual(end)) {
+      return undefined
+    }
+    return new Range(start, end)
+  }
+
+  union(other: Range): Range {
+    const start = this.start.isBefore(other.start) ? this.start : other.start
+    const end = this.end.isAfter(other.end) ? this.end : other.end
+    return new Range(start, end)
+  }
+
+  with(start?: Position, end?: Position): Range
+  with(change: { start?: Position, end?: Position }): Range
+  with(startOrChange?: Position | { start?: Position, end?: Position }, end?: Position): Range {
+    let newStart: Position
+    let newEnd: Position
+
+    if (startOrChange instanceof Position) {
+      newStart = startOrChange
+      newEnd = end || this.end
+    } else if (typeof startOrChange === 'object') {
+      newStart = startOrChange.start || this.start
+      newEnd = startOrChange.end || this.end
+    } else {
+      newStart = this.start
+      newEnd = this.end
+    }
+
+    return new Range(newStart, newEnd)
+  }
 }
 
 export class Position {

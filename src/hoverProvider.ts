@@ -34,12 +34,13 @@ export class JsonJsHoverProvider implements vscode.HoverProvider {
     // 添加标题
     markdown.appendMarkdown(`**JavaScript Code in Field: \`${jsInfo.fieldName}\`**\n\n`)
 
-    // 添加代码预览（限制行数）
+    // 检测语言类型并添加代码预览（限制行数）
+    const language = this.detector.detectLanguage(jsInfo.fieldName, jsInfo.code)
     const codeLines = jsInfo.code.split('\n')
     const previewLines = codeLines.slice(0, 5)
     const hasMore = codeLines.length > 5
 
-    markdown.appendCodeblock(previewLines.join('\n'), 'javascript')
+    markdown.appendCodeblock(previewLines.join('\n'), language)
 
     if (hasMore) {
       markdown.appendMarkdown(`\n*... and ${codeLines.length - 5} more lines*\n\n`)

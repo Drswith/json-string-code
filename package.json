@@ -80,10 +80,14 @@
     "test:coverage": "vitest run --coverage",
     "ext:pack": "vsce package --no-dependencies"
   },
+  "dependencies": {
+    "jsesc": "^3.1.0"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "5.2.1",
     "@oxc-parser/binding-wasm32-wasi": "latest",
     "@oxc-project/types": "^0.82.3",
+    "@types/jsesc": "^3.0.3",
     "@types/node": "22.x",
     "@types/vscode": "^1.74.0",
     "@vitest/ui": "^3.2.4",
