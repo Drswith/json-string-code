@@ -20,6 +20,8 @@
     "url": "https://github.com/sponsors/Drswith"
   },
   "categories": [
+    "Formatters",
+    "Programming Languages",
     "Other"
   ],
   "main": "./out/extension.js",
