@@ -4,7 +4,7 @@ export enum LogLevel {
   ERROR = 0,
   WARN = 1,
   INFO = 2,
-  DEBUG = 3
+  DEBUG = 3,
 }
 
 export class Logger {
@@ -27,7 +27,7 @@ export class Logger {
   private updateLogLevel(): void {
     const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
     const level = config.get<string>('logLevel', 'info')
-    
+
     switch (level) {
       case 'error':
         this.logLevel = LogLevel.ERROR
@@ -59,7 +59,7 @@ export class Logger {
     const minutes = String(now.getMinutes()).padStart(2, '0')
     const seconds = String(now.getSeconds()).padStart(2, '0')
     const milliseconds = String(now.getMilliseconds()).padStart(3, '0')
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
   }
 
@@ -71,10 +71,10 @@ export class Logger {
     const timestamp = this.formatTimestamp()
     const levelStr = LogLevel[level]
     const logMessage = `[${timestamp}] [${levelStr}] ${message}`
-    
+
     // 1. 输出到 Output Channel
     this.outputChannel.appendLine(logMessage)
-    
+
     // 2. 输出到 Console
     switch (level) {
       case LogLevel.ERROR:

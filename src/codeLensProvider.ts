@@ -1,5 +1,6 @@
 import type { CodeDetector } from './codeDetector'
 import * as vscode from 'vscode'
+import { shouldProcessFile } from './fileUtils'
 
 export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
   private detector: CodeDetector
@@ -14,7 +15,8 @@ export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
     document: vscode.TextDocument,
     token: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.CodeLens[]> {
-    if (document.languageId !== 'json' && document.languageId !== 'jsonc') {
+    // 检查文件是否应该被处理（包括文件类型和include配置）
+    if (!shouldProcessFile(document)) {
       return []
     }
 
