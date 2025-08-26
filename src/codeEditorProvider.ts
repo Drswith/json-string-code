@@ -43,7 +43,7 @@ export class CodeEditorProvider {
       const tempDocument = await vscode.workspace.openTextDocument(tempFileUri)
 
       // 打开临时编辑器
-      const tempEditor = await vscode.window.showTextDocument(tempDocument, {
+      await vscode.window.showTextDocument(tempDocument, {
         viewColumn: vscode.ViewColumn.Beside,
         preview: false,
       })
@@ -62,8 +62,6 @@ export class CodeEditorProvider {
       statusBarItem.text = `$(edit) Editing: ${codeInfo.fieldName} (${codeInfo.language})`
       statusBarItem.tooltip = `${codeInfo.language} code is being edited. Save or close to sync changes.`
       statusBarItem.show()
-
-      // 不再实时同步，仅在保存和关闭时同步
 
       // 监听文档关闭
       const closeListener = vscode.workspace.onDidCloseTextDocument((document: vscode.TextDocument) => {

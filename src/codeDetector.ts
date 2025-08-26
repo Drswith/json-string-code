@@ -1,6 +1,7 @@
 import type { JSONVisitor, ParseError } from 'jsonc-parser'
 import { parseTree, visit } from 'jsonc-parser'
 import * as vscode from 'vscode'
+import { logger } from './logger'
 
 export interface CodeBlockInfo {
   code: string
@@ -25,8 +26,6 @@ export class CodeDetector {
     this.enableAutoDetection = config.get('enableAutoDetection', true)
   }
 
-
-
   detectCodeAtPosition(document: vscode.TextDocument, position: vscode.Position): CodeBlockInfo | null {
     const text = document.getText()
     const offset = document.offsetAt(position)
@@ -48,12 +47,10 @@ export class CodeDetector {
       return this.findCodeInPartialJson(text, offset, document)
     }
     catch (error) {
-      console.error('Error detecting code at position:', error)
+      logger.error(`Error detecting code at position: ${error}`)
       return null
     }
   }
-
-
 
   detectAllCodeBlocks(document: vscode.TextDocument): CodeBlockInfo[] {
     // 如果禁用了自动检测，返回空数组
@@ -82,13 +79,12 @@ export class CodeDetector {
       }
     }
     catch (error) {
+      logger.error(`Error detecting code at position: ${error}`)
       this.findAllCodeBlocksWithRegex(text, document, blocks)
     }
 
     return blocks
   }
-
-
 
   private findCodeInObjectWithAST(text: string, offset: number, document: vscode.TextDocument): CodeBlockInfo | null {
     let result: CodeBlockInfo | null = null
@@ -164,8 +160,6 @@ export class CodeDetector {
 
     return null
   }
-
-
 
   private findAllCodeBlocksWithAST(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
     let currentProperty: string | null = null
@@ -297,9 +291,6 @@ export class CodeDetector {
       return 'javascript'
     }
 
-    // 基于内容推断语言类型
-    const valueLower = value.toLowerCase()
-
     // JavaScript/TypeScript 检测
     if (value.includes('function') || value.includes('=>') || value.includes('const ') || value.includes('let ')
       || value.includes('var ') || value.includes('console.') || /\b(?:async|await)\b/.test(value)
@@ -407,8 +398,6 @@ export class CodeDetector {
 
     return 'javascript'
   }
-
-
 
   private isCodeField(fieldName: string): boolean {
     // 检查是否为已知的代码字段

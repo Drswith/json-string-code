@@ -13,7 +13,7 @@ export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
 
   provideCodeLenses(
     document: vscode.TextDocument,
-    token: vscode.CancellationToken,
+    _token: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.CodeLens[]> {
     // 检查文件是否应该被处理（包括文件类型和include配置）
     if (!shouldProcessFile(document)) {
