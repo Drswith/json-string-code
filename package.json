@@ -134,7 +134,8 @@
     "ext:publish": "pnpm run ext:publish-vsce && pnpm run ext:publish-ovsx",
     "ext:publish-vsce": "vsce publish --no-dependencies",
     "ext:publish-ovsx": "ovsx publish",
-    "ext:tag": "bumpp",
+    "tag": "pnpm run changelog && bumpp",
+    "changelog": "npx changelogen@latest --output CHANGELOG.md",
     "release": "pnpm run ext:tag && pnpm run build && pnpm run ext:publish"
   },
   "dependencies": {

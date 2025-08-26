@@ -11,6 +11,7 @@ export default antfu(
       'src/generated',
       '**/*.test.{js,mjs,ts,mts}',
       'out/**/*',
+      'CHANGELOG.md',
     ],
   },
   {
