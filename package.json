@@ -125,6 +125,7 @@
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint-staged": "lint-staged",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -150,11 +151,19 @@
     "eslint": "9.29.0",
     "eslint-plugin-format": "1.0.1",
     "jest-mock-vscode": "^4.6.0",
+    "lint-staged": "^15.5.0",
     "ovsx": "^0.10.5",
     "pnpm": "9.15.9",
+    "simple-git-hooks": "^2.11.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.4",
     "vitest": "^3.2.4",
     "vscode-ext-gen": "^1.1.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run update && npm run lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
   }
 }
