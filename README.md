@@ -1,7 +1,10 @@
 # JSON String Code Editor
 
 [![VS Code Marketplace](https://img.shields.io/vscode-marketplace/v/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
+[![VS Code Marketplace Downloads](https://img.shields.io/vscode-marketplace/d/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Downloads)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
+[![VS Code Marketplace Installs](https://img.shields.io/vscode-marketplace/i/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Installs)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
 [![Open VSX Registry](https://img.shields.io/open-vsx/v/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=Open%20VSX)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
+[![Open VSX Downloads](https://img.shields.io/open-vsx/dt/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=OpenVSX%20Downloads)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Changelog](https://img.shields.io/badge/📋-Changelog-green.svg)](CHANGELOG.md)
 
@@ -236,15 +239,60 @@ If you encounter issues not covered here:
 3. Check the VS Code Output panel (View → Output → JSON String Code Editor)
 4. Create a new issue with detailed reproduction steps
 
+## 📈 Star History
+
+<p align="center">
+  <a href="https://star-history.com/#Drswith/vscode-json-string-code-editor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Drswith/vscode-json-string-code-editor&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Drswith/vscode-json-string-code-editor&type=Date" />
+      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Drswith/vscode-json-string-code-editor&type=Date" />
+    </picture>
+  </a>
+</p>
+
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+We welcome Issues and Pull Requests! For major changes, please create an Issue first to discuss what you would like to change.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### 🚀 Quick Start
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your changes** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push to the branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
+
+### 📋 Contributing Guidelines
+
+- 🐛 **Bug Reports**: Use [Issue templates](https://github.com/Drswith/vscode-json-string-code-editor/issues/new) to report problems
+- 💡 **Feature Requests**: Submit feature requests and improvement suggestions
+- 📖 **Documentation**: Help improve documentation and examples
+- 🧪 **Testing**: Add test cases and improve code coverage
+- 🎨 **Code Optimization**: Performance improvements, code refactoring, etc.
+
+### 🏆 Contributors
+
+<div align="center">
+  <h3>🌟 Thanks to all the developers who contributed to this project! 🌟</h3>
+
+  <!-- Contributors Display -->
+  <a href="https://github.com/Drswith/vscode-json-string-code-editor/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=Drswith/vscode-json-string-code-editor&max=100&columns=20" alt="Contributors" />
+  </a>
+
+<br><br>
+
+  <!-- Project Statistics Badges -->
+  <img src="https://img.shields.io/github/contributors/Drswith/vscode-json-string-code-editor?style=for-the-badge&color=ff69b4" alt="Contributors Count">
+  <img src="https://img.shields.io/github/commit-activity/m/Drswith/vscode-json-string-code-editor?style=for-the-badge&color=00d4aa" alt="Commit Activity">
+  <img src="https://img.shields.io/github/last-commit/Drswith/vscode-json-string-code-editor?style=for-the-badge&color=ffd700" alt="Last Commit">
+  <img src="https://img.shields.io/github/issues/Drswith/vscode-json-string-code-editor?style=for-the-badge&color=orange" alt="Open Issues">
+  <img src="https://img.shields.io/github/issues-pr/Drswith/vscode-json-string-code-editor?style=for-the-badge&color=blue" alt="Open PRs">
+
+</div>
+
+> 🎨 Contributors display powered by [contrib.rocks](https://contrib.rocks)
 
 ## 📝 License
 
