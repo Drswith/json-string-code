@@ -70,12 +70,13 @@ Access settings via `File > Preferences > Settings` and search for "JSON String 
 
 <!-- configs -->
 
-| Key                                                  | Description                                                          | Type      | Default                                    |
-| ---------------------------------------------------- | -------------------------------------------------------------------- | --------- | ------------------------------------------ |
-| `vscode-json-string-code-editor.include`             | Glob patterns for files where the extension should be active         | `array`   | `["**/*.json","**/*.jsonc"]`               |
-| `vscode-json-string-code-editor.autoDetectFields`    | Field names that should be automatically detected as containing code | `array`   | `["adaptor","script","code","expression"]` |
-| `vscode-json-string-code-editor.enableAutoDetection` | Automatically detect code in JSON strings                            | `boolean` | `true`                                     |
-| `vscode-json-string-code-editor.logLevel`            | Set the logging level for the extension                              | `string`  | `"info"`                                   |
+| Key                                                  | Description                                                          | Type      | Default                                             |
+| ---------------------------------------------------- | -------------------------------------------------------------------- | --------- | --------------------------------------------------- |
+| `vscode-json-string-code-editor.include`             | Glob patterns for files where the extension should be active         | `array`   | `["**/*.json","**/*.jsonc"]`                        |
+| `vscode-json-string-code-editor.exclude`             | Glob patterns for files that should be excluded from processing      | `array`   | `["**/node_modules/**","**/dist/**","**/build/**"]` |
+| `vscode-json-string-code-editor.enableAutoDetection` | Automatically detect code in JSON strings                            | `boolean` | `true`                                              |
+| `vscode-json-string-code-editor.autoDetectFields`    | Field names that should be automatically detected as containing code | `array`   | `["adaptor","script","code","expression"]`          |
+| `vscode-json-string-code-editor.logLevel`            | Set the logging level for the extension                              | `string`  | `"info"`                                            |
 
 <!-- configs -->
 
