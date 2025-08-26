@@ -6,7 +6,6 @@
 [![Open VSX Registry](https://img.shields.io/open-vsx/v/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=Open%20VSX)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
 [![Open VSX Downloads](https://img.shields.io/open-vsx/dt/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=OpenVSX%20Downloads)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Changelog](https://img.shields.io/badge/📋-Changelog-green.svg)](CHANGELOG.md)
 
 A powerful VS Code extension that enhances the editing experience of code snippets embedded within JSON and JSONC files. Edit JavaScript, TypeScript, Python, and other code directly in temporary editor tabs with full syntax highlighting, IntelliSense, and language support.
 
@@ -309,7 +308,6 @@ If you find this extension helpful, please consider:
 
 ## 📚 Related
 
-- [📋 Changelog](CHANGELOG.md) - See what's new in each version
 - [VS Code Extension API](https://code.visualstudio.com/api)
 - [JSON Schema](https://json-schema.org/)
 - [JSONC (JSON with Comments)](https://github.com/microsoft/node-jsonc-parser)
