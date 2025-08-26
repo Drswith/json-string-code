@@ -9,7 +9,7 @@ A powerful VS Code extension that enhances the editing experience of code snippe
 ## ✨ Features
 
 - **🚀 Temporary Code Editor**: Open code strings in dedicated temporary editor tabs with full language support
-- **🎯 Smart Detection**: Automatically detects code in JSON string fields like `adapter`, `script`, `code`, `expression`
+- **🎯 Smart Detection**: Automatically detects code in JSON string fields like `adaptor`, `script`, `code`, `expression`
 - **🌈 Syntax Highlighting**: Full syntax highlighting and IntelliSense for multiple programming languages
 - **🔧 Right-click Integration**: Easy access through context menu in JSON/JSONC files
 - **⚡ Real-time Sync**: Changes in temporary editors are automatically synced back to the original JSON
@@ -45,7 +45,7 @@ code --install-extension drswith.vscode-json-string-code-editor
 
 ```json
 {
-  "adapter": "const adapter = require('./adapter');\nconsole.log('Adapter loaded');",
+  "adaptor": "const adaptor = require('./adaptor');\nconsole.log('Adaptor loaded');",
   "script": "function processData(data) {\n  return data.map(item => item.value);\n}",
   "code": "try {\n  const result = await fetchData();\n  return result;\n} catch (error) {\n  console.error(error);\n}"
 }
@@ -55,12 +55,32 @@ code --install-extension drswith.vscode-json-string-code-editor
 
 The extension automatically detects code in fields with these names by default:
 
-- `adapter`
+- `adaptor`
 - `script`
 - `code`
 - `expression`
 
 You can customize these field names in the extension settings.
+
+### Language Detection
+
+The extension automatically detects the programming language based on:
+
+- **Field names**: Fields containing keywords like `script`, `code`, `expression` are detected as JavaScript
+- **Content analysis**: The extension analyzes code content to determine the most appropriate language
+- **File context**: Uses the context of the JSON file to make intelligent language suggestions
+
+### Keyboard Shortcuts
+
+- **Ctrl+S** (Cmd+S on Mac): Save temporary file and sync changes back to original JSON
+- **Ctrl+Shift+P** (Cmd+Shift+P on Mac): Open Command Palette to access extension commands
+
+### Tips
+
+- The extension works with both JSON and JSONC (JSON with Comments) files
+- Temporary files are automatically cleaned up when editors are closed
+- Use the Command Palette to manually clean up temporary files if needed
+- The extension respects VS Code's file inclusion/exclusion patterns
 
 ## ⚙️ Configuration
 
@@ -85,7 +105,7 @@ Access settings via `File > Preferences > Settings` and search for "JSON String 
 ```json
 {
   "vscode-json-string-code-editor.autoDetectFields": [
-    "adapter",
+    "adaptor",
     "script",
     "code",
     "expression",
@@ -153,6 +173,43 @@ pnpm run build
 # Package the extension
 pnpm run ext:pack
 ```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+**Extension not detecting code fields**
+
+- Check that the field name is included in `autoDetectFields` setting
+- Ensure `enableAutoDetection` is set to `true`
+- Verify the file matches the `include` patterns and doesn't match `exclude` patterns
+
+**Temporary editor not opening**
+
+- Make sure you're right-clicking on a string value, not the field name
+- Check that the file is a JSON or JSONC file
+- Verify the extension is activated (should show in the status bar)
+
+**Changes not syncing back to original file**
+
+- Save the temporary file using Ctrl+S (Cmd+S on Mac)
+- Check that the original JSON file is not read-only
+- Ensure the temporary file hasn't been moved or renamed
+
+**Performance issues with large files**
+
+- Use the `exclude` setting to skip large directories like `node_modules`
+- Consider disabling auto-detection for very large JSON files
+- Use the manual "Edit Code in Temporary Editor" command instead of auto-detection
+
+### Getting Help
+
+If you encounter issues not covered here:
+
+1. Check the [GitHub Issues](https://github.com/Drswith/vscode-json-string-code-editor/issues) for existing solutions
+2. Enable debug logging by setting `logLevel` to `"debug"` in extension settings
+3. Check the VS Code Output panel (View → Output → JSON String Code Editor)
+4. Create a new issue with detailed reproduction steps
 
 ## 🤝 Contributing
 
