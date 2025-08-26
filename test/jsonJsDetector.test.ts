@@ -1,20 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CodeDetector } from '../src/codeDetector'
-import { Position, TextDocument } from './vscode-mock'
+import { TextDocument, workspace, Uri, Position } from 'vscode'
 
 describe('jsonJsDetector', () => {
   let detector: CodeDetector
   let testDocument: TextDocument
 
-  beforeEach(() => {
+  beforeEach(async () => {
     detector = new CodeDetector()
-    const testJson = `{
-  "adaptor": "function test() { console.log('Hello World'); return true; }",
-  "expression": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n",
-  "script": "const x = 1 + 1; console.log(x);",
-  "name": "test"
-}`
-    testDocument = new TextDocument(testJson)
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-detector.json');
+    testDocument = await workspace.openTextDocument(uri);
   })
 
   describe('detectAllJavaScriptBlocks', () => {
@@ -36,23 +31,17 @@ describe('jsonJsDetector', () => {
       expect(blocks[2].code).toBe('const x = 1 + 1; console.log(x);')
     })
 
-    it('should return empty array for JSON without JavaScript', () => {
-      const simpleJson = `{
-  "name": "test",
-  "value": 123
-}`
-      const document = new TextDocument(simpleJson)
+    it('should return empty array for non-JavaScript content', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-simple.json')
+      const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
       expect(blocks).toHaveLength(0)
     })
 
-    it('should handle malformed JSON gracefully', () => {
-      const malformedJson = `{
-  "adaptor": "function test() { return true; }",
-  "invalid": 
-}`
-      const document = new TextDocument(malformedJson)
+    it('should handle malformed JSON gracefully', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-malformed.json')
+      const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
       // Should still detect the valid adaptor field using regex fallback
@@ -90,12 +79,10 @@ describe('jsonJsDetector', () => {
   })
 
   describe('configuration', () => {
-    it('should handle configuration updates', () => {
+    it('should handle configuration updates', async () => {
       // Test that detector works with default configuration
-      const defaultJson = `{
-  "adaptor": "console.log('test');"
-}`
-      const document = new TextDocument(defaultJson)
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-config.json')
+      const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
       // Should detect adaptor field by default
@@ -105,21 +92,17 @@ describe('jsonJsDetector', () => {
   })
 
   describe('edge cases', () => {
-    it('should handle empty JSON', () => {
-      const emptyJson = '{}'
-      const document = new TextDocument(emptyJson)
+    it('should handle empty JSON', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-empty.json')
+      const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
       expect(blocks).toHaveLength(0)
     })
 
-    it('should handle nested objects', () => {
-      const nestedJson = `{
-  "config": {
-    "adaptor": "function nested() { return 'nested'; }"
-  }
-}`
-      const document = new TextDocument(nestedJson)
+    it('should handle nested objects', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-nested.json')
+      const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
       expect(blocks).toHaveLength(1)
@@ -127,14 +110,9 @@ describe('jsonJsDetector', () => {
       expect(blocks[0].code).toBe('function nested() { return \'nested\'; }')
     })
 
-    it('should handle arrays with JavaScript', () => {
-      const arrayJson = `{
-  "scripts": [
-    "console.log('first');",
-    "console.log('second');"
-  ]
-}`
-      const document = new TextDocument(arrayJson)
+    it('should handle arrays with JavaScript', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-array.json')
+      const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
       // Should not detect array elements as they don't match field names

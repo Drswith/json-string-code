@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CodeDetector } from '../src/codeDetector'
-import { Position, TextDocument } from './vscode-mock'
+import { Position, TextDocument, workspace, Uri } from 'vscode'
 
 describe('multiline JavaScript detection', () => {
   let detector: CodeDetector
@@ -10,13 +10,11 @@ describe('multiline JavaScript detection', () => {
     detector.updateConfiguration()
   })
 
-  it('should detect multiline JavaScript with escaped newlines', () => {
-    const jsonContent = `{
-  "expression": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n"
-}`
-    const document = new TextDocument(jsonContent)
+  it('should detect multiline JavaScript with escaped newlines', async () => {
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-multiline-detection.json')
+    const document = await workspace.openTextDocument(uri)
 
-    const result = detector.detectJavaScriptAtPosition(document, new Position(1, 15))
+    const result = detector.detectJavaScriptAtPosition(document, new Position(1, 20))
 
     expect(result).not.toBeNull()
     expect(result?.fieldName).toBe('expression')
@@ -25,14 +23,9 @@ describe('multiline JavaScript detection', () => {
     expect(result?.code).toContain('catch (e)')
   })
 
-  it('should detect all JavaScript blocks including multiline ones', () => {
-    const jsonContent = `{
-  "adaptor": "function test() { console.log('Hello World'); return true; }",
-  "expression": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n",
-  "script": "const x = 1 + 1; console.log(x);",
-  "name": "test"
-}`
-    const document = new TextDocument(jsonContent)
+  it('should detect all JavaScript blocks including multiline ones', async () => {
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-multiline-all-blocks.json')
+    const document = await workspace.openTextDocument(uri)
 
     const blocks = detector.detectAllJavaScriptBlocks(document)
 
@@ -56,13 +49,11 @@ describe('multiline JavaScript detection', () => {
     expect(scriptBlock?.code).toBe('const x = 1 + 1; console.log(x);')
   })
 
-  it('should handle complex escaped characters in multiline code', () => {
-    const jsonContent = `{
-  "expression": "function complex() {\\n  const str = 'Hello\\\\nWorld';\\n  const regex = /\\\\d+/g;\\n  return str.replace(regex, '');\\n}"
-}`
-    const document = new TextDocument(jsonContent)
+  it('should handle complex escaped characters in multiline code', async () => {
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-complex-escaped.json')
+    const document = await workspace.openTextDocument(uri)
 
-    const result = detector.detectJavaScriptAtPosition(document, new Position(1, 15))
+    const result = detector.detectJavaScriptAtPosition(document, new Position(1, 20))
 
     expect(result).not.toBeNull()
     expect(result?.code).toContain('Hello\\nWorld')

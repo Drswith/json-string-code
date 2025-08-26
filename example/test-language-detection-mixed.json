@@ -1,0 +1,6 @@
+{
+  "numberValue": 42,
+  "booleanValue": true,
+  "nullValue": null,
+  "codeValue": "function test() { return true; }"
+}

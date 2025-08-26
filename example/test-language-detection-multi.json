@@ -1,0 +1,6 @@
+{
+  "pythonCode": "def hello():\n    print('Hello World')",
+  "sqlQuery": "SELECT * FROM users WHERE active = 1",
+  "htmlContent": "<div>Hello World</div>",
+  "cssStyles": ".container { margin: 0 auto; }"
+}

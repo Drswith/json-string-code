@@ -1,0 +1,5 @@
+{
+  "config": {
+    "adaptor": "function nested() { return true; }"
+  }
+}

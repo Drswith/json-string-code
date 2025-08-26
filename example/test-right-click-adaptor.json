@@ -1,0 +1,4 @@
+{
+  "adaptor": "function test() { return 'hello'; }",
+  "other": "normal text"
+}

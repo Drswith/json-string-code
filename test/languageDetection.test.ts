@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CodeDetector } from '../src/codeDetector'
-import { TextDocument } from './vscode-mock'
+import { TextDocument, workspace, Uri } from 'vscode'
 
 // 测试语言检测功能
 describe('language Detection', () => {
   let detector: CodeDetector
-  let testDocument: TextDocument
 
   beforeEach(() => {
     detector = new CodeDetector()
@@ -180,15 +179,10 @@ describe('language Detection', () => {
   })
 
   describe('detectAllCodeBlocks function', () => {
-    it('should detect multiple code blocks with correct languages', () => {
-      const testJson = JSON.stringify({
-        pythonCode: 'def hello():\n    print("Hello World")',
-        sqlQuery: 'SELECT * FROM users WHERE active = 1',
-        htmlContent: '<div>Hello World</div>',
-        cssStyles: '.container { margin: 0 auto; }'
-      }, null, 2)
+    it('should detect multiple code blocks with correct languages', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-multi.json')
+      const testDocument = await workspace.openTextDocument(uri)
       
-      testDocument = new TextDocument(testJson)
       const codeBlocks = detector.detectAllCodeBlocks(testDocument)
       
       expect(codeBlocks).toHaveLength(4)
@@ -200,21 +194,17 @@ describe('language Detection', () => {
       expect(languages).toContain('css')
     })
 
-    it('should handle empty JSON document', () => {
-      testDocument = new TextDocument('{}')
+    it('should handle empty JSON document', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-empty.json')
+      const testDocument = await workspace.openTextDocument(uri)
       const codeBlocks = detector.detectAllCodeBlocks(testDocument)
       expect(codeBlocks).toHaveLength(0)
     })
 
-    it('should handle JSON with non-string values', () => {
-      const testJson = JSON.stringify({
-        numberValue: 42,
-        booleanValue: true,
-        nullValue: null,
-        codeValue: 'function test() { return true; }'
-      }, null, 2)
+    it('should handle JSON with non-string values', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-mixed.json')
+      const testDocument = await workspace.openTextDocument(uri)
       
-      testDocument = new TextDocument(testJson)
       const codeBlocks = detector.detectAllCodeBlocks(testDocument)
       
       // 只应该检测到一个代码块（codeValue）
@@ -224,12 +214,9 @@ describe('language Detection', () => {
   })
 
   describe('detectCodeAtPosition function', () => {
-    it('should detect code at specific position', () => {
-      const testJson = JSON.stringify({
-        pythonCode: 'def hello():\n    print("Hello World")'
-      }, null, 2)
-      
-      testDocument = new TextDocument(testJson)
+    it('should detect code at specific position', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-python.json')
+      const testDocument = await workspace.openTextDocument(uri)
       
       // 查找值的位置（在字符串值内部）
       const content = testDocument.getText()
@@ -243,12 +230,9 @@ describe('language Detection', () => {
       expect(codeInfo?.fieldName).toBe('pythonCode')
     })
 
-    it('should return null for non-code positions', () => {
-      const testJson = JSON.stringify({
-        numberValue: 42
-      }, null, 2)
-      
-      testDocument = new TextDocument(testJson)
+    it('should return null for non-code positions', async () => {
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-number.json')
+      const testDocument = await workspace.openTextDocument(uri)
       
       const content = testDocument.getText()
       const fieldIndex = content.indexOf('"numberValue"')

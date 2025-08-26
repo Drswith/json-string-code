@@ -1,0 +1,3 @@
+{
+  "expression": "function complex() {\n  const str = 'Hello\\nWorld';\n  const regex = /\\d+/g;\n  return str.replace(regex, '');\n}"
+}

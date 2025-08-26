@@ -1,0 +1,4 @@
+{
+  "adaptor": "function test() { return true; }",
+  "invalid": "incomplete"
+}
