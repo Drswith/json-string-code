@@ -1,6 +1,6 @@
 import type { CodeBlockInfo } from './codeDetector'
 import { Buffer } from 'node:buffer'
-import jsesc from 'jsesc'
+import jsesc from 'jsesc-es'
 import * as vscode from 'vscode'
 import { generateTempFileName } from './languageUtils'
 import { logger } from './logger'

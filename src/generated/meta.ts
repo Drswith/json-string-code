@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "drswith"
 export const name = "vscode-json-string-code-editor"
-export const version = "0.3.5"
+export const version = "0.3.6-beta.3"
 export const displayName = "JSON String Code Editor"
 export const description = "Enhanced JSON schema code snippet editing experience with temporary code editor tabs"
 export const extensionId = `${publisher}.${name}`

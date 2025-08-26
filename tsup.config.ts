@@ -9,7 +9,7 @@ export default defineConfig({
   ],
   noExternal: [
     'jsonc-parser',
-    'jsesc',
+    'jsesc-es',
   ],
   outDir: 'out',
 })
