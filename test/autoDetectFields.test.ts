@@ -8,7 +8,7 @@ describe('AutoDetectFields Configuration', () => {
 
   beforeEach(async () => {
     codeDetector = new CodeDetector()
-    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-auto-detect-fields.json');
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-auto-detect-fields.json');
     document = await workspace.openTextDocument(uri);
   })
 

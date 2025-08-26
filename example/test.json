@@ -1,6 +1,0 @@
-{
-  "adaptor": "function test() { console.log('Hello World'); return true; }",
-  "expression": "try {\n  let result = payload.data.items.map(el => {\n    return {\n      label: el.merchantName + ' - ' + el.merchantNo,\n      value: el.merchantNo\n    }\n  })\n  return {\n    ...payload,\n    data: {\n      items: result\n    }\n  }\n}\ncatch (e) {\n  console.error(e)\n  return payload\n}\n",
-  "script": "const x = 1 + 1; console.log(x);",
-  "name": "test"
-}

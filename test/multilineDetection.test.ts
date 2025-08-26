@@ -11,7 +11,7 @@ describe('multiline JavaScript detection', () => {
   })
 
   it('should detect multiline JavaScript with escaped newlines', async () => {
-    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-multiline-detection.json')
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-multiline-detection.json')
     const document = await workspace.openTextDocument(uri)
 
     const result = detector.detectJavaScriptAtPosition(document, new Position(1, 20))
@@ -24,7 +24,7 @@ describe('multiline JavaScript detection', () => {
   })
 
   it('should detect all JavaScript blocks including multiline ones', async () => {
-    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-multiline-all-blocks.json')
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-multiline-all-blocks.json')
     const document = await workspace.openTextDocument(uri)
 
     const blocks = detector.detectAllJavaScriptBlocks(document)
@@ -50,7 +50,7 @@ describe('multiline JavaScript detection', () => {
   })
 
   it('should handle complex escaped characters in multiline code', async () => {
-    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-complex-escaped.json')
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-complex-escaped.json')
     const document = await workspace.openTextDocument(uri)
 
     const result = detector.detectJavaScriptAtPosition(document, new Position(1, 20))

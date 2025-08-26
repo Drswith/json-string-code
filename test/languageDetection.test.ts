@@ -180,7 +180,7 @@ describe('language Detection', () => {
 
   describe('detectAllCodeBlocks function', () => {
     it('should detect multiple code blocks with correct languages', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-multi.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-language-detection-multi.json')
       const testDocument = await workspace.openTextDocument(uri)
       
       const codeBlocks = detector.detectAllCodeBlocks(testDocument)
@@ -195,14 +195,14 @@ describe('language Detection', () => {
     })
 
     it('should handle empty JSON document', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-empty.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-language-detection-empty.json')
       const testDocument = await workspace.openTextDocument(uri)
       const codeBlocks = detector.detectAllCodeBlocks(testDocument)
       expect(codeBlocks).toHaveLength(0)
     })
 
     it('should handle JSON with non-string values', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-mixed.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-language-detection-mixed.json')
       const testDocument = await workspace.openTextDocument(uri)
       
       const codeBlocks = detector.detectAllCodeBlocks(testDocument)
@@ -215,7 +215,7 @@ describe('language Detection', () => {
 
   describe('detectCodeAtPosition function', () => {
     it('should detect code at specific position', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-python.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-language-detection-python.json')
       const testDocument = await workspace.openTextDocument(uri)
       
       // 查找值的位置（在字符串值内部）
@@ -231,7 +231,7 @@ describe('language Detection', () => {
     })
 
     it('should return null for non-code positions', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-language-detection-number.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-language-detection-number.json')
       const testDocument = await workspace.openTextDocument(uri)
       
       const content = testDocument.getText()

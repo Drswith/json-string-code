@@ -8,7 +8,7 @@ describe('jsonJsDetector', () => {
 
   beforeEach(async () => {
     detector = new CodeDetector()
-    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-detector.json');
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-json-js-detector.json');
     testDocument = await workspace.openTextDocument(uri);
   })
 
@@ -32,7 +32,7 @@ describe('jsonJsDetector', () => {
     })
 
     it('should return empty array for non-JavaScript content', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-simple.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-json-js-simple.json')
       const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
@@ -40,7 +40,7 @@ describe('jsonJsDetector', () => {
     })
 
     it('should handle malformed JSON gracefully', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-malformed.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-json-js-malformed.json')
       const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
@@ -81,7 +81,7 @@ describe('jsonJsDetector', () => {
   describe('configuration', () => {
     it('should handle configuration updates', async () => {
       // Test that detector works with default configuration
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-config.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-json-js-config.json')
       const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
@@ -93,7 +93,7 @@ describe('jsonJsDetector', () => {
 
   describe('edge cases', () => {
     it('should handle empty JSON', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-empty.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-json-js-empty.json')
       const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
@@ -101,7 +101,7 @@ describe('jsonJsDetector', () => {
     })
 
     it('should handle nested objects', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-nested.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-json-js-nested.json')
       const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 
@@ -111,7 +111,7 @@ describe('jsonJsDetector', () => {
     })
 
     it('should handle arrays with JavaScript', async () => {
-      const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-json-js-array.json')
+      const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-json-js-array.json')
       const document = await workspace.openTextDocument(uri)
       const blocks = detector.detectAllJavaScriptBlocks(document)
 

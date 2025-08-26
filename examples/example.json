@@ -1,0 +1,184 @@
+{
+  "basic_code_snippets": {
+    "javascript_simple": "function hello() { console.log('Hello World'); }",
+    "javascript_multiline": "function complex() {\n  const data = {\n    name: 'test',\n    value: 42\n  };\n  return data;\n}",
+    "javascript_with_escape": "function escaped() {\n  const str = 'Hello\\nWorld';\n  const regex = /\\d+/g;\n  return str.replace(regex, '');\n}"
+  },
+  
+  "multi_language_snippets": {
+    "python_script": "def hello():\n    print('Hello World')\n    return True",
+    "sql_query": "SELECT u.name, u.email\nFROM users u\nWHERE u.active = 1\nORDER BY u.created_at DESC",
+    "html_template": "<div class='container'>\n  <h1>Hello World</h1>\n  <p>This is a test</p>\n</div>",
+    "css_styles": ".container {\n  background-color: #f0f0f0;\n  padding: 20px;\n  border-radius: 8px;\n}",
+    "yaml_config": "name: test-project\nversion: 1.0.0\ndependencies:\n  - package1\n  - package2\nscripts:\n  build: npm run compile",
+    "xml_data": "<root>\n  <item id='1'>Test Item</item>\n  <item id='2'>Another Item</item>\n</root>",
+    "dockerfile_content": "FROM node:16-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY . .\nEXPOSE 3000\nCMD [\"npm\", \"start\"]",
+    "shell_script": "#!/bin/bash\nset -e\necho 'Starting deployment...'\nfor file in *.js; do\n  echo \"Processing $file\"\n  node \"$file\"\ndone",
+    "go_code": "package main\n\nimport (\n    \"fmt\"\n    \"time\"\n)\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n    time.Sleep(1 * time.Second)\n}",
+    "rust_code": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let sum: i32 = numbers.iter().sum();\n    println!(\"Sum: {}\", sum);\n}",
+    "java_code": "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n        int[] numbers = {1, 2, 3, 4, 5};\n        System.out.println(\"Array length: \" + numbers.length);\n    }\n}",
+    "php_code": "<?php\n$users = [\n    ['name' => 'John', 'age' => 30],\n    ['name' => 'Jane', 'age' => 25]\n];\nforeach ($users as $user) {\n    echo $user['name'] . ': ' . $user['age'] . \"\\n\";\n}\n?>",
+    "typescript_code": "interface User {\n    name: string;\n    age: number;\n    email?: string;\n}\n\nclass UserService {\n    private users: User[] = [];\n    \n    addUser(user: User): void {\n        this.users.push(user);\n    }\n}",
+    "markdown_content": "# Project Documentation\n\n## Overview\n\nThis is a **comprehensive** example with:\n\n- *Italic text*\n- `inline code`\n- [Links](https://example.com)\n\n```javascript\nconst example = 'code block';\n```"
+  },
+  
+  "array_code_snippets": {
+    "script_array": [
+      "function first() { return 1; }",
+      "function second() { return 2; }",
+      "const result = first() + second();"
+    ],
+    "mixed_array": [
+      "console.log('JavaScript');",
+      "print('Python')",
+      "SELECT * FROM table;",
+      42,
+      true
+    ]
+  },
+  
+  "nested_object_code": {
+    "level_1": {
+      "level_2": {
+        "level_3": {
+          "level_4": {
+            "level_5": {
+              "deep_code": "function deeplyNested() {\n  const config = {\n    database: {\n      connection: {\n        host: 'localhost',\n        port: 5432,\n        credentials: {\n          username: 'admin',\n          password: 'secret'\n        }\n      }\n    }\n  };\n  return config;\n}",
+              "nested_functions": "const utils = {\n  data: {\n    processors: {\n      transform: {\n        json: function(input) {\n          return JSON.parse(input);\n        },\n        xml: function(input) {\n          return parseXML(input);\n        }\n      }\n    }\n  }\n};"
+            },
+            "level_4_code": "class NestedClass {\n  constructor() {\n    this.config = {\n      api: {\n        endpoints: {\n          users: '/api/v1/users',\n          posts: '/api/v1/posts'\n        }\n      }\n    };\n  }\n}"
+          },
+          "level_3_scripts": [
+            "function level3() { return 'deep'; }",
+            "const nested = { a: { b: { c: 'value' } } };"
+          ]
+        },
+        "level_2_config": {
+          "webpack": {
+            "entry": "./src/index.js",
+            "output": {
+              "path": "path.resolve(__dirname, 'dist')",
+              "filename": "bundle.js"
+            },
+            "module": {
+              "rules": [
+                {
+                  "test": "/\\.js$/",
+                  "use": "babel-loader",
+                  "exclude": "/node_modules/"
+                }
+              ]
+            }
+          },
+          "scripts": {
+            "build": "npm run compile && npm run bundle",
+            "test": "jest --coverage --watchAll=false",
+            "start": "node dist/index.js"
+          }
+        }
+      },
+      "level_1_database": {
+        "connections": {
+          "primary": {
+            "config": {
+              "host": "localhost",
+              "migrations": [
+                "CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(255));",
+                "ALTER TABLE users ADD COLUMN email VARCHAR(255);",
+                "CREATE INDEX idx_users_email ON users(email);"
+              ]
+            }
+          },
+          "secondary": {
+            "config": {
+              "host": "backup-server",
+              "queries": {
+                "user_management": {
+                  "create_user": "INSERT INTO users (name, email) VALUES (?, ?)",
+                  "update_user": "UPDATE users SET name = ?, email = ? WHERE id = ?",
+                  "delete_user": "DELETE FROM users WHERE id = ?"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "microservices": {
+      "auth_service": {
+        "routes": {
+          "authentication": {
+            "login": {
+              "handler": "async function login(req, res) {\n  try {\n    const { username, password } = req.body;\n    const user = await User.findOne({ username });\n    if (!user || !await bcrypt.compare(password, user.password)) {\n      return res.status(401).json({ error: 'Invalid credentials' });\n    }\n    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);\n    res.json({ token, user: { id: user.id, username: user.username } });\n  } catch (error) {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n}",
+              "middleware": [
+                "const rateLimit = require('express-rate-limit');",
+                "const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });"
+              ]
+            },
+            "register": {
+              "validation": {
+                "schema": {
+                  "username": "joi.string().min(3).max(30).required()",
+                  "email": "joi.string().email().required()",
+                  "password": "joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)/).required()"
+                }
+              }
+            }
+          }
+        }
+      },
+      "user_service": {
+        "models": {
+          "user_model": {
+            "schema": "const userSchema = new mongoose.Schema({\n  username: { type: String, required: true, unique: true },\n  email: { type: String, required: true, unique: true },\n  password: { type: String, required: true },\n  profile: {\n    firstName: String,\n    lastName: String,\n    avatar: String,\n    preferences: {\n      theme: { type: String, default: 'light' },\n      language: { type: String, default: 'en' },\n      notifications: {\n        email: { type: Boolean, default: true },\n        push: { type: Boolean, default: false }\n      }\n    }\n  },\n  createdAt: { type: Date, default: Date.now },\n  updatedAt: { type: Date, default: Date.now }\n});",
+            "methods": {
+              "instance_methods": {
+                "updateProfile": "userSchema.methods.updateProfile = function(profileData) {\n  Object.assign(this.profile, profileData);\n  this.updatedAt = new Date();\n  return this.save();\n};",
+                "getPublicProfile": "userSchema.methods.getPublicProfile = function() {\n  return {\n    id: this._id,\n    username: this.username,\n    profile: {\n      firstName: this.profile.firstName,\n      lastName: this.profile.lastName,\n      avatar: this.profile.avatar\n    }\n  };\n};"
+              },
+              "static_methods": {
+                "findByEmail": "userSchema.statics.findByEmail = function(email) {\n  return this.findOne({ email: email.toLowerCase() });\n};"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  
+  "complex_business_logic": {
+    "data_processor": "try {\n  let result = payload.data.items.map(el => {\n    return {\n      label: el.merchantName + ' - ' + el.merchantNo,\n      value: el.merchantNo,\n      metadata: {\n        createdAt: new Date().toISOString(),\n        isActive: el.status === 'active'\n      }\n    }\n  });\n  \n  return {\n    ...payload,\n    data: {\n      items: result,\n      total: result.length,\n      processed: true\n    }\n  };\n} catch (e) {\n  console.error('Processing failed:', e);\n  return {\n    ...payload,\n    error: e.message,\n    processed: false\n  };\n}",
+    "async_handler": "async function processData(input) {\n  try {\n    const response = await fetch('/api/data', {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json',\n        'Authorization': `Bearer ${token}`\n      },\n      body: JSON.stringify(input)\n    });\n    \n    if (!response.ok) {\n      throw new Error(`HTTP ${response.status}: ${response.statusText}`);\n    }\n    \n    const data = await response.json();\n    return data;\n  } catch (error) {\n    console.error('API call failed:', error);\n    throw error;\n  }\n}"
+  },
+  
+  "non_code_values": {
+    "number_value": 42,
+    "boolean_value": true,
+    "null_value": null,
+    "empty_string": "",
+    "simple_text": "This is just plain text, not code",
+    "url": "https://example.com/api/v1/users",
+    "email": "user@example.com",
+    "date_string": "2024-01-15T10:30:00Z",
+    "json_string": "{\"name\": \"test\", \"value\": 123}",
+    "numbers_array": [1, 2, 3, 4, 5],
+    "mixed_simple_array": ["text", 42, true, null]
+  },
+  
+  "edge_cases_and_special_chars": {
+    "empty_function": "function empty() {}",
+    "single_line_comment": "// This is a comment",
+    "multi_line_comment": "/* This is a\n   multi-line\n   comment */",
+    "regex_pattern": "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/",
+    "escaped_quotes": "console.log(\"He said: \\\"Hello, World!\\\"\");",
+    "unicode_content": "console.log('你好世界 🌍 Здравствуй мир');",
+    "template_literal": "const message = `Hello, ${name}!\\nWelcome to ${place}`;",
+    "very_long_line": "function veryLongFunctionNameThatExceedsNormalLineLengthLimitsAndContinuesForAVeryLongTimeToTestHowTheEditorHandlesLongLines() { return 'This is a very long line that might cause issues with some editors or formatters if not handled properly'; }"
+  },
+  
+  "legacy_examples": {
+    "adaptor": "try { \n const adaptor = require('./adaptor'); } catch (error) { console.error('Error loading adaptor:', error); }\n",
+    "code": "const adaptor = require('./adaptor');\n",
+    "script": "const code = require('./code');\n"
+  }
+}
