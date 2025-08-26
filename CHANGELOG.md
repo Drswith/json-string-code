@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.3.6-beta.2...main
+
+[compare changes](https://github.com/Drswith/vscode-json-string-code-editor/compare/v0.3.6-beta.2...main)
+
+### 🏡 Chore
+
+- 更新 tag 脚本以自动提交 CHANGELOG.md ([f9bd9bc](https://github.com/Drswith/vscode-json-string-code-editor/commit/f9bd9bc))
+
+### ❤️ Contributors
+
+- Drswith <540628938@qq.com>
+
 ## v0.3.6-beta.1...main
 
 [compare changes](https://github.com/Drswith/vscode-json-string-code-editor/compare/v0.3.6-beta.1...main)
