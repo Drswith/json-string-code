@@ -134,7 +134,7 @@
     "ext:publish": "pnpm run ext:publish-vsce && pnpm run ext:publish-ovsx",
     "ext:publish-vsce": "vsce publish --no-dependencies",
     "ext:publish-ovsx": "ovsx publish",
-    "tag": "pnpm run changelog && bumpp",
+    "tag": "pnpm run changelog && git add CHANGELOG.md && git commit -m \"docs: update CHANGELOG.md\" && bumpp",
     "changelog": "npx changelogen@latest --output CHANGELOG.md",
     "release": "pnpm run ext:tag && pnpm run build && pnpm run ext:publish"
   },

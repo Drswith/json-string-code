@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v0.3.6-beta.1...main
+
+[compare changes](https://github.com/Drswith/vscode-json-string-code-editor/compare/v0.3.6-beta.1...main)
+
+### 📖 Documentation
+
+- 添加CHANGELOG.md文件记录项目变更历史 ([ae0b72f](https://github.com/Drswith/vscode-json-string-code-editor/commit/ae0b72f))
+- 在README中添加变更日志链接 ([b06ade4](https://github.com/Drswith/vscode-json-string-code-editor/commit/b06ade4))
+- 更新README文档添加下载统计和贡献指南 ([ea898e5](https://github.com/Drswith/vscode-json-string-code-editor/commit/ea898e5))
+
+### 🏡 Chore
+
+- 更新 eslint 配置和 package.json 脚本 ([d1c8c26](https://github.com/Drswith/vscode-json-string-code-editor/commit/d1c8c26))
+
+### ❤️ Contributors
+
+- Drswith <540628938@qq.com>
+
 ## v0.3.1...v0.3.6-beta.1
 
 [compare changes](https://github.com/Drswith/vscode-json-string-code-editor/compare/v0.3.1...v0.3.6-beta.1)
