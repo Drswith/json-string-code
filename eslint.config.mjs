@@ -7,7 +7,7 @@ export default antfu(
     formatters: true,
     markdown: false,
     ignores: [
-      'example/**/*',
+      'examples/**/*',
       'src/generated',
       '**/*.test.{js,mjs,ts,mts}',
       'out/**/*',
@@ -20,13 +20,7 @@ export default antfu(
       },
     },
     rules: {
-      'no-template-curly-in-string': 'off',
-      'unused-imports/no-unused-vars': 'off',
-      'eqeqeq': 'off',
       'no-console': 'off',
-      'no-alert': 'off',
-      'style/eol-last': 'off',
-      'prefer-const': 'off',
     },
   },
 )
