@@ -2,7 +2,7 @@
   "publisher": "drswith",
   "name": "vscode-json-string-code-editor",
   "displayName": "JSON String Code Editor",
-  "version": "0.3.6",
+  "version": "0.3.7-beta.1",
   "packageManager": "pnpm@9.15.9",
   "description": "Enhanced JSON schema code snippet editing experience with temporary code editor tabs",
   "author": "Drswith",
@@ -134,7 +134,7 @@
     "ext:publish": "pnpm run ext:publish-vsce && pnpm run ext:publish-ovsx",
     "ext:publish-vsce": "vsce publish --no-dependencies",
     "ext:publish-ovsx": "ovsx publish",
-    "tag": "bumpp",
+    "tag": "pnpm run update && bumpp",
     "release": "pnpm run tag && pnpm run build && pnpm run ext:publish"
   },
   "dependencies": {
