@@ -37,6 +37,14 @@ export function activate(context: vscode.ExtensionContext) {
       const selection = editor.selection
       const position = selection.active
 
+      // 检查是否启用了自动检测
+      const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
+      const enableAutoDetection = config.get('enableAutoDetection', true)
+      if (!enableAutoDetection) {
+        vscode.window.showInformationMessage('自动检测功能已禁用，请在设置中启用 enableAutoDetection')
+        return
+      }
+
       // 检测当前位置是否包含代码
       const codeInfo = detector.detectCodeAtPosition(document, position)
       if (!codeInfo) {
@@ -54,6 +62,13 @@ export function activate(context: vscode.ExtensionContext) {
     ['json', 'jsonc'],
     {
       provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
+        // 检查是否启用了自动检测
+        const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
+        const enableAutoDetection = config.get('enableAutoDetection', true)
+        if (!enableAutoDetection) {
+          return []
+        }
+
         const codeLenses: vscode.CodeLens[] = []
         const codeBlocks = detector.detectAllCodeBlocks(document)
 
@@ -88,6 +103,14 @@ export function activate(context: vscode.ExtensionContext) {
 
       // 检查文件是否应该被处理（包括文件类型和include配置）
       if (!shouldProcessFile(editor.document)) {
+        return
+      }
+
+      // 检查是否启用了自动检测
+      const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
+      const enableAutoDetection = config.get('enableAutoDetection', true)
+      if (!enableAutoDetection) {
+        vscode.window.showInformationMessage('自动检测功能已禁用，请在设置中启用 enableAutoDetection')
         return
       }
 

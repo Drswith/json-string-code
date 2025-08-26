@@ -20,6 +20,13 @@ export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
       return []
     }
 
+    // 检查是否启用了自动检测
+    const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
+    const enableAutoDetection = config.get('enableAutoDetection', true)
+    if (!enableAutoDetection) {
+      return []
+    }
+
     const codeLenses: vscode.CodeLens[] = []
     const jsBlocks = this.detector.detectAllJavaScriptBlocks(document)
 

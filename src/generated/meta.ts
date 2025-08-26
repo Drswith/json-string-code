@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "drswith"
 export const name = "vscode-json-string-code-editor"
-export const version = "0.3.1"
+export const version = "0.3.3"
 export const displayName = "JSON String Code Editor"
 export const description = "Enhanced JSON schema code snippet editing experience with temporary code editor tabs"
 export const extensionId = `${publisher}.${name}`
@@ -43,28 +43,32 @@ export const commands = {
  */
 export type ConfigKey = 
   | "vscode-json-string-code-editor.include"
-  | "vscode-json-string-code-editor.autoDetectFields"
+  | "vscode-json-string-code-editor.exclude"
   | "vscode-json-string-code-editor.enableAutoDetection"
+  | "vscode-json-string-code-editor.autoDetectFields"
   | "vscode-json-string-code-editor.logLevel"
 
 export interface ConfigKeyTypeMap {
   "vscode-json-string-code-editor.include": string[],
-  "vscode-json-string-code-editor.autoDetectFields": unknown[],
+  "vscode-json-string-code-editor.exclude": string[],
   "vscode-json-string-code-editor.enableAutoDetection": boolean,
+  "vscode-json-string-code-editor.autoDetectFields": unknown[],
   "vscode-json-string-code-editor.logLevel": ("error" | "warn" | "info" | "debug"),
 }
 
 export interface ConfigShorthandMap {
   include: "vscode-json-string-code-editor.include",
-  autoDetectFields: "vscode-json-string-code-editor.autoDetectFields",
+  exclude: "vscode-json-string-code-editor.exclude",
   enableAutoDetection: "vscode-json-string-code-editor.enableAutoDetection",
+  autoDetectFields: "vscode-json-string-code-editor.autoDetectFields",
   logLevel: "vscode-json-string-code-editor.logLevel",
 }
 
 export interface ConfigShorthandTypeMap {
   include: string[],
-  autoDetectFields: unknown[],
+  exclude: string[],
   enableAutoDetection: boolean,
+  autoDetectFields: unknown[],
   logLevel: ("error" | "warn" | "info" | "debug"),
 }
 
@@ -89,15 +93,15 @@ export const configs = {
     default: ["**/*.json","**/*.jsonc"],
   } as ConfigItem<"vscode-json-string-code-editor.include">,
   /**
-   * Field names that should be automatically detected as containing code
-   * @key `vscode-json-string-code-editor.autoDetectFields`
-   * @default `["adaptor","script","code","expression"]`
+   * Glob patterns for files that should be excluded from processing
+   * @key `vscode-json-string-code-editor.exclude`
+   * @default `["**\/node_modules/**","**\/dist/**","**\/build/**"]`
    * @type `array`
    */
-  autoDetectFields: {
-    key: "vscode-json-string-code-editor.autoDetectFields",
-    default: ["adaptor","script","code","expression"],
-  } as ConfigItem<"vscode-json-string-code-editor.autoDetectFields">,
+  exclude: {
+    key: "vscode-json-string-code-editor.exclude",
+    default: ["**/node_modules/**","**/dist/**","**/build/**"],
+  } as ConfigItem<"vscode-json-string-code-editor.exclude">,
   /**
    * Automatically detect code in JSON strings
    * @key `vscode-json-string-code-editor.enableAutoDetection`
@@ -108,6 +112,16 @@ export const configs = {
     key: "vscode-json-string-code-editor.enableAutoDetection",
     default: true,
   } as ConfigItem<"vscode-json-string-code-editor.enableAutoDetection">,
+  /**
+   * Field names that should be automatically detected as containing code
+   * @key `vscode-json-string-code-editor.autoDetectFields`
+   * @default `["adaptor","script","code","expression"]`
+   * @type `array`
+   */
+  autoDetectFields: {
+    key: "vscode-json-string-code-editor.autoDetectFields",
+    default: ["adaptor","script","code","expression"],
+  } as ConfigItem<"vscode-json-string-code-editor.autoDetectFields">,
   /**
    * Set the logging level for the extension
    * @key `vscode-json-string-code-editor.logLevel`
@@ -122,8 +136,9 @@ export const configs = {
 
 export interface ScopedConfigKeyTypeMap {
   "include": string[],
-  "autoDetectFields": unknown[],
+  "exclude": string[],
   "enableAutoDetection": boolean,
+  "autoDetectFields": unknown[],
   "logLevel": ("error" | "warn" | "info" | "debug"),
 }
 
@@ -131,8 +146,9 @@ export const scopedConfigs = {
   scope: "vscode-json-string-code-editor",
   defaults: {
     "include": ["**/*.json","**/*.jsonc"],
-    "autoDetectFields": ["adaptor","script","code","expression"],
+    "exclude": ["**/node_modules/**","**/dist/**","**/build/**"],
     "enableAutoDetection": true,
+    "autoDetectFields": ["adaptor","script","code","expression"],
     "logLevel": "info",
   } satisfies ScopedConfigKeyTypeMap,
 }
@@ -140,16 +156,18 @@ export const scopedConfigs = {
 export interface NestedConfigs {
   "vscode-json-string-code-editor": {
     "include": string[],
-    "autoDetectFields": unknown[],
+    "exclude": string[],
     "enableAutoDetection": boolean,
+    "autoDetectFields": unknown[],
     "logLevel": ("error" | "warn" | "info" | "debug"),
   },
 }
 
 export interface NestedScopedConfigs {
   "include": string[],
-  "autoDetectFields": unknown[],
+  "exclude": string[],
   "enableAutoDetection": boolean,
+  "autoDetectFields": unknown[],
   "logLevel": ("error" | "warn" | "info" | "debug"),
 }
 

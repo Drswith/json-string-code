@@ -48,6 +48,15 @@ export class DecorationProvider {
       return
     }
 
+    // 检查是否启用了自动检测
+    const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
+    const enableAutoDetection = config.get('enableAutoDetection', true)
+    if (!enableAutoDetection) {
+      // 如果禁用了自动检测，清除所有装饰
+      activeEditor.setDecorations(this.decorationType, [])
+      return
+    }
+
     // 检测所有代码块
     const codeBlocks = this.detector.detectAllCodeBlocks(document)
 

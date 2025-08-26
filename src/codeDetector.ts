@@ -13,10 +13,12 @@ export interface CodeBlockInfo {
 
 export class CodeDetector {
   private autoDetectFields: string[] = ['adaptor', 'adaptor2', 'script', 'code', 'expression']
+  private enableAutoDetection: boolean = true
 
   updateConfiguration(): void {
     const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
     this.autoDetectFields = config.get('autoDetectFields', ['adaptor', 'adaptor2', 'script', 'code', 'expression'])
+    this.enableAutoDetection = config.get('enableAutoDetection', true)
   }
 
   detectJavaScriptAtPosition(document: vscode.TextDocument, position: vscode.Position): CodeBlockInfo | null {
@@ -71,6 +73,11 @@ export class CodeDetector {
   }
 
   detectAllJavaScriptBlocks(document: vscode.TextDocument): CodeBlockInfo[] {
+    // 如果禁用了自动检测，返回空数组
+    if (!this.enableAutoDetection) {
+      return []
+    }
+
     const text = document.getText()
     const blocks: CodeBlockInfo[] = []
 
@@ -99,6 +106,11 @@ export class CodeDetector {
   }
 
   detectAllCodeBlocks(document: vscode.TextDocument): CodeBlockInfo[] {
+    // 如果禁用了自动检测，返回空数组
+    if (!this.enableAutoDetection) {
+      return []
+    }
+
     const text = document.getText()
     const blocks: CodeBlockInfo[] = []
 
