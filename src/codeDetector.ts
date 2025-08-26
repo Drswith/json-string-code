@@ -12,12 +12,16 @@ export interface CodeBlockInfo {
 }
 
 export class CodeDetector {
-  private autoDetectFields: string[] = ['adaptor', 'adaptor2', 'script', 'code', 'expression']
+  private autoDetectFields: string[] = []
   private enableAutoDetection: boolean = true
+
+  constructor() {
+    this.updateConfiguration()
+  }
 
   updateConfiguration(): void {
     const config = vscode.workspace.getConfiguration('vscode-json-string-code-editor')
-    this.autoDetectFields = config.get('autoDetectFields', ['adaptor', 'adaptor2', 'script', 'code', 'expression'])
+    this.autoDetectFields = config.get('autoDetectFields', ['adaptor', 'script', 'code', 'expression'])
     this.enableAutoDetection = config.get('enableAutoDetection', true)
   }
 
@@ -301,7 +305,8 @@ export class CodeDetector {
           return
         }
 
-        if (typeof value === 'string' && value.trim().length > 0) {
+        // 只检测配置中指定的字段或符合代码字段模式的字段
+        if (this.isCodeField(currentProperty) && typeof value === 'string' && value.trim().length > 0) {
           // 检测语言类型
           const language = this.detectLanguage(currentProperty, value)
 
@@ -327,7 +332,7 @@ export class CodeDetector {
   }
 
   private findAllCodeBlocksWithRegex(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
-    // 匹配所有字符串字段，不限制字段名
+    // 匹配字符串字段，但只处理配置中指定的字段或符合代码字段模式的字段
     const regex = /"([^"]+)"\s*:\s*"((?:[^"\\]|\\.)*)"/g
     let match = regex.exec(text)
 
@@ -336,7 +341,8 @@ export class CodeDetector {
       const jsCode = match[2]
       const unescapedCode = this.unescapeString(jsCode)
 
-      if (unescapedCode.trim().length > 0) {
+      // 只检测配置中指定的字段或符合代码字段模式的字段
+      if (this.isCodeField(fieldName) && unescapedCode.trim().length > 0) {
         const language = this.detectLanguage(fieldName, unescapedCode)
         const fullMatch = match[0]
         const startOffset = match.index + fullMatch.indexOf('"', fullMatch.indexOf(':')) + 1
