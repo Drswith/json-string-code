@@ -12,14 +12,14 @@ describe('multiline JavaScript detection', () => {
 
   it('should detect multiline JavaScript with escaped newlines', () => {
     const jsonContent = `{
-  "adaptor2": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n"
+  "expression": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n"
 }`
     const document = new TextDocument(jsonContent)
 
     const result = detector.detectJavaScriptAtPosition(document, new Position(1, 15))
 
     expect(result).not.toBeNull()
-    expect(result?.fieldName).toBe('adaptor2')
+    expect(result?.fieldName).toBe('expression')
     expect(result?.code).toContain('try {')
     expect(result?.code).toContain('payload.data.items.map')
     expect(result?.code).toContain('catch (e)')
@@ -28,7 +28,7 @@ describe('multiline JavaScript detection', () => {
   it('should detect all JavaScript blocks including multiline ones', () => {
     const jsonContent = `{
   "adaptor": "function test() { console.log('Hello World'); return true; }",
-  "adaptor2": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n",
+  "expression": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n",
   "script": "const x = 1 + 1; console.log(x);",
   "name": "test"
 }`
@@ -43,12 +43,12 @@ describe('multiline JavaScript detection', () => {
     expect(adaptorBlock).toBeDefined()
     expect(adaptorBlock?.code).toBe('function test() { console.log(\'Hello World\'); return true; }')
 
-    // Check adaptor2 field (multiline)
-    const adaptor2Block = blocks.find(b => b.fieldName === 'adaptor2')
-    expect(adaptor2Block).toBeDefined()
-    expect(adaptor2Block?.code).toContain('try {')
-    expect(adaptor2Block?.code).toContain('payload.data.items.map')
-    expect(adaptor2Block?.code).toContain('catch (e)')
+    // Check expression field (multiline)
+    const expressionBlock = blocks.find(b => b.fieldName === 'expression')
+    expect(expressionBlock).toBeDefined()
+    expect(expressionBlock?.code).toContain('try {')
+    expect(expressionBlock?.code).toContain('payload.data.items.map')
+    expect(expressionBlock?.code).toContain('catch (e)')
 
     // Check script field
     const scriptBlock = blocks.find(b => b.fieldName === 'script')
@@ -58,7 +58,7 @@ describe('multiline JavaScript detection', () => {
 
   it('should handle complex escaped characters in multiline code', () => {
     const jsonContent = `{
-  "adaptor2": "function complex() {\\n  const str = 'Hello\\\\nWorld';\\n  const regex = /\\\\d+/g;\\n  return str.replace(regex, '');\\n}"
+  "expression": "function complex() {\\n  const str = 'Hello\\\\nWorld';\\n  const regex = /\\\\d+/g;\\n  return str.replace(regex, '');\\n}"
 }`
     const document = new TextDocument(jsonContent)
 

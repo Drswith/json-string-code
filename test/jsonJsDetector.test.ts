@@ -10,7 +10,7 @@ describe('jsonJsDetector', () => {
     detector = new CodeDetector()
     const testJson = `{
   "adaptor": "function test() { console.log('Hello World'); return true; }",
-  "adaptor2": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n",
+  "expression": "try {\\n  let result = payload.data.items.map(el => {\\n    return {\\n      label: el.merchantName + ' - ' + el.merchantNo,\\n      value: el.merchantNo\\n    }\\n  })\\n  return {\\n    ...payload,\\n    data: {\\n      items: result\\n    }\\n  }\\n}\\ncatch (e) {\\n  console.error(e)\\n  return payload\\n}\\n",
   "script": "const x = 1 + 1; console.log(x);",
   "name": "test"
 }`
@@ -27,8 +27,8 @@ describe('jsonJsDetector', () => {
       expect(blocks[0].fieldName).toBe('adaptor')
       expect(blocks[0].code).toBe('function test() { console.log(\'Hello World\'); return true; }')
 
-      // Check adaptor2 field
-      expect(blocks[1].fieldName).toBe('adaptor2')
+      // Check expression field
+      expect(blocks[1].fieldName).toBe('expression')
       expect(blocks[1].code).toContain('payload.data.items.map')
 
       // Check script field
