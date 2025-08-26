@@ -421,6 +421,11 @@ export class CodeDetector {
       return false
     }
 
+    // 如果启用了自动检测但autoDetectFields为空，不进行关键词匹配
+    if (this.autoDetectFields.length === 0) {
+      return false
+    }
+
     // 检查字段名是否包含代码相关的关键词
     const fieldLower = fieldName.toLowerCase()
     return fieldLower.includes('code') || fieldLower.includes('script')

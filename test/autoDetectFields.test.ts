@@ -139,8 +139,35 @@ describe('AutoDetectFields Configuration', () => {
   })
 
   describe('Code Field Pattern Matching', () => {
-    it('should detect fields with code-related keywords even if not in autoDetectFields', () => {
-      // 模拟配置，autoDetectFields 为空，但应该检测包含 'code' 关键词的字段
+    it('should detect fields with code-related keywords when autoDetectFields has values', () => {
+      // 模拟配置，autoDetectFields 不为空，应该检测包含关键词的字段
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
+        get: (key: string, defaultValue?: any) => {
+          if (key === 'autoDetectFields') {
+            return ['adaptor'] // 不为空
+          }
+          if (key === 'enableAutoDetection') {
+            return true
+          }
+          return defaultValue
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
+
+      codeDetector.updateConfiguration()
+      const blocks = codeDetector.detectAllCodeBlocks(document)
+      
+      // 应该检测到包含关键词的字段和autoDetectFields中的字段
+      const fieldNames = blocks.map(block => block.fieldName)
+      expect(fieldNames).toContain('sqlQuery')
+      expect(fieldNames).toContain('adaptor')
+    })
+
+    it('should not detect fields with keywords when autoDetectFields is empty but enableAutoDetection is true', () => {
+      // 模拟配置，enableAutoDetection为true但autoDetectFields为空，不应该检测关键词字段
       const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
       mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
@@ -160,17 +187,16 @@ describe('AutoDetectFields Configuration', () => {
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllCodeBlocks(document)
       
-      // 应该检测到包含 'sql' 关键词的字段
-      const fieldNames = blocks.map(block => block.fieldName)
-      expect(fieldNames).toContain('sqlQuery')
+      // 不应该检测到任何字段
+      expect(blocks.length).toBe(0)
     })
 
-    it('should detect HTML and SQL fields based on field name patterns', () => {
+    it('should detect HTML and SQL fields when autoDetectFields contains relevant fields', () => {
       const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
       mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
-            return []
+            return ['sqlQuery', 'htmlTemplate']
           }
           if (key === 'enableAutoDetection') {
             return true
@@ -191,13 +217,13 @@ describe('AutoDetectFields Configuration', () => {
     })
   })
 
-  describe('Empty Configuration', () => {
-    it('should handle empty autoDetectFields array', () => {
+  describe('Configuration Scenarios', () => {
+    it('should not detect any fields when enableAutoDetection is false (scenario 1)', () => {
       const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
       mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
-            return []
+            return ['adaptor', 'script'] // 不为空
           }
           if (key === 'enableAutoDetection') {
             return false
@@ -212,8 +238,58 @@ describe('AutoDetectFields Configuration', () => {
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllCodeBlocks(document)
       
-      // 空配置时，不应该检测到任何 JavaScript 字段
+      // enableAutoDetection为false时，无论autoDetectFields是否为空，均不进行检测
       expect(blocks.length).toBe(0)
+    })
+
+    it('should not detect any fields when enableAutoDetection is true but autoDetectFields is empty (scenario 2)', () => {
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
+        get: (key: string, defaultValue?: any) => {
+          if (key === 'autoDetectFields') {
+            return []
+          }
+          if (key === 'enableAutoDetection') {
+            return true
+          }
+          return defaultValue
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
+
+      codeDetector.updateConfiguration()
+      const blocks = codeDetector.detectAllCodeBlocks(document)
+      
+      // enableAutoDetection为true但autoDetectFields为空时，不进行检测
+      expect(blocks.length).toBe(0)
+    })
+
+    it('should detect fields when enableAutoDetection is true and autoDetectFields is not empty (scenario 3)', () => {
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
+        get: (key: string, defaultValue?: any) => {
+          if (key === 'autoDetectFields') {
+            return ['adaptor']
+          }
+          if (key === 'enableAutoDetection') {
+            return true
+          }
+          return defaultValue
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
+
+      codeDetector.updateConfiguration()
+      const blocks = codeDetector.detectAllCodeBlocks(document)
+      
+      // enableAutoDetection为true且autoDetectFields不为空时，进行检测
+      expect(blocks.length).toBeGreaterThan(0)
+      const fieldNames = blocks.map(block => block.fieldName)
+      expect(fieldNames).toContain('adaptor')
     })
   })
 
