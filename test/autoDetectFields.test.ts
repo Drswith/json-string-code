@@ -1,39 +1,33 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { CodeDetector } from '../src/codeDetector'
-import { TextDocument, workspace } from './vscode-mock'
+import { TextDocument, workspace, Uri } from 'vscode'
 
 describe('AutoDetectFields Configuration', () => {
   let codeDetector: CodeDetector
   let document: TextDocument
 
-  beforeEach(() => {
+  beforeEach(async () => {
     codeDetector = new CodeDetector()
-    // 模拟包含多种字段的 JSON 文档
-    const jsonContent = `{
-  "adaptor": "console.log('adaptor code')",
-  "script": "function test() { return 'script'; }",
-  "code": "const x = 42;",
-  "expression": "x => x * 2",
-  "customField": "alert('custom field')",
-  "nonCodeField": "just a string",
-  "sqlQuery": "SELECT * FROM users",
-  "htmlTemplate": "<div>Hello World</div>"
-}`
-    document = new TextDocument(jsonContent)
+    const uri = Uri.joinPath(Uri.file(process.cwd()), 'example/test-auto-detect-fields.json');
+    document = await workspace.openTextDocument(uri);
   })
 
   describe('Default Configuration', () => {
     it('should use default autoDetectFields when configuration is not set', () => {
       // 模拟默认配置
-      const originalGet = workspace.getConfiguration('vscode-json-string-code-editor').get
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return defaultValue // 返回默认值
           }
-          return originalGet(key, defaultValue)
-        }
-      })
+          return defaultValue
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
+
 
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllJavaScriptBlocks(document)
@@ -64,14 +58,18 @@ describe('AutoDetectFields Configuration', () => {
   describe('Custom Configuration', () => {
     it('should only detect fields specified in autoDetectFields', () => {
       // 模拟自定义配置，只检测 'script' 和 'code' 字段
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return ['script', 'code']
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllJavaScriptBlocks(document)
@@ -85,14 +83,18 @@ describe('AutoDetectFields Configuration', () => {
 
     it('should detect custom fields when added to autoDetectFields', () => {
       // 模拟自定义配置，添加 'customField' 到检测列表
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return ['adaptor', 'script', 'code', 'expression', 'customField']
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       // 使用 detectAllCodeBlocks 而不是 detectAllJavaScriptBlocks，因为 customField 不一定是 JavaScript
@@ -107,14 +109,18 @@ describe('AutoDetectFields Configuration', () => {
 
     it('should not detect fields not in autoDetectFields (except code-related keywords)', () => {
       // 模拟配置，只检测 'script' 字段
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return ['script']
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllCodeBlocks(document)
@@ -135,14 +141,18 @@ describe('AutoDetectFields Configuration', () => {
   describe('Code Field Pattern Matching', () => {
     it('should detect fields with code-related keywords even if not in autoDetectFields', () => {
       // 模拟配置，autoDetectFields 为空，但应该检测包含 'code' 关键词的字段
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return []
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllCodeBlocks(document)
@@ -153,14 +163,18 @@ describe('AutoDetectFields Configuration', () => {
     })
 
     it('should detect HTML and SQL fields based on field name patterns', () => {
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return []
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllCodeBlocks(document)
@@ -173,14 +187,18 @@ describe('AutoDetectFields Configuration', () => {
 
   describe('Empty Configuration', () => {
     it('should handle empty autoDetectFields array', () => {
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return []
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       const blocks = codeDetector.detectAllJavaScriptBlocks(document)
@@ -192,14 +210,18 @@ describe('AutoDetectFields Configuration', () => {
 
   describe('Position-based Detection', () => {
     it('should respect autoDetectFields for position-based JavaScript detection', () => {
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return ['script']
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       
@@ -216,14 +238,18 @@ describe('AutoDetectFields Configuration', () => {
     })
 
     it('should respect autoDetectFields for position-based code detection', () => {
-      workspace.getConfiguration = () => ({
+      const mockGetConfiguration = vi.mocked(workspace.getConfiguration)
+      mockGetConfiguration.mockReturnValue({
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return ['code']
           }
           return defaultValue
-        }
-      })
+        },
+        has: vi.fn(),
+        inspect: vi.fn(),
+        update: vi.fn()
+      } as any)
 
       codeDetector.updateConfiguration()
       
