@@ -64,11 +64,35 @@ You can customize these field names in the extension settings.
 
 ### Language Detection
 
-The extension automatically detects the programming language based on:
+The extension automatically detects the programming language based on field names and content analysis. The following languages are supported (built-in, not customizable):
 
-- **Field names**: Fields containing keywords like `script`, `code`, `expression` are detected as JavaScript
-- **Content analysis**: The extension analyzes code content to determine the most appropriate language
-- **File context**: Uses the context of the JSON file to make intelligent language suggestions
+**Supported Languages:**
+
+- **JavaScript** (default fallback)
+- **TypeScript**
+- **Python**
+- **SQL**
+- **HTML**
+- **CSS**
+- **Java**
+- **PHP**
+- **Shell/Bash**
+- **JSON**
+- **Go**
+- **Rust**
+- **C/C++**
+- **XML**
+- **YAML**
+- **Markdown**
+- **Dockerfile**
+
+**Detection Logic:**
+
+- **Field name analysis**: Fields containing keywords like `sql`, `html`, `python`, `typescript`, etc. are detected accordingly
+- **Content analysis**: The extension analyzes code syntax patterns to determine the most appropriate language
+- **Default fallback**: When language cannot be determined, JavaScript is used as the default
+
+> **Note**: Language detection is built into the extension and cannot be customized by users. The detection algorithms are optimized for common use cases and code patterns.
 
 ### Keyboard Shortcuts
 
