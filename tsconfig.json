@@ -6,6 +6,9 @@
     ],
     "module": "commonjs",
     "moduleResolution": "node",
+    "types": [
+      "vitest/globals"
+    ],
     "strict": true,
     "outDir": "out",
     "sourceMap": true,

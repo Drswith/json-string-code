@@ -149,6 +149,7 @@
     "bumpp": "^10.0.3",
     "eslint": "9.29.0",
     "eslint-plugin-format": "1.0.1",
+    "jest-mock-vscode": "^4.6.0",
     "ovsx": "^0.10.5",
     "pnpm": "9.15.9",
     "tsup": "^8.5.0",
