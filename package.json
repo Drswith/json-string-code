@@ -75,6 +75,23 @@
           ],
           "description": "Glob patterns for files where the extension should be active"
         },
+        "vscode-json-string-code-editor.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/build/**"
+          ],
+          "description": "Glob patterns for files that should be excluded from processing"
+        },
+        "vscode-json-string-code-editor.enableAutoDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect code in JSON strings"
+        },
         "vscode-json-string-code-editor.autoDetectFields": {
           "type": "array",
           "default": [
@@ -84,11 +101,6 @@
             "expression"
           ],
           "description": "Field names that should be automatically detected as containing code"
-        },
-        "vscode-json-string-code-editor.enableAutoDetection": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically detect code in JSON strings"
         },
         "vscode-json-string-code-editor.logLevel": {
           "type": "string",
