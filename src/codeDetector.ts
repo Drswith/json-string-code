@@ -260,7 +260,13 @@ export class CodeDetector {
     if (keyLower.includes('typescript') || keyLower.includes('ts')) {
       return 'typescript'
     }
-    if (keyLower.includes('java')) {
+    if (keyLower.includes('json')) {
+      return 'json'
+    }
+    if (keyLower.includes('javascript') || keyLower.includes('js')) {
+      return 'javascript'
+    }
+    if (keyLower.includes('java') && !keyLower.includes('javascript')) {
       return 'java'
     }
     if (keyLower.includes('php')) {
@@ -268,9 +274,6 @@ export class CodeDetector {
     }
     if (keyLower.includes('shell') || keyLower.includes('bash') || keyLower.includes('sh')) {
       return 'shellscript'
-    }
-    if (keyLower.includes('json')) {
-      return 'json'
     }
     if (keyLower.includes('dockerfile') || keyLower.includes('docker')) {
       return 'dockerfile'
@@ -287,13 +290,10 @@ export class CodeDetector {
     if ((keyLower === 'c' || keyLower.includes('c_code') || keyLower.includes('c-code')) && !keyLower.includes('css')) {
       return 'c'
     }
-    if (keyLower.includes('javascript') || keyLower.includes('js')) {
-      return 'javascript'
-    }
 
     // JavaScript/TypeScript 检测
-    if (value.includes('function') || value.includes('=>') || value.includes('const ') || value.includes('let ')
-      || value.includes('var ') || value.includes('console.') || /\b(?:async|await)\b/.test(value)
+    if (/\bfunction\s*\(/.test(value) || value.includes('=>') || /\bconst\s+\w+/.test(value) || /\blet\s+\w+/.test(value)
+      || /\bvar\s+\w+/.test(value) || value.includes('console.') || /\b(?:async|await)\b/.test(value)
       || /\b(?:import|export)\b/.test(value) || /\$\{[^}]+\}/.test(value)) {
       // 进一步检测是否为 TypeScript
       if (/:\s*(?:string|number|boolean|object|any|void)\b/.test(value)
