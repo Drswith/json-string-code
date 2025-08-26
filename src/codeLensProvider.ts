@@ -28,12 +28,12 @@ export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
     }
 
     const codeLenses: vscode.CodeLens[] = []
-    const jsBlocks = this.detector.detectAllJavaScriptBlocks(document)
+    const codeBlocks = this.detector.detectAllCodeBlocks(document)
 
-    for (const jsInfo of jsBlocks) {
+    for (const codeInfo of codeBlocks) {
       const range = new vscode.Range(
-        document.positionAt(jsInfo.start),
-        document.positionAt(jsInfo.end),
+        document.positionAt(codeInfo.start),
+        document.positionAt(codeInfo.end),
       )
 
       // 在JavaScript代码块上方添加CodeLens
@@ -45,9 +45,9 @@ export class JsonJsCodeLensProvider implements vscode.CodeLensProvider {
       )
 
       const codeLens = new vscode.CodeLens(codeLensRange, {
-        title: `$(edit) Edit JavaScript (${jsInfo.fieldName})`,
+        title: `$(edit) Edit Code (${codeInfo.fieldName})`,
         command: 'vscode-json-string-code-editor.editCodeAtRange',
-        arguments: [document.uri, jsInfo],
+        arguments: [document.uri, codeInfo],
       })
 
       codeLenses.push(codeLens)

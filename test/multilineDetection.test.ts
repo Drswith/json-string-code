@@ -14,7 +14,7 @@ describe('multiline JavaScript detection', () => {
     const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-multiline-detection.json')
     const document = await workspace.openTextDocument(uri)
 
-    const result = detector.detectJavaScriptAtPosition(document, new Position(1, 20))
+    const result = detector.detectCodeAtPosition(document, new Position(1, 20))
 
     expect(result).not.toBeNull()
     expect(result?.fieldName).toBe('expression')
@@ -27,7 +27,7 @@ describe('multiline JavaScript detection', () => {
     const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-multiline-all-blocks.json')
     const document = await workspace.openTextDocument(uri)
 
-    const blocks = detector.detectAllJavaScriptBlocks(document)
+    const blocks = detector.detectAllCodeBlocks(document)
 
     expect(blocks).toHaveLength(3)
 
@@ -53,7 +53,7 @@ describe('multiline JavaScript detection', () => {
     const uri = Uri.joinPath(Uri.file(process.cwd()), 'examples/test-complex-escaped.json')
     const document = await workspace.openTextDocument(uri)
 
-    const result = detector.detectJavaScriptAtPosition(document, new Position(1, 20))
+    const result = detector.detectCodeAtPosition(document, new Position(1, 20))
 
     expect(result).not.toBeNull()
     expect(result?.code).toContain('Hello\\nWorld')

@@ -30,7 +30,7 @@ describe('AutoDetectFields Configuration', () => {
 
 
       codeDetector.updateConfiguration()
-      const blocks = codeDetector.detectAllJavaScriptBlocks(document)
+      const blocks = codeDetector.detectAllCodeBlocks(document)
       
       // 应该检测到默认字段中的 JavaScript 代码
       expect(blocks.length).toBeGreaterThan(0)
@@ -72,7 +72,7 @@ describe('AutoDetectFields Configuration', () => {
       } as any)
 
       codeDetector.updateConfiguration()
-      const blocks = codeDetector.detectAllJavaScriptBlocks(document)
+      const blocks = codeDetector.detectAllCodeBlocks(document)
       
       const fieldNames = blocks.map(block => block.fieldName)
       expect(fieldNames).toContain('script')
@@ -147,6 +147,9 @@ describe('AutoDetectFields Configuration', () => {
           if (key === 'autoDetectFields') {
             return []
           }
+          if (key === 'enableAutoDetection') {
+            return true
+          }
           return defaultValue
         },
         has: vi.fn(),
@@ -168,6 +171,9 @@ describe('AutoDetectFields Configuration', () => {
         get: (key: string, defaultValue?: any) => {
           if (key === 'autoDetectFields') {
             return []
+          }
+          if (key === 'enableAutoDetection') {
+            return true
           }
           return defaultValue
         },
@@ -193,6 +199,9 @@ describe('AutoDetectFields Configuration', () => {
           if (key === 'autoDetectFields') {
             return []
           }
+          if (key === 'enableAutoDetection') {
+            return false
+          }
           return defaultValue
         },
         has: vi.fn(),
@@ -201,7 +210,7 @@ describe('AutoDetectFields Configuration', () => {
       } as any)
 
       codeDetector.updateConfiguration()
-      const blocks = codeDetector.detectAllJavaScriptBlocks(document)
+      const blocks = codeDetector.detectAllCodeBlocks(document)
       
       // 空配置时，不应该检测到任何 JavaScript 字段
       expect(blocks.length).toBe(0)
@@ -227,13 +236,13 @@ describe('AutoDetectFields Configuration', () => {
       
       // 在 'script' 字段中的位置
       const scriptPosition = document.positionAt(document.getText().indexOf('function test'))
-      const scriptBlock = codeDetector.detectJavaScriptAtPosition(document, scriptPosition)
+      const scriptBlock = codeDetector.detectCodeAtPosition(document, scriptPosition)
       expect(scriptBlock).not.toBeNull()
       expect(scriptBlock?.fieldName).toBe('script')
       
       // 在 'adaptor' 字段中的位置（不在配置中）
       const adaptorPosition = document.positionAt(document.getText().indexOf('console.log'))
-      const adaptorBlock = codeDetector.detectJavaScriptAtPosition(document, adaptorPosition)
+      const adaptorBlock = codeDetector.detectCodeAtPosition(document, adaptorPosition)
       expect(adaptorBlock).toBeNull()
     })
 

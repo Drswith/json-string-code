@@ -25,30 +25,7 @@ export class CodeDetector {
     this.enableAutoDetection = config.get('enableAutoDetection', true)
   }
 
-  detectJavaScriptAtPosition(document: vscode.TextDocument, position: vscode.Position): CodeBlockInfo | null {
-    const text = document.getText()
-    const offset = document.offsetAt(position)
 
-    try {
-      // 使用jsonc-parser解析JSON，支持注释和容错
-      const parseErrors: ParseError[] = []
-      const parsed = parseTree(text, parseErrors, {
-        allowTrailingComma: true,
-        allowEmptyContent: true,
-        disallowComments: false,
-      })
-
-      if (parsed) {
-        return this.findJavaScriptInObjectWithAST(text, offset, document)
-      }
-
-      // 如果解析失败，尝试部分解析
-      return this.findJavaScriptInPartialJson(text, offset, document)
-    }
-    catch (error) {
-      return this.findJavaScriptInPartialJson(text, offset, document)
-    }
-  }
 
   detectCodeAtPosition(document: vscode.TextDocument, position: vscode.Position): CodeBlockInfo | null {
     const text = document.getText()
@@ -76,38 +53,7 @@ export class CodeDetector {
     }
   }
 
-  detectAllJavaScriptBlocks(document: vscode.TextDocument): CodeBlockInfo[] {
-    // 如果禁用了自动检测，返回空数组
-    if (!this.enableAutoDetection) {
-      return []
-    }
 
-    const text = document.getText()
-    const blocks: CodeBlockInfo[] = []
-
-    try {
-      // 使用自定义JSON解析器解析JSON，支持注释和容错
-      const parseErrors: ParseError[] = []
-      const parsed = parseTree(text, parseErrors, {
-        allowTrailingComma: true,
-        allowEmptyContent: true,
-        disallowComments: false,
-      })
-
-      if (parsed) {
-        this.findAllJavaScriptWithAST(text, document, blocks)
-      }
-      else {
-        // 如果解析失败，使用正则表达式查找
-        this.findAllJavaScriptWithRegex(text, document, blocks)
-      }
-    }
-    catch (error) {
-      this.findAllJavaScriptWithRegex(text, document, blocks)
-    }
-
-    return blocks
-  }
 
   detectAllCodeBlocks(document: vscode.TextDocument): CodeBlockInfo[] {
     // 如果禁用了自动检测，返回空数组
@@ -142,45 +88,7 @@ export class CodeDetector {
     return blocks
   }
 
-  private findJavaScriptInObjectWithAST(text: string, offset: number, document: vscode.TextDocument): CodeBlockInfo | null {
-    let result: CodeBlockInfo | null = null
-    let currentProperty: string | null = null
 
-    const visitor: JSONVisitor = {
-      onObjectProperty: (property: string) => {
-        currentProperty = property
-      },
-      onLiteralValue: (value: any, valueOffset: number, valueLength: number) => {
-        if (result || !currentProperty) {
-          return
-        }
-
-        if (offset >= valueOffset && offset <= valueOffset + valueLength) {
-          if (this.isJavaScriptField(currentProperty) && typeof value === 'string') {
-            if (this.looksLikeJavaScript(value)) {
-              // valueOffset包含引号，需要+1跳过开始引号，-1跳过结束引号
-              const codeStart = valueOffset + 1
-              const codeEnd = valueOffset + valueLength - 1
-              const startPos = document.positionAt(codeStart)
-              const endPos = document.positionAt(codeEnd)
-
-              result = {
-                code: value,
-                start: codeStart,
-                end: codeEnd,
-                range: new vscode.Range(startPos, endPos),
-                fieldName: currentProperty,
-                language: 'javascript',
-              }
-            }
-          }
-        }
-      },
-    }
-
-    visit(text, visitor)
-    return result
-  }
 
   private findCodeInObjectWithAST(text: string, offset: number, document: vscode.TextDocument): CodeBlockInfo | null {
     let result: CodeBlockInfo | null = null
@@ -257,41 +165,7 @@ export class CodeDetector {
     return null
   }
 
-  private findAllJavaScriptWithAST(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
-    let currentProperty: string | null = null
 
-    const visitor: JSONVisitor = {
-      onObjectProperty: (property: string) => {
-        currentProperty = property
-      },
-      onLiteralValue: (value: any, valueOffset: number, valueLength: number) => {
-        if (!currentProperty) {
-          return
-        }
-
-        if (this.isJavaScriptField(currentProperty) && typeof value === 'string') {
-          if (this.looksLikeJavaScript(value)) {
-            // valueOffset包含引号，需要+1跳过开始引号，-1跳过结束引号
-            const codeStart = valueOffset + 1
-            const codeEnd = valueOffset + valueLength - 1
-            const startPos = document.positionAt(codeStart)
-            const endPos = document.positionAt(codeEnd)
-
-            blocks.push({
-              code: value,
-              start: codeStart,
-              end: codeEnd,
-              range: new vscode.Range(startPos, endPos),
-              fieldName: currentProperty,
-              language: 'javascript',
-            })
-          }
-        }
-      },
-    }
-
-    visit(text, visitor)
-  }
 
   private findAllCodeBlocksWithAST(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
     let currentProperty: string | null = null
@@ -534,74 +408,17 @@ export class CodeDetector {
     return 'javascript'
   }
 
-  private findJavaScriptInPartialJson(text: string, offset: number, document: vscode.TextDocument): CodeBlockInfo | null {
-    // 回退到正则表达式方法
-    const blocks: CodeBlockInfo[] = []
-    this.findAllJavaScriptWithRegex(text, document, blocks)
 
-    // 找到包含offset的块
-    for (const block of blocks) {
-      if (offset >= block.start && offset <= block.end) {
-        return block
-      }
-    }
-
-    return null
-  }
-
-  private findAllJavaScriptWithRegex(text: string, document: vscode.TextDocument, blocks: CodeBlockInfo[]): void {
-    // 为每个自动检测字段创建正则表达式，支持转义字符和未闭合字符串
-    for (const fieldName of this.autoDetectFields) {
-      // 修改正则表达式以正确处理转义字符、多行内容和未闭合字符串
-      const regex = new RegExp(`"${fieldName}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"?`, 'g')
-      let match = regex.exec(text)
-
-      while (match !== null) {
-        const fullMatch = match[0]
-        let jsCode = match[1]
-
-        // 对于未闭合的字符串，可能包含额外的内容，需要清理
-        // 如果代码以分号结尾，截取到分号为止
-        const semicolonIndex = jsCode.indexOf(';')
-        if (semicolonIndex !== -1) {
-          // 检查分号后是否只有空白字符和换行符
-          const afterSemicolon = jsCode.substring(semicolonIndex + 1).trim()
-          if (afterSemicolon === '' || /^[\s}]*$/.test(afterSemicolon)) {
-            jsCode = jsCode.substring(0, semicolonIndex + 1)
-          }
-        }
-
-        const unescapedCode = this.unescapeString(jsCode)
-
-        if (this.looksLikeJavaScript(unescapedCode)) {
-          const startOffset = match.index + fullMatch.indexOf('"', fullMatch.indexOf(':')) + 1
-          const endOffset = startOffset + jsCode.length
-
-          const startPos = document.positionAt(startOffset)
-          const endPos = document.positionAt(endOffset)
-
-          blocks.push({
-            code: unescapedCode,
-            start: startOffset,
-            end: endOffset,
-            range: new vscode.Range(startPos, endPos),
-            fieldName,
-            language: 'javascript',
-          })
-        }
-        match = regex.exec(text)
-      }
-    }
-  }
-
-  private isJavaScriptField(fieldName: string): boolean {
-    return this.autoDetectFields.includes(fieldName)
-  }
 
   private isCodeField(fieldName: string): boolean {
     // 检查是否为已知的代码字段
     if (this.autoDetectFields.includes(fieldName)) {
       return true
+    }
+
+    // 如果禁用了自动检测，不进行关键词匹配
+    if (!this.enableAutoDetection) {
+      return false
     }
 
     // 检查字段名是否包含代码相关的关键词
@@ -615,40 +432,6 @@ export class CodeDetector {
       || fieldLower.includes('bash') || fieldLower.includes('go')
       || fieldLower.includes('rust') || fieldLower.includes('cpp')
       || fieldLower.includes('c++') || fieldLower === 'c'
-  }
-
-  private looksLikeJavaScript(code: string): boolean {
-    if (!code || code.trim().length === 0) {
-      return false
-    }
-
-    // 检查是否包含JavaScript关键字或语法
-    const jsPatterns = [
-      /\bfunction\b/,
-      /\bvar\b|\blet\b|\bconst\b/,
-      /\bif\b|\belse\b|\bfor\b|\bwhile\b/,
-      /\breturn\b/,
-      /\btry\b|\bcatch\b|\bfinally\b/,
-      /\bconsole\./,
-      /=>/, // 箭头函数
-      /\{[^}]*\}/, // 代码块
-      /\([^)]*\)\s*=>/, // 箭头函数参数
-      /\.\w*\s*\(/, // 方法调用
-      /\b(?:class|extends|super)\b/, // ES6类语法
-      /\b(?:async|await)\b/, // 异步语法
-      /\b(?:import|export)\b/, // 模块语法
-      /\$\{[^}]+\}/, // 模板字符串
-      /\b(?:typeof|instanceof)\b/, // 类型检查
-      /\b(?:new|delete)\b/, // 对象操作
-      /\b(?:switch|case|default|break|continue)\b/, // 控制流
-      /\b(?:throw|finally)\b/, // 异常处理
-      /\/\*[\s\S]*?\*\//, // 多行注释
-      /\/\/.*$/, // 单行注释
-      /[;{}]\s*$/, // 语句结束符
-      /^\s*[{[]/, // 对象或数组字面量开始
-    ]
-
-    return jsPatterns.some(pattern => pattern.test(code))
   }
 
   private unescapeString(str: string): string {
