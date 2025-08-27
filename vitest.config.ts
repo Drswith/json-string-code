@@ -7,5 +7,14 @@ export default defineConfig({
     alias: {
       vscode: resolve(__dirname, './mock/vscode.ts'),
     },
+    reporters: ['default', 'html'],
+    coverage: {
+      enabled: true,
+      include: [
+        'mock/vscode.ts',
+        'src/**.{ts,tsx}',
+      ],
+    },
+    outputFile: 'dist-test/index.html',
   },
 })

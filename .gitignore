@@ -6,6 +6,7 @@
 *.vsix
 coverage
 dist
+dist-*
 cache
 out
 lib-cov
