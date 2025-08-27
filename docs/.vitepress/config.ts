@@ -6,7 +6,7 @@ export default defineConfig({
   lang: 'en-US',
   title: 'JSON String Code Editor',
   description: 'Enhanced JSON schema code snippet editing experience with temporary code editor tabs',
-  base: '/vscode-json-string-code-editor/',
+  // base: '/vscode-json-string-code-editor/',
 
   head: [
     // ['link', { rel: 'icon', href: '/favicon.ico' }],
