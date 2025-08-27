@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     setupFiles: ['./test/setup.ts'],
     alias: {
-      vscode: resolve(__dirname, './mocks/vscode.ts'),
+      vscode: resolve(__dirname, './mock/vscode.ts'),
     },
   },
 })
