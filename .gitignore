@@ -6,6 +6,7 @@
 *.vsix
 coverage
 dist
+cache
 out
 lib-cov
 logs
