@@ -130,6 +130,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "ext:pack": "vsce package --no-dependencies",
     "ext:publish": "pnpm run ext:publish-vsce && pnpm run ext:publish-ovsx",
     "ext:publish-vsce": "vsce publish --no-dependencies",
@@ -156,6 +159,7 @@
     "simple-git-hooks": "^2.11.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.4",
+    "vitepress": "latest",
     "vitest": "^3.2.4",
     "vscode-ext-gen": "^1.1.0"
   },
