@@ -56,5 +56,5 @@ export default defineConfig({
     },
     lineNumbers: true,
   },
-  outDir: path.resolve(process.cwd(), 'dist-docs'),
+  outDir: path.resolve(process.cwd(), 'dist'),
 })

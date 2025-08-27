@@ -139,7 +139,8 @@
     "ext:publish-vsce": "vsce publish --no-dependencies",
     "ext:publish-ovsx": "ovsx publish",
     "tag": "bumpp",
-    "release": "pnpm run tag && pnpm run build && pnpm run ext:publish"
+    "release": "pnpm run tag && pnpm run build && pnpm run ext:publish",
+    "release:pages": "pnpm run docs:build && pnpm run test:ui"
   },
   "dependencies": {
     "jsesc-es": "^0.0.3",
