@@ -139,8 +139,6 @@
     "ext:publish-vsce": "vsce publish --no-dependencies",
     "ext:publish-ovsx": "ovsx publish",
     "tag": "bumpp",
-    "vsce": "vsce",
-    "ovsx": "ovsx",
     "release": "pnpm run tag && pnpm run build && pnpm run ext:publish",
     "release:pages": "pnpm run update && node scripts/release-pages.mjs"
   },
