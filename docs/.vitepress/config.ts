@@ -20,11 +20,17 @@ export default defineConfig({
 
     nav: [
       {
+        text: 'Test Report',
+        items: [
+          { text: 'Unit Test', link: 'https://vscode-json-string-code-editor.netlify.app/vitest' },
+          { text: 'Test Coverage', link: 'https://vscode-json-string-code-editor.netlify.app/coverage' },
+        ],
+      },
+      {
         text: 'Links',
         items: [
           { text: 'VS Code Marketplace', link: 'https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor' },
           { text: 'Open VSX', link: 'https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor' },
-          { text: 'GitHub', link: 'https://github.com/Drswith/vscode-json-string-code-editor' },
           { text: 'Issues', link: 'https://github.com/Drswith/vscode-json-string-code-editor/issues' },
         ],
       },

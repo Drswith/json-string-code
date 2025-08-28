@@ -1,10 +1,15 @@
 # JSON String Code Editor
 
 [![VS Code Marketplace](https://img.shields.io/vscode-marketplace/v/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
+
 [![VS Code Marketplace Downloads](https://img.shields.io/vscode-marketplace/d/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Downloads)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
+
 [![VS Code Marketplace Installs](https://img.shields.io/vscode-marketplace/i/Drswith.vscode-json-string-code-editor.svg?color=blue&label=VS%20Code%20Installs)](https://marketplace.visualstudio.com/items?itemName=Drswith.vscode-json-string-code-editor)
+
 [![Open VSX Registry](https://img.shields.io/open-vsx/v/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=Open%20VSX)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
+
 [![Open VSX Downloads](https://img.shields.io/open-vsx/dt/Drswith/vscode-json-string-code-editor.svg?color=c160ef&label=OpenVSX%20Downloads)](https://open-vsx.org/extension/Drswith/vscode-json-string-code-editor)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A powerful VS Code extension that enhances the editing experience of code snippets embedded within JSON and JSONC files. Edit JavaScript, TypeScript, Python, and other code directly in temporary editor tabs with full syntax highlighting, IntelliSense, and language support.
@@ -237,18 +242,6 @@ If you encounter issues not covered here:
 2. Enable debug logging by setting `logLevel` to `"debug"` in extension settings
 3. Check the VS Code Output panel (View → Output → JSON String Code Editor)
 4. Create a new issue with detailed reproduction steps
-
-## 📈 Star History
-
-<p align="center">
-  <a href="https://star-history.com/#Drswith/vscode-json-string-code-editor">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Drswith/vscode-json-string-code-editor&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Drswith/vscode-json-string-code-editor&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Drswith/vscode-json-string-code-editor&type=Date" />
-    </picture>
-  </a>
-</p>
 
 ## 🤝 Contributing
 
