@@ -15,6 +15,6 @@ export default defineConfig({
         'src/**.{ts,tsx}',
       ],
     },
-    outputFile: 'dist-test/index.html',
+    outputFile: 'dist/vitest/index.html',
   },
 })

@@ -6,7 +6,7 @@ export default defineConfig({
   lang: 'en-US',
   title: 'JSON String Code Editor',
   description: 'Enhanced JSON schema code snippet editing experience with temporary code editor tabs',
-  // base: '/vscode-json-string-code-editor/',
+  base: '/docs/',
 
   head: [
     // ['link', { rel: 'icon', href: '/favicon.ico' }],
@@ -56,5 +56,5 @@ export default defineConfig({
     },
     lineNumbers: true,
   },
-  outDir: path.resolve(process.cwd(), 'dist'),
+  outDir: path.resolve(process.cwd(), 'dist/docs'),
 })
