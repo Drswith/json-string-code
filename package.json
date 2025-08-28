@@ -26,6 +26,12 @@
   ],
   "main": "./out/extension.js",
   "icon": "res/icon.png",
+  "files": [
+    "LICENSE.md",
+    "README.md",
+    "out",
+    "res"
+  ],
   "engines": {
     "vscode": "^1.74.0"
   },
